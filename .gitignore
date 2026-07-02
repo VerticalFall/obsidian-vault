@@ -1,0 +1,10 @@
+# 操作系统 / 编辑器杂项
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Obsidian 本地状态(如果 Obsidian 在此子文件夹生成配置,不上传)
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+.trash/
