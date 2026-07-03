@@ -68,7 +68,8 @@ def render(db_path, date):
             url = (r["url"] or "").strip()
             best = r["best_rank"]
             meta = []
-            if r["crawl_count"]:
+            # 在榜次数只在一天多次爬取(>1)时才有区分度,否则是噪音
+            if r["crawl_count"] and r["crawl_count"] > 1:
                 meta.append(f"在榜 {r['crawl_count']} 次")
             if best:
                 meta.append(f"最高第 {best} 位")
