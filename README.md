@@ -11,7 +11,7 @@
 GitHub 上的定时 Action(`.github/workflows/sync-reports.yml`,北京时间每天 12:20 运行)会:
 
 1. **AI HOT** — 调用公开 API `aihot.virxact.com/api/public/daily`,渲染成 `AI-HOT/YYYY-MM-DD.md`
-2. **TrendRadar** — 下载当天 `output/news/YYYY-MM-DD.db`(SQLite),渲染成 `TrendRadar/YYYY-MM-DD.md`
+2. **TrendRadar** — 下载当天成品报告 `output/html/latest/daily.html`,解析成「AI 热点分析(DeepSeek)+ 按话题分组热榜 + RSS」的 `TrendRadar/YYYY-MM-DD.md`(与推送飞书同源;db 作为退化方案)
 3. 用内置 `GITHUB_TOKEN` 提交回本仓库
 
 本地只需每天 `git pull` 即可拿到最新报告。

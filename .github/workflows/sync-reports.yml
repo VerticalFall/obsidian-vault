@@ -49,7 +49,7 @@ jobs:
           if curl -sfL "$db" -o /tmp/trendradar.db; then
             echo "db 下载成功,尝试下载 daily.html(含 AI 分析)..."
             curl -sfL "$html" -o /tmp/daily.html || echo "::warning::daily.html 未取到,本次仅渲染热榜。"
-            python .github/scripts/render_trendradar.py /tmp/trendradar.db "${TODAY}" "TrendRadar" /tmp/daily.html
+            python .github/scripts/render_trendradar.py "${TODAY}" /tmp/daily.html "TrendRadar" /tmp/trendradar.db
           else
             echo "::warning::TrendRadar 今日(${TODAY})数据库不存在,跳过。可能上游今天还没跑,或该源已停用。"
           fi
