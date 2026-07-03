@@ -96,7 +96,8 @@ def render_ai(src):
     for bt, bc in blocks:
         out.append(f"### {_text(bt)}")
         out.append("")
-        out.append(_text(bc))
+        # 折叠块内多余空行,避免"松散列表"被 Obsidian 自动整理成紧凑列表(否则本地会出现改动、卡住 pull)
+        out.append(re.sub(r"\n{2,}", "\n", _text(bc)))
         out.append("")
     return "\n".join(out), len(blocks)
 
