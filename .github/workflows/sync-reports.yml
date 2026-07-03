@@ -1,0 +1,65 @@
+name: 每日报告同步 (Daily Reports Sync)
+
+on:
+  schedule:
+    # 北京时间 12:20 = UTC 04:20。
+    # GitHub Actions 定时任务通常会延迟数分钟到数小时,
+    # 中午跑给上游(北京 8 点启动的源)留足缓冲。
+    - cron: "20 4 * * *"
+  workflow_dispatch: {}   # 允许在 Actions 页手动触发,用于测试 / 补抓
+
+permissions:
+  contents: write         # 允许用内置 GITHUB_TOKEN 把报告提交回本仓库
+
+concurrency:
+  group: sync-reports
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 检出 vault 仓库
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 计算北京日期
+        id: date
+        run: echo "today=$(TZ=Asia/Shanghai date +%F)" >> "$GITHUB_OUTPUT"
+
+      - name: 抓取 AI HOT 日报
+        continue-on-error: true
+        env:
+          RUN_DATE: ${{ steps.date.outputs.today }}
+        run: python .github/scripts/render_aihot.py
+
+      - name: 抓取 TrendRadar 热点
+        continue-on-error: true
+        env:
+          TODAY: ${{ steps.date.outputs.today }}
+        run: |
+          url="https://raw.githubusercontent.com/VerticalFall/TrendRadar/master/output/news/${TODAY}.db"
+          echo "尝试下载: $url"
+          if curl -sfL "$url" -o /tmp/trendradar.db; then
+            echo "下载成功,渲染中..."
+            python .github/scripts/render_trendradar.py /tmp/trendradar.db "${TODAY}" "TrendRadar"
+          else
+            echo "::warning::TrendRadar 今日(${TODAY})数据库不存在,跳过。可能上游今天还没跑,或该源已停用。"
+          fi
+
+      - name: 提交并推送变更
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "没有新内容,跳过提交。"
+          else
+            git commit -m "chore: 同步每日报告 ${{ steps.date.outputs.today }}"
+            git push
+          fi

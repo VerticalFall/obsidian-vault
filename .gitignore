@@ -8,3 +8,6 @@ desktop.ini
 .obsidian/workspace-mobile.json
 .obsidian/cache
 .trash/
+
+# 本地渲染预览(不上传)
+_preview/
