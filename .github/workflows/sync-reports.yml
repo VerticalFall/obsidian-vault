@@ -54,6 +54,14 @@ jobs:
             echo "::warning::TrendRadar 今日(${TODAY})数据库不存在,跳过。可能上游今天还没跑,或该源已停用。"
           fi
 
+      - name: 第一层预筛选(Layer 1 内容锚定)
+        continue-on-error: true
+        env:
+          TODAY: ${{ steps.date.outputs.today }}
+        run: |
+          echo "运行第一层内容锚定筛选..."
+          python .github/scripts/prefilter.py
+
       - name: 提交并推送变更
         run: |
           git config user.name "github-actions[bot]"
