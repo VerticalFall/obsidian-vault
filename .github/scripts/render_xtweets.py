@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""从 SocialData.tools API 拉取指定 X 博主的当日推文,渲染成 Markdown。
+"""从 SocialData.tools API 拉取指定 X 博主的当日推文,翻译+渲染成 Markdown。
 
 API: https://api.socialdata.tools
-纯标准库实现(urllib + json),无需 pip 安装。
+翻译: translate 库(Google Translate 免费后端)
 博主列表从 X-Tweets/following.json 读取。
 输出: X-Tweets/YYYY-MM-DD.md
 
@@ -14,6 +14,7 @@ API: https://api.socialdata.tools
 
 import json
 import os
+import re
 import sys
 import time
 import urllib.request
@@ -32,7 +33,6 @@ BEIJING = timezone(timedelta(hours=8))
 
 
 def today_beijing() -> str:
-    """返回北京时间今天的 YYYY-MM-DD,或环境变量 TODAY_OVERRIDE 指定的日期。"""
     override = os.environ.get("TODAY_OVERRIDE", "").strip()
     if override:
         return override
@@ -40,16 +40,12 @@ def today_beijing() -> str:
 
 
 def today_start_utc(date_str: str) -> str:
-    """给定北京时间 YYYY-MM-DD,返回当天 00:00 对应的 UTC ISO 8601。
-    例如 date_str="2026-07-08" → "2026-07-07T16:00:00Z"
-    """
     dt = datetime.strptime(date_str, "%Y-%m-%d")
     dt_beijing = dt.replace(tzinfo=BEIJING)
     return dt_beijing.isoformat()
 
 
 def api_get(path: str) -> dict:
-    """调 SocialData.tools API,返回 JSON。"""
     api_key = os.environ.get("SOCIALDATA_API_KEY", "").strip()
     if not api_key:
         raise RuntimeError("SOCIALDATA_API_KEY 环境变量未设置")
@@ -66,7 +62,6 @@ def api_get(path: str) -> dict:
 
 
 def load_following() -> list[str]:
-    """读取 following.json,返回 screen_name 列表。"""
     if not os.path.exists(FOLLOWING_FILE):
         print(f"WARNING: {FOLLOWING_FILE} 不存在,返回空列表")
         return []
@@ -76,7 +71,6 @@ def load_following() -> list[str]:
 
 
 def resolve_user(screen_name: str) -> dict | None:
-    """通过 screen_name 查用户信息,返回 {id_str, screen_name, name}。"""
     try:
         profile = api_get(f"user/{screen_name}")
         return {
@@ -90,7 +84,6 @@ def resolve_user(screen_name: str) -> dict | None:
 
 
 def fetch_tweets(user_id: str, since_utc: str) -> list[dict]:
-    """拉取用户推文,翻页直到推文时间早于 since_utc。"""
     all_tweets = []
     cursor = None
     page = 0
@@ -111,20 +104,18 @@ def fetch_tweets(user_id: str, since_utc: str) -> list[dict]:
         if not tweets:
             break
 
-        # 筛选北京时间今天的推文
         for tw in tweets:
             created = tw.get("tweet_created_at", "")
             if created >= since_utc:
                 all_tweets.append(tw)
             else:
-                # 已进入昨天,停止收集
                 return all_tweets
 
         cursor = data.get("next_cursor")
         if not cursor:
             break
 
-        time.sleep(0.3)  # 友好间隔
+        time.sleep(0.3)
 
     return all_tweets
 
@@ -134,7 +125,6 @@ def tweet_url(screen_name: str, tweet_id: str) -> str:
 
 
 def format_time(iso_str: str) -> str:
-    """UTC ISO 8601 → 北京时间 HH:MM。"""
     try:
         dt = datetime.fromisoformat(iso_str.replace("Z", "+00:00"))
         dt_bj = dt.astimezone(BEIJING)
@@ -143,10 +133,51 @@ def format_time(iso_str: str) -> str:
         return iso_str
 
 
+# ── 翻译 ────────────────────────────────────────────────────────
+
+def contains_chinese(text: str) -> bool:
+    """判断文本是否含中文。"""
+    return bool(re.search(r'[一-鿿]', text))
+
+
+def translate_to_chinese(text: str) -> str | None:
+    """用 translate 库将英文翻译为中文。失败返回 None。"""
+    try:
+        from translate import Translator
+        translator = Translator(to_lang="zh", from_lang="en")
+        result = translator.translate(text)
+        return result
+    except Exception as e:
+        print(f"      翻译失败: {e}", file=sys.stderr)
+        return None
+
+
+def translate_text(text: str) -> str | None:
+    """翻译一条推文。只翻译不含中文的文本。字数 < 30 跳过（太短没价值）。"""
+    text = text.strip()
+    if not text:
+        return None
+    if contains_chinese(text):
+        return None
+    if len(text) < 30:
+        return None
+    # 超长文本截断翻译（> 500 字符先截）
+    if len(text) > 500:
+        text = text[:500] + "..."
+    return translate_to_chinese(text)
+
+
+def clean_tweet_text(tw: dict) -> str:
+    """提取纯文本,去掉 t.co 短链接。"""
+    text = (tw.get("full_text") or tw.get("text") or "").strip()
+    # 去掉末尾所有 t.co 短链接
+    text = re.sub(r'https://t\.co/\S+', '', text).strip()
+    return text
+
+
 # ── render ──────────────────────────────────────────────────────
 
 def render(date_str: str, tweets_by_user: list[tuple[dict, list[dict]]]) -> str:
-    """渲染为 Obsidian 友好的 Markdown。"""
     out = []
     out.append("---")
     out.append(f"date: {date_str}")
@@ -171,29 +202,39 @@ def render(date_str: str, tweets_by_user: list[tuple[dict, list[dict]]]) -> str:
         out.append("")
 
         for tw in tweets:
-            # 跳过纯转推(无自己文字)
-            text = (tw.get("full_text") or tw.get("text") or "").strip()
+            text = clean_tweet_text(tw)
             tw_id = tw.get("id_str", "")
             created = tw.get("tweet_created_at", "")
             reply_to = tw.get("in_reply_to_screen_name", "")
 
-            # 前缀标记
             prefix = ""
             if reply_to:
                 prefix = f"↩ 回复 @{reply_to}: "
 
-            out.append(f"{prefix}{text}")
+            # 是否需要翻译
+            need_translation = not contains_chinese(text) and len(text) >= 30
+
+            # 原文
+            out.append(f"> {prefix}{text}")
+
+            # 翻译
+            if need_translation:
+                translation = translate_text(text)
+                if translation:
+                    out.append(f"> 🇨🇳 {translation}")
+
+            # 数据行
             out.append(
                 f"🕐 {format_time(created)} · "
                 f"🔁 {tw.get('retweet_count', 0)} · "
                 f"❤️ {tw.get('favorite_count', 0)} · "
                 f"👁 {tw.get('views_count', 0)} · "
-                f"[查看原文]({tweet_url(screen_name, tw_id)})"
+                f"[原文]({tweet_url(screen_name, tw_id)})"
             )
             out.append("")
 
     out.append("---")
-    out.append("*数据来源:[SocialData.tools](https://socialdata.tools)*")
+    out.append("*数据来源:[SocialData.tools](https://socialdata.tools) · 翻译由 Google Translate 提供*")
     out.append("")
     return "\n".join(out)
 
@@ -220,7 +261,9 @@ def main():
         uid = user["id_str"]
         print(f"  @{sn} (id={uid}) …", end=" ")
         tweets = fetch_tweets(uid, since_utc)
-        print(f"{len(tweets)} 条今日推文")
+        to_translate = sum(1 for t in tweets if not contains_chinese(clean_tweet_text(t)) and len(clean_tweet_text(t)) >= 30)
+        print(f"{len(tweets)} 条今天 (需翻译 {to_translate} 条)")
+
         tweets_by_user.append((user, tweets))
 
     if not tweets_by_user:
