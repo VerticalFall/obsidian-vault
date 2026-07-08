@@ -38,6 +38,13 @@ jobs:
           RUN_DATE: ${{ steps.date.outputs.today }}
         run: python .github/scripts/render_aihot.py
 
+      - name: 抓取 X 博主动态
+        continue-on-error: true
+        env:
+          SOCIALDATA_API_KEY: ${{ secrets.SOCIALDATA_API_KEY }}
+          TODAY_OVERRIDE: ${{ steps.date.outputs.today }}
+        run: python .github/scripts/render_xtweets.py
+
       - name: 抓取 TrendRadar 热点
         continue-on-error: true
         env:
