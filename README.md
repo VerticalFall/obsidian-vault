@@ -12,8 +12,9 @@ GitHub 上的定时 Action（`.github/workflows/sync-reports.yml`，北京时间
 
 1. **AI HOT** — 调用公开 API `aihot.virxact.com/api/public/daily`，渲染成 `AI-HOT/YYYY-MM-DD.md`
 2. **X 博主动态** — 通过 SocialData.tools API（$0.0002/条）拉取指定博主的当日推文，自动翻译英文内容为中文，渲染成 `X-Tweets/YYYY-MM-DD.md`
-3. **TrendRadar** — 下载当天成品报告 `output/html/latest/daily.html`，解析成「AI 热点分析（DeepSeek）+ 按话题分组热榜 + RSS」的 `TrendRadar/YYYY-MM-DD.md`（与推送飞书同源；db 作为退化方案）
-4. 用内置 `GITHUB_TOKEN` 提交回本仓库
+3. **TrendRadar** — 下载当天成品报告，解析成「AI 热点分析 + 热榜 + RSS」的 `TrendRadar/YYYY-MM-DD.md`
+4. **日报路由（NEW）** — 用 DeepSeek V4 Pro 自动跑 daily-router 三层漏斗：读三源报告 → 筛选选题 → 输出路由日志 + 更新选题池。成本 ~$0.018/天
+5. 用内置 `GITHUB_TOKEN` 提交回本仓库
 
 本地只需每天 `git pull` 即可拿到最新报告。
 
@@ -66,13 +67,13 @@ commit → push → 次日 12:20 生效。不需要改代码。
 AI HOT + X Tweets + TrendRadar（采集层，本仓库）
         │
         ▼
-  daily-router ──[三层漏斗筛选]──► 选题池
+  daily-router [DeepSeek V4 Pro 自动] ──[三层漏斗]──► 选题池 + 路由日志
         │
         ▼
-  weekly-distill ──[信号群合并 + 冷却判断 + 沉淀框架]──► 周度蒸馏报告
+  weekly-distill ──[信号群合并 + 冷却判断 + 沉淀框架]──► 周度蒸馏报告（本地手动）
         │
         ▼
-  公众号写作 ──[两步调研 + 去 AI 味 + 四层自检]
+  公众号写作 ──[两步调研 + 去 AI 味 + 四层自检]（本地手动）
         │
   配图理念 ──[GPT Image 封面 + 原文截图正文]
         │

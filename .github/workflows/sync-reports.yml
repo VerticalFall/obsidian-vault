@@ -18,7 +18,7 @@ concurrency:
 jobs:
   sync:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: 检出 vault 仓库
         uses: actions/checkout@v4
@@ -63,6 +63,16 @@ jobs:
           else
             echo "::warning::TrendRadar 今日(${TODAY})数据库不存在,跳过。可能上游今天还没跑,或该源已停用。"
           fi
+
+      - name: 自动日报路由 (DeepSeek V4 Pro)
+        continue-on-error: true
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          ROUTER_MODEL: deepseek-v4-pro
+          TODAY_OVERRIDE: ${{ steps.date.outputs.today }}
+          ROUTE_OUT_DIR: _路由
+          TOPIC_FILE: _选题池.md
+        run: python .github/scripts/run_daily_router.py
 
       - name: 提交并推送变更
         run: |
