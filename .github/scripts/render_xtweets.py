@@ -84,6 +84,10 @@ def resolve_user(screen_name: str) -> dict | None:
 
 
 def fetch_tweets(user_id: str, since_utc: str) -> list[dict]:
+    """拉取用户推文，翻页直到推文时间早于 since_utc。
+    注意：API 可能返回乱序推文（如置顶推文在最前），所以不能看到一条旧的就提前 return，
+    而是遍历整页后再判断是否继续翻页。
+    """
     all_tweets = []
     cursor = None
     page = 0
@@ -104,12 +108,21 @@ def fetch_tweets(user_id: str, since_utc: str) -> list[dict]:
         if not tweets:
             break
 
+        # 遍历整页：收集今天的，记录最早时间
+        saw_old = False
+        oldest_in_page = None
         for tw in tweets:
             created = tw.get("tweet_created_at", "")
+            if not oldest_in_page or created < oldest_in_page:
+                oldest_in_page = created
             if created >= since_utc:
                 all_tweets.append(tw)
             else:
-                return all_tweets
+                saw_old = True
+
+        # 当前页最早推文 < since，后面的页也不会有今天的了
+        if saw_old and oldest_in_page and oldest_in_page < since_utc:
+            break
 
         cursor = data.get("next_cursor")
         if not cursor:
