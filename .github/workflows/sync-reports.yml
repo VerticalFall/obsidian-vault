@@ -74,6 +74,12 @@ jobs:
           TOPIC_FILE: _选题池.md
         run: python .github/scripts/run_daily_router.py
 
+      - name: L1 系统健康检查
+        continue-on-error: true
+        env:
+          TODAY_OVERRIDE: ${{ steps.date.outputs.today }}
+        run: python .github/scripts/check_health.py
+
       - name: 提交并推送变更
         run: |
           git config user.name "github-actions[bot]"
