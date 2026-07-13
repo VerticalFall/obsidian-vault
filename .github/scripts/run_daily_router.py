@@ -138,6 +138,15 @@ def read_file(path: str) -> str:
         return ""
 
 
+def is_table_sep(line: str) -> bool:
+    """判断是否为 Markdown 表格分隔行。
+    兼容无 padding(|---|---|) 与有 padding(| --- | --- |) 两种写法——
+    只要整行由 | - : 空格 组成且含至少一个 -，即视为分隔行。
+    """
+    s = line.strip()
+    return s.startswith("|") and "-" in s and set(s) <= set("|-: ")
+
+
 def list_routes(route_dir: str, days: int = 3) -> list[str]:
     """返回最近 N 天的路由日志路径列表。"""
     import glob as g
@@ -312,14 +321,14 @@ def update_topic_pool(new_entries: str, updates: str, date_str: str):
         if line.strip().startswith("## 🔥"):
             in_hot = True
             hot_idx = i
-        elif in_hot and line.strip().startswith("| -"):
+        elif in_hot and is_table_sep(line):
             hot_sep = i
             break  # 找到第一个分隔行即停止
 
     if hot_sep < 0:
         print("WARNING: 找不到 🔥 新进 区表格,回退到旧格式")
-        # 回退：找文件中第一个 | ---- 分隔行
-        hot_sep = next((i for i, l in enumerate(lines) if l.strip().startswith("| -")), None)
+        # 回退：找文件中第一个表格分隔行
+        hot_sep = next((i for i, l in enumerate(lines) if is_table_sep(l)), None)
         if hot_sep is None:
             print("WARNING: 找不到任何表格,跳过")
             return

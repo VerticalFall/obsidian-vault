@@ -147,22 +147,43 @@ def check_route_log(date_str):
 
 
 def check_topic_pool():
-    """检查 4: 选题池中 🌱待定 + 💤等待 条目数。"""
+    """检查 4: 选题池「可写库存」= 🔥 新进 + 🌿 持续发酵 + 💤 等待 三区的数据行数。
+
+    分节看板格式：每区一个 Markdown 表格。统计各区数据行，
+    排除表头行(第一格为「选题/文章/标题」)、分隔行(|---|)、区块外内容。
+    ✅ 已发布不计入库存。
+    """
     text = read_file(TOPIC_FILE)
     if not text:
         return "🔴", "选题池文件不存在", 0
 
-    # 只匹配表格行(以 | 🌱待定 或 | 💤等待 开头),排除图例行中出现的 emoji
-    pending = len(re.findall(r'^\|\s*🌱待定', text, re.MULTILINE))
-    waiting = len(re.findall(r'^\|\s*💤等待', text, re.MULTILINE))
-    total = pending + waiting
+    counts = {"🔥": 0, "🌿": 0, "💤": 0}
+    current = None
+    for line in text.split("\n"):
+        s = line.strip()
+        m = re.match(r'^##\s*(🔥|🌿|💤|✅)', s)
+        if m:
+            sec = m.group(1)
+            current = sec if sec in counts else None  # ✅ → None(不计)
+            continue
+        if current is None or not s.startswith("|"):
+            continue
+        if set(s) <= set("|-: "):          # 分隔行 |---|---|
+            continue
+        first_cell = s.strip("|").split("|")[0].strip()
+        if first_cell in ("选题", "文章", "标题"):  # 表头行
+            continue
+        counts[current] += 1
+
+    total = counts["🔥"] + counts["🌿"] + counts["💤"]
+    detail = f"{total} 条(🔥{counts['🔥']} 🌿{counts['🌿']} 💤{counts['💤']})"
 
     if total >= 5:
-        return "🟢", f"{total} 条(🌱{pending} 💤{waiting})", total
+        return "🟢", detail, total
     elif total >= 3:
-        return "🟡", f"{total} 条(🌱{pending} 💤{waiting})", total
+        return "🟡", detail, total
     else:
-        return "🔴", f"仅 {total} 条(🌱{pending} 💤{waiting})", total
+        return "🔴", detail, total
 
 
 def check_translation(date_str):
