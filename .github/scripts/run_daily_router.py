@@ -97,16 +97,16 @@ X 博主的推文不是经过编辑的新闻摘要。英文推文（含翻译）
 ```
 
 ===TOPIC_POOL_UPDATES===
-需要写入选题池的新条目，每行一条：
+需要写入选题池的新条目，每行一条（路由器自动放入 🔥 新进 区）：
 ```
-| 🌱待定 | <选题标题> | <来源/日期> | <角度/钩子> | ⭐/普通 |
+| <选题标题> | <来源/日期> | <角度/钩子> | ⭐/· |
 ```
 (无新条目则写 "无")
 
 ===TOPIC_UPDATES===
-需要修改的已有选题，每行一条：
+需要修改的已有选题，每行一条（路由器跨所有分区搜索匹配）：
 ```
-| <原选题关键词> | <新状态或角度> |
+| <原选题关键词> | <新角度或状态> |
 ```
 (无需修改则写 "无")
 
@@ -117,7 +117,7 @@ X 博主的推文不是经过编辑的新闻摘要。英文推文（含翻译）
 - 丢弃条目列出理由,不要静默丢弃
 - 利率史永远不丢
 - 同一日期不重复路由
-- 选题池维护:按日期倒序,更新时直接修改原行,不做额外标记行
+- 选题池维护:新条目放入 🔥 新进 区;更新已有条目时不限分区
 - merge_hint 要落到具体操作,不用模糊语言
 
 现在开始对以下日报内容执行路由。"""
@@ -296,18 +296,33 @@ def main():
 
 
 def update_topic_pool(new_entries: str, updates: str, date_str: str):
-    """更新 _选题池.md：插入新条目 + 修改已有条目。"""
+    """更新分节选题池：新条目插入 🔥 新进 区，更新跨所有分区搜索。"""
     existing = read_file(TOPIC_FILE)
     if not existing:
         print("WARNING: _选题池.md 不存在,跳过")
         return
 
     lines = existing.split("\n")
-    # 找到表头分隔行位置 (| ---- | ...)
-    sep_idx = next((i for i, l in enumerate(lines) if l.strip().startswith("| -")), None)
-    if sep_idx is None:
-        print("WARNING: 找不到选题池表格,跳过")
-        return
+
+    # ── 定位 🔥 新进 区的表格分隔行 ──
+    hot_idx = -1
+    hot_sep = -1
+    in_hot = False
+    for i, line in enumerate(lines):
+        if line.strip().startswith("## 🔥"):
+            in_hot = True
+            hot_idx = i
+        elif in_hot and line.strip().startswith("| -"):
+            hot_sep = i
+            break  # 找到第一个分隔行即停止
+
+    if hot_sep < 0:
+        print("WARNING: 找不到 🔥 新进 区表格,回退到旧格式")
+        # 回退：找文件中第一个 | ---- 分隔行
+        hot_sep = next((i for i, l in enumerate(lines) if l.strip().startswith("| -")), None)
+        if hot_sep is None:
+            print("WARNING: 找不到任何表格,跳过")
+            return
 
     # ── 插入新条目 ──
     new_lines = []
@@ -318,15 +333,14 @@ def update_topic_pool(new_entries: str, updates: str, date_str: str):
                 new_lines.append(le)
 
     if new_lines:
-        # 按日期倒序:提取日期列,排在现有最前面
-        # 新条目插在分隔行后第一位
-        insert_pos = sep_idx + 1
+        insert_pos = hot_sep + 1
         for i, nl in enumerate(new_lines):
             lines.insert(insert_pos + i, nl)
-        print(f"OK: 选题池新增 {len(new_lines)} 条")
+        print(f"OK: 选题池 🔥 新区新增 {len(new_lines)} 条")
 
-    # ── 更新已有条目 ──
+    # ── 更新已有条目（跨所有分区搜索）──
     if updates and updates != "无":
+        updated_count = 0
         for ul in updates.strip().split("\n"):
             ul = ul.strip()
             if not ul.startswith("|"):
@@ -334,17 +348,19 @@ def update_topic_pool(new_entries: str, updates: str, date_str: str):
             parts = [p.strip() for p in ul.split("|")]
             if len(parts) < 3:
                 continue
-            keyword = parts[1]  # 选题名关键词
-            new_angle = parts[2]  # 新角度
+            keyword = parts[1]
+            new_content = parts[2]
             for i, line in enumerate(lines):
-                if keyword in line:
-                    # 替换角度列(第4列)
+                if keyword in line and any(c in line for c in "|"):
+                    # 替换「我会怎么写」列（第 3 列）
                     cols = [c.strip() for c in line.split("|")]
                     if len(cols) >= 4:
-                        cols[3] = new_angle
+                        cols[3] = new_content
                         lines[i] = "| " + " | ".join(cols[1:]) + " |"
+                        updated_count += 1
                     break
-        print("OK: 已有选题已更新")
+        if updated_count:
+            print(f"OK: 已有选题更新 {updated_count} 条（跨分区搜索）")
 
     # ── 写回 ──
     with open(TOPIC_FILE, "w", encoding="utf-8") as f:
