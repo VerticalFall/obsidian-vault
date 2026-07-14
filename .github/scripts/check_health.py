@@ -147,10 +147,11 @@ def check_route_log(date_str):
 
 
 def check_topic_pool():
-    """检查 4: 选题池「可写库存」= 🔥 新进 + 🌿 持续发酵 + 💤 等待 三区的数据行数。
+    """检查 4: 选题池「可写库存」= 🔥 + 🌿 + 💤 三区的条目数。
 
-    分节看板格式：每区一个 Markdown 表格。统计各区数据行，
-    排除表头行(第一格为「选题/文章/标题」)、分隔行(|---|)、区块外内容。
+    新格式：
+      🔥 区 — 标题列表，每条选题以 #### ⭐ 或 #### · 开头
+      🌿/💤 区 — Markdown 表格
     ✅ 已发布不计入库存。
     """
     text = read_file(TOPIC_FILE)
@@ -164,16 +165,24 @@ def check_topic_pool():
         m = re.match(r'^##\s*(🔥|🌿|💤|✅)', s)
         if m:
             sec = m.group(1)
-            current = sec if sec in counts else None  # ✅ → None(不计)
+            current = sec if sec in counts else None
             continue
-        if current is None or not s.startswith("|"):
+        if current is None:
             continue
-        if set(s) <= set("|-: "):          # 分隔行 |---|---|
-            continue
-        first_cell = s.strip("|").split("|")[0].strip()
-        if first_cell in ("选题", "文章", "标题"):  # 表头行
-            continue
-        counts[current] += 1
+        if current == "🔥":
+            # 标题列表格式 — 统计 #### ⭐ 或 #### ·
+            if s.startswith("#### "):
+                counts[current] += 1
+        else:
+            # 表格格式 — 统计数据行
+            if not s.startswith("|"):
+                continue
+            if set(s) <= set("|-: "):
+                continue
+            first_cell = s.strip("|").split("|")[0].strip()
+            if first_cell in ("选题", "文章", "标题"):
+                continue
+            counts[current] += 1
 
     total = counts["🔥"] + counts["🌿"] + counts["💤"]
     detail = f"{total} 条(🔥{counts['🔥']} 🌿{counts['🌿']} 💤{counts['💤']})"
