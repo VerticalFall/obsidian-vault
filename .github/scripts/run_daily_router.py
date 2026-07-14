@@ -179,7 +179,10 @@ def call_deepseek(system: str, user: str, max_tokens: int = 8000) -> str:
     )
     with urllib.request.urlopen(req, timeout=180) as r:
         data = json.loads(r.read().decode("utf-8"))
-    return data["choices"][0]["message"]["content"]
+    content = data["choices"][0]["message"]["content"]
+    if not content or not content.strip():
+        raise RuntimeError("DeepSeek 返回了空内容 — 可能是模型不可用、Key 额度耗尽或服务端限流")
+    return content
 
 
 def parse_sections(output: str) -> dict[str, str]:
@@ -309,6 +312,13 @@ def update_topic_pool(new_entries: str, updates: str, date_str: str):
     existing = read_file(TOPIC_FILE)
     if not existing:
         print("WARNING: _选题池.md 不存在,跳过")
+        return
+
+    # ── 空操作提前返回，避免无意义的 read+write ──
+    has_new = bool(new_entries.strip()) and new_entries.strip() != "无"
+    has_upd = bool(updates.strip()) and updates.strip() != "无"
+    if not has_new and not has_upd:
+        print("OK: 无新选题/更新项，选题池未修改")
         return
 
     lines = existing.split("\n")
