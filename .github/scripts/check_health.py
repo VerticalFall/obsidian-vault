@@ -149,9 +149,7 @@ def check_route_log(date_str):
 def check_topic_pool():
     """检查 4: 选题池「可写库存」= 🔥 + 🌿 + 💤 三区的条目数。
 
-    新格式：
-      🔥 区 — 标题列表，每条选题以 #### ⭐ 或 #### · 开头
-      🌿/💤 区 — Markdown 表格
+    三区均为 Markdown 表格，按分区统计表格数据行。
     ✅ 已发布不计入库存。
     """
     text = read_file(TOPIC_FILE)
@@ -160,29 +158,35 @@ def check_topic_pool():
 
     counts = {"🔥": 0, "🌿": 0, "💤": 0}
     current = None
+    in_table = False
     for line in text.split("\n"):
         s = line.strip()
         m = re.match(r'^##\s*(🔥|🌿|💤|✅)', s)
         if m:
             sec = m.group(1)
             current = sec if sec in counts else None
+            in_table = False
             continue
         if current is None:
             continue
-        if current == "🔥":
-            # 标题列表格式 — 统计 #### ⭐ 或 #### ·
-            if s.startswith("#### "):
-                counts[current] += 1
-        else:
-            # 表格格式 — 统计数据行
-            if not s.startswith("|"):
-                continue
-            if set(s) <= set("|-: "):
-                continue
-            first_cell = s.strip("|").split("|")[0].strip()
-            if first_cell in ("选题", "文章", "标题"):
-                continue
-            counts[current] += 1
+        # 检测表格开始
+        if s.startswith("|"):
+            in_table = True
+        elif not s.startswith("|") and s != "":
+            in_table = False
+            continue
+        if not in_table or not s.startswith("|"):
+            continue
+        # 跳过分隔行和表头
+        if set(s) <= set("|-: "):
+            continue
+        first_cell = s.strip("|").split("|")[0].strip()
+        if first_cell in ("选题", "文章", "标题"):
+            continue
+        # ⸺ 占位符行（阿里 Claude 那条）不计
+        if first_cell == "⸺":
+            continue
+        counts[current] += 1
 
     total = counts["🔥"] + counts["🌿"] + counts["💤"]
     detail = f"{total} 条(🔥{counts['🔥']} 🌿{counts['🌿']} 💤{counts['💤']})"

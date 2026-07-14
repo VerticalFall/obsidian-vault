@@ -97,20 +97,20 @@ X 博主的推文不是经过编辑的新闻摘要。英文推文（含翻译）
 ```
 
 ===TOPIC_POOL_UPDATES===
-需要写入选题池的新条目，格式如下（路由器自动放入 🔥 新进 区的当日日期子标题下）：
+需要写入 🔥 新进 区表格的新选题，每条一行表格行。路由器自动放入当日日期子标题 `### MM-DD` 下的表格中：
 ```
-#### ⭐ <选题标题>
-- 来源: <来源/日期>
-- 框架: <角度/钩子——选用的标尺书+简述如何用>
-- → <合并建议：可合并与"XX"组系列 或 独立成文>
+| ⭐/· <选题标题> | <钩子——一句"然后呢？"> | <角度——独特的分析切入点，不贴书名标签> | <系列：独立 / ◈ XXX #N> |
 ```
 (无新条目则写 "无")
-注意：⭐ 与 · 已通过标题的 ⭐ 前缀区分，无需额外标记。
+要求：
+- 钩子要有传播力——让读者说"卧槽然后呢"。用具体冲突、数字、反差。
+- 角度不要写"《叙事经济学》——xxx"这种书封标签。写具体的分析切入，比如"用市场先生隐喻讲两个估值体系互殴"。
+- 系列字段：独立成文写"独立"，有前后关系写"◈ AI 泡沫三部曲 #2"这种带序号和前后锚点的格式。
 
 ===TOPIC_UPDATES===
-需要修改的已有选题，每行一条（路由器跨所有分区搜索匹配 #### 标题）：
+需要修改的已有选题，每行一条。路由器跨所有分区搜索表格中"选题"列关键词匹配：
 ```
-| <原选题关键词> | <新角度或状态> |
+| <原选题关键词> | <新信号——要更新到🌿区"最新信号"列的文本> |
 ```
 (无需修改则写 "无")
 
@@ -121,7 +121,7 @@ X 博主的推文不是经过编辑的新闻摘要。英文推文（含翻译）
 - 丢弃条目列出理由,不要静默丢弃
 - 利率史永远不丢
 - 同一日期不重复路由
-- 选题池维护:新条目放入 🔥 新进 区当日日期子标题下;更新已有条目时不限分区,以 #### 标题关键词匹配
+- 选题池维护:新条目放入 🔥 新进 区当日日期子标题下的表格;更新已有条目时不限分区,以选题列关键词匹配表格行
 - merge_hint 要落到具体操作,不用模糊语言
 
 现在开始对以下日报内容执行路由。"""
@@ -312,21 +312,19 @@ def main():
 
 
 def update_topic_pool(new_entries: str, updates: str, date_str: str):
-    """更新选题池（标题列表格式）。
+    """更新选题池（表格格式）。
 
-    新格式：
+    格式：
       ## 🔥 新进
       ### MM-DD（N 条）
-      #### ⭐ 选题标题
-      - 来源: ...
-      - 框架: ...
-      - → ...
+      | 选题 | 钩子 | 角度 | 系列 |
+      |------|------|------|------|
+      | ⭐ 标题 | ... | ... | ... |
 
     插入逻辑：
       1. 找 `## 🔥` 标题
-      2. 在 🔥 区内找或创建 `### MM-DD`（从 date_str 取 MM-DD）子标题
-      3. 在日期子标题下追加 `#### ` 块
-      4. 无 date_str → 取字符串前 2+后 2 位作为 MM-DD
+      2. 在 🔥 区内找或建 `### MM-DD` 子标题
+      3. 在日期子标题下的表格分隔行后插入新行
     """
     existing = read_file(TOPIC_FILE)
     if not existing:
@@ -362,63 +360,84 @@ def update_topic_pool(new_entries: str, updates: str, date_str: str):
 
     hot_end = next_section if next_section >= 0 else len(lines)
 
-    # ── 在 🔥 区内找已有日期子标题 ──
-    date_sub_idx = -1
-    date_marker = f"### {mmdd}"
-    for i in range(hot_start, hot_end):
-        if lines[i].strip().startswith(date_marker):
-            date_sub_idx = i
-            break
+    # ── 解析表格行的辅助函数 ──
+    def is_data_row(line: str) -> bool:
+        s = line.strip()
+        return s.startswith("|") and not set(s) <= set("|-: ") and "---" not in s
 
-    # ── 插入新条目（标题列表格式）──
+    # ── 插入新条目（表格格式）──
     if has_new:
-        blocks = []
-        for block_text in new_entries.strip().split("\n#### "):
-            block_text = block_text.strip()
-            if not block_text:
-                continue
-            if not block_text.startswith("#### "):
-                block_text = "#### " + block_text
-            # 确保标题行后有空行、块末有空行分隔
-            blocks.append(block_text.strip() + "\n")
+        new_rows = []
+        for le in new_entries.strip().split("\n"):
+            le = le.strip()
+            if le.startswith("|") and not le.startswith("|---"):
+                new_rows.append(le)
 
-        if blocks:
+        if new_rows:
+            date_marker = f"### {mmdd}"
+            date_sub_idx = -1
+            for i in range(hot_start, hot_end):
+                if lines[i].strip().startswith(date_marker):
+                    date_sub_idx = i
+                    break
+
             if date_sub_idx >= 0:
-                # 日期子标题已存在 → 插入到该日期组末尾（下一个 ### 或 ##  之前）
-                insert_at = -1
-                for j in range(date_sub_idx + 1, hot_end):
-                    if lines[j].strip().startswith("### ") or lines[j].strip().startswith("## "):
-                        insert_at = j
+                # 日期子标题已存在 → 在表格分隔行后插入
+                sep_idx = -1
+                in_date_table = False
+                for j in range(date_sub_idx, hot_end):
+                    s = lines[j].strip()
+                    if s.startswith("### ") and j != date_sub_idx:
+                        break  # 到了下一个日期组
+                    if s.startswith("|"):
+                        in_date_table = True
+                    if in_date_table and set(s) <= set("|-: "):
+                        sep_idx = j
                         break
-                if insert_at < 0:
-                    insert_at = hot_end
-                # 在插入点之前补一个空行
-                if lines[insert_at - 1].strip() != "":
-                    lines.insert(insert_at, "")
-                    insert_at += 1
-                for b in reversed(blocks):
-                    lines.insert(insert_at, b)
+                if sep_idx >= 0:
+                    insert_at = sep_idx + 1
+                    for i, row in enumerate(new_rows):
+                        lines.insert(insert_at + i, row)
+                    # 更新日期子标题计数
+                    for j in range(date_sub_idx, min(date_sub_idx + 3, len(lines))):
+                        if lines[j].strip().startswith("### "):
+                            import re as _re
+                            lines[j] = _re.sub(r'（\d+ 条）', f'（{_re.sub(r"[^0-9]", "", lines[j].strip())} 条）', lines[j])
+                            break
             else:
-                # 日期子标题不存在 → 新建日期组（插入到 🔥 区内第一个 ### 之前，或 🔥 区末尾）
-                # 更新日期子标题计数
-                date_n = sum(1 for b in blocks if b.strip().startswith("#### "))
-                date_line = f"\n### {mmdd}（{date_n} 条）\n"
+                # 日期子标题不存在 → 建日期组（### MM-DD + 表头 + 分隔行 + 数据行）
+                date_line = f"### {mmdd}（{len(new_rows)} 条）"
+                header = "| 选题 | 钩子 | 角度 | 系列 |"
+                sep = "|------|------|------|------|"
+
+                # 找到插入位置：🔥 区内第一个已有日期子标题之前，否则 🔥 区末尾
                 insert_at = -1
                 for j in range(hot_start + 1, hot_end):
                     if lines[j].strip().startswith("### "):
                         insert_at = j
                         break
                 if insert_at < 0:
-                    # 🔥 区没有日期子标题 → 插在 🔥 标题提示行之后
-                    insert_at = hot_start + 3  # 跳过 ## 🔥、空行、> 提示行
+                    # 🔥 区没有日期子标题 → 插在 🔥 区提示行之后
+                    for j in range(hot_start + 1, hot_end):
+                        if lines[j].strip().startswith(">"):
+                            insert_at = j + 1
+                            break
+                    if insert_at < 0:
+                        insert_at = hot_start + 2
+
+                # 插入：空行 → ### 日期 → 空行 → 表头 → 分隔 → 数据行 → 空行
                 lines.insert(insert_at, "")
                 lines.insert(insert_at, date_line)
-                for b in reversed(blocks):
-                    lines.insert(insert_at + 1, b)
+                lines.insert(insert_at + 1, "")
+                lines.insert(insert_at + 2, header)
+                lines.insert(insert_at + 3, sep)
+                for i, row in enumerate(new_rows):
+                    lines.insert(insert_at + 4 + i, row)
+                lines.insert(insert_at + 4 + len(new_rows), "")
 
-            print(f"OK: 选题池 🔥 新区 ({mmdd}) 新增 {len(blocks)} 条")
+            print(f"OK: 选题池 🔥 新区 ({mmdd}) 新增 {len(new_rows)} 条")
 
-    # ── 更新已有条目（跨区搜索 #### 标题）──
+    # ── 更新已有条目（跨区搜索表格行的选题列关键词）──
     if has_upd:
         updated_count = 0
         for ul in updates.strip().split("\n"):
@@ -428,20 +447,37 @@ def update_topic_pool(new_entries: str, updates: str, date_str: str):
             parts = [p.strip() for p in ul.split("|")]
             if len(parts) < 3:
                 continue
-            keyword = parts[1]
-            new_content = parts[2]
+            keyword = parts[1].strip()
+            new_signal = parts[2].strip()
             for i, line in enumerate(lines):
-                if line.strip().startswith("#### ") and keyword in line:
-                    # 在标题块的「来源」或「框架」行后面追加更新信息
-                    for j in range(i + 1, min(i + 10, len(lines))):
-                        if lines[j].strip().startswith("- →"):
-                            # 在 → 行后面追加更新
-                            lines.insert(j + 1, f"- 🔄 更新：{new_content}")
-                            updated_count += 1
+                s = line.strip()
+                if not is_data_row(s):
+                    continue
+                # 检查选题列（第一列）是否包含关键词
+                cols = [c.strip() for c in s.split("|")]
+                if len(cols) < 3:
+                    continue
+                title_cell = cols[1]  # 去掉前后 | 后第一列
+                if keyword in title_cell:
+                    # 更新"最新信号"列（🌿 区第 2 列）
+                    # 🔥 区没有"最新信号"列，只更新 🌿 区
+                    section = ""
+                    for j in range(i - 1, -1, -1):
+                        sj = lines[j].strip()
+                        if sj.startswith("## "):
+                            section = sj
                             break
+                    if "🌿" in section:
+                        # 表格行格式: | ⭐ 标题 | 最新信号 | 角度 | 系列 |
+                        # 替换第 2 列（最新信号）
+                        if len(cols) >= 4:
+                            cols[2] = f" {new_signal} "
+                            new_line = "|" + "|".join(cols) + "|"
+                            lines[i] = new_line
+                            updated_count += 1
                     break
         if updated_count:
-            print(f"OK: 已有选题更新 {updated_count} 条（跨区搜索 #### 标题）")
+            print(f"OK: 已有选题更新 {updated_count} 条（🌿 区最新信号）")
 
     # ── 写回 ──
     with open(TOPIC_FILE, "w", encoding="utf-8") as f:
