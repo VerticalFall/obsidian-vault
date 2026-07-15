@@ -23,6 +23,7 @@ MODEL = os.environ.get("ROUTER_MODEL", "deepseek-v4-pro")
 API_BASE = "https://api.deepseek.com/v1/chat/completions"
 ROUTE_DIR = os.environ.get("ROUTE_OUT_DIR", "_路由")
 TOPIC_FILE = os.environ.get("TOPIC_FILE", "_选题池.md")
+VIEWPOINT_FILE = os.environ.get("VIEWPOINT_FILE", "_观点.md")
 DRY_RUN = os.environ.get("ROUTER_DRY_RUN", "") == "1"
 
 # ── 路由规则(从 daily-router SKILL.md 精简) ──────────────────────────
@@ -55,6 +56,13 @@ X 博主的推文不是经过编辑的新闻摘要。英文推文（含翻译）
 ## 利率史素材
 利率/央行/货币政策条目永远保留。标注 "💰 利率史素材"。
 
+## 观点信号（仅当上下文提供「我的既有判断」段落时执行）
+对每条进入路由日志的选题（⭐ 和普通都要），对照「我的既有判断」表逐条判断：
+- 印证 V几：支持某条既有判断 → 备注"可作为 V几 的追踪证据"
+- 挑战 V几：与某条判断冲突 → 单独高亮。挑战不降权反而提权——要么是"我错了"类绝佳选题，要么应触发观点修正
+- 无关：不涉及任何既有判断
+如果上下文中没有「我的既有判断」段落，省略所有观点信号字段，其余照常。
+
 ---
 
 ## 输出格式
@@ -76,11 +84,12 @@ X 博主的推文不是经过编辑的新闻摘要。英文推文（含翻译）
 - 传播: X/5(冲突/新鲜/情绪/解释/关联)
 - 选题角度: <100-200字,写这篇文章的角度和建议>
 - merge_hint: {无 / 建议与"XX"合并为XX系列}
+- 观点信号:{印证 V几,一句依据 / 挑战 V几,一句依据 / 无关}
 
 (最多3条)
 
 ## 普通选题(→ 选题池)
-| # | 选题 | 来源 | 得分 | 框架 | 说明 |
+| # | 选题 | 来源 | 得分 | 框架 | 观点信号 | 说明 |
 (无上限)
 
 ## 🔄 更新现有选题
@@ -149,6 +158,34 @@ def is_table_sep(line: str) -> bool:
     """
     s = line.strip()
     return s.startswith("|") and "-" in s and set(s) <= set("|-: ")
+
+
+def load_viewpoints(path: str = "") -> str:
+    """读取 _观点.md 第二层「当前核心判断」表格的数据行。
+
+    任何失败(文件缺失/无该小节/表格无数据行/异常)返回 "" —
+    router 降级为无观点模式,不阻塞路由。
+    """
+    try:
+        text = read_file(path or VIEWPOINT_FILE)
+        if not text:
+            return ""
+        m = re.search(r'^## 二、当前核心判断.*?\n(.*?)(?=^## |\Z)',
+                      text, re.M | re.S)
+        if not m:
+            return ""
+        rows = []
+        for line in m.group(1).split("\n"):
+            s = line.strip()
+            if not s.startswith("|") or is_table_sep(s):
+                continue
+            if re.match(r'^\|\s*#\s*\|', s):  # 表头行
+                continue
+            rows.append(s)
+        return "\n".join(rows)
+    except Exception as e:
+        print(f"WARNING: _观点.md 解析失败,降级为无观点模式: {e}")
+        return ""
 
 
 def list_routes(route_dir: str, days: int = 3) -> list[str]:
@@ -242,6 +279,14 @@ def build_context(date_str: str) -> str:
     if topic_pool:
         parts.append("\n=== 当前选题池 ===\n")
         parts.append(topic_pool)
+
+    # 我的既有判断(观点信号参考) — 缺失时静默省略,降级为无观点模式
+    viewpoints = load_viewpoints()
+    if viewpoints:
+        parts.append("\n=== 我的既有判断(观点信号参考) ===\n")
+        parts.append("| # | 判断 | 形成日期 | 置信度 | 来源文章 |")
+        parts.append("|---|------|---------|:---:|------|")
+        parts.append(viewpoints)
 
     # 最近路由日志(去重用,只传日期行)
     recent = list_routes(ROUTE_DIR, days=3)
