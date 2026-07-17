@@ -40,8 +40,14 @@ def today_beijing() -> str:
 
 
 def today_start_utc(date_str: str) -> str:
+    """北京时间 date_str 前一天的 00:00，转为 UTC ISO 字符串。
+
+    往前偏移一天是为了确保翻页抓全——SocialData API 不传 start_time 参数，
+    只能靠客户端时间过滤。如果窗口只设当天 00:00，凌晨推文可能因 API 翻页深度限制被截断。
+    从昨天 00:00 开始抓，窗口 ~36 小时（昨天 00:00 → 今天 Action 跑的时刻），宁可多抓不漏。
+    """
     dt = datetime.strptime(date_str, "%Y-%m-%d")
-    dt_beijing = dt.replace(tzinfo=BEIJING)
+    dt_beijing = dt.replace(tzinfo=BEIJING) - timedelta(days=1)
     return dt_beijing.isoformat()
 
 
