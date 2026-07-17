@@ -6,7 +6,12 @@ on:
     # GitHub Actions 定时任务通常会延迟数分钟到数小时,
     # 中午跑给上游(北京 8 点启动的源)留足缓冲。
     - cron: "20 4 * * *"
-  workflow_dispatch: {}   # 允许在 Actions 页手动触发,用于测试 / 补抓
+  workflow_dispatch:
+    inputs:
+      today-override:
+        description: '手动指定日期 (YYYY-MM-DD)，留空则用北京时间当天'
+        required: false
+        default: ''
 
 permissions:
   contents: write         # 允许用内置 GITHUB_TOKEN 把报告提交回本仓库
@@ -33,7 +38,12 @@ jobs:
 
       - name: 计算北京日期
         id: date
-        run: echo "today=$(TZ=Asia/Shanghai date +%F)" >> "$GITHUB_OUTPUT"
+        run: |
+          if [ -n "${{ inputs.today-override }}" ]; then
+            echo "today=${{ inputs.today-override }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "today=$(TZ=Asia/Shanghai date +%F)" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: 抓取 AI HOT 日报
         continue-on-error: true
