@@ -102,6 +102,7 @@ def fetch_tweets(user_id: str, since_utc: str) -> list[dict]:
             data = api_get(path)
         except Exception as e:
             print(f"WARNING: 拉取推文第{page}页失败: {e}", file=sys.stderr)
+            all_tweets.append({"_fetch_error": True, "_page": page, "_error": str(e)})
             break
 
         tweets = data.get("tweets") or []
@@ -112,6 +113,7 @@ def fetch_tweets(user_id: str, since_utc: str) -> list[dict]:
         saw_old = False
         oldest_in_page = None
         for tw in tweets:
+            tw["_page"] = page
             created = tw.get("tweet_created_at", "")
             if not oldest_in_page or created < oldest_in_page:
                 oldest_in_page = created
@@ -130,6 +132,10 @@ def fetch_tweets(user_id: str, since_utc: str) -> list[dict]:
 
         time.sleep(0.3)
 
+    if all_tweets:
+        real = [t for t in all_tweets if not t.get("_fetch_error")]
+        errs = [t for t in all_tweets if t.get("_fetch_error")]
+        print(f"    共 {len(real)} 条（{page} 页）" + (f"，⚠️ {len(errs)} 页失败" if errs else ""))
     return all_tweets
 
 
@@ -212,6 +218,58 @@ def translate_text(text: str) -> str | None:
     return translate_to_chinese(text)
 
 
+def classify_tweet(tw: dict) -> str:
+    """将推文分类: 'rt' (转发), 'reply' (回复), 'original' (原创)。"""
+    text = (tw.get("full_text") or tw.get("text") or "").strip()
+    if text.startswith("RT @"):
+        return "rt"
+    if tw.get("in_reply_to_screen_name", ""):
+        return "reply"
+    return "original"
+
+
+def generate_signal_summary(name: str, tweets: list[dict]) -> str | None:
+    """用 DeepSeek 生成一句话信号摘要。失败或内容太少返回 None。"""
+    if not DEEPSEEK_API_KEY or not tweets:
+        return None
+    total_chars = sum(len(clean_tweet_text(t)) for t in tweets)
+    if total_chars < 100:
+        return None
+    texts = []
+    for tw in tweets[:5]:
+        t = clean_tweet_text(tw)
+        if len(t) > 200:
+            t = t[:200] + "..."
+        texts.append(t)
+    combined = "\n---\n".join(texts)
+    try:
+        body = json.dumps({
+            "model": DEEPSEEK_TRANSLATE_MODEL,
+            "messages": [
+                {"role": "system", "content": "你是一个信息摘要助手。用一句话（≤50字）概括以下推文的主题和关键信号。只输出这句话，不要加任何解释或前缀。"},
+                {"role": "user", "content": combined},
+            ],
+            "max_tokens": 100,
+            "temperature": 0.1,
+        }).encode("utf-8")
+        req = urllib.request.Request(
+            DEEPSEEK_API_BASE,
+            data=body,
+            headers={
+                "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
+                "Content-Type": "application/json",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=15) as r:
+            data = json.loads(r.read().decode("utf-8"))
+        result = data["choices"][0]["message"]["content"]
+        if result and result.strip():
+            return result.strip()
+    except Exception as e:
+        print(f"      摘要生成失败: {e}", file=sys.stderr)
+    return None
+
+
 def clean_tweet_text(tw: dict) -> str:
     """提取纯文本,去掉 t.co 短链接。"""
     text = (tw.get("full_text") or tw.get("text") or "").strip()
@@ -234,54 +292,98 @@ def render(date_str: str, tweets_by_user: list[tuple[dict, list[dict]]]) -> str:
     out.append(f"# 🐦 X 博主动态 · {date_str}")
     out.append("")
 
-    total = sum(len(tweets) for _, tweets in tweets_by_user)
-    out.append(f"> {len(tweets_by_user)} 位博主 · {total} 条推文")
+    all_real = [t for _, tweets in tweets_by_user for t in tweets if not t.get("_fetch_error")]
+    all_errs = [t for _, tweets in tweets_by_user for t in tweets if t.get("_fetch_error")]
+    total = len(all_real)
+    out.append(f"> {len(tweets_by_user)} 位博主 · {total} 条推文" + (f" · ⚠️ {len(all_errs)} 页抓取异常" if all_errs else ""))
     out.append("")
 
     for user, tweets in tweets_by_user:
         name = user.get("name", "")
         screen_name = user.get("screen_name", "")
+
+        # 分离真实推文和抓取异常标记
+        real_tweets = [t for t in tweets if not t.get("_fetch_error")]
+        errors = [t for t in tweets if t.get("_fetch_error")]
+
+        # 无推文且无异常的博主不渲染
+        if not real_tweets and not errors:
+            continue
+
         out.append(f"## @{screen_name}")
         if name and name != screen_name:
             out.append(f"*{name}*")
         out.append("")
 
-        for tw in tweets:
-            text = clean_tweet_text(tw)
-            tw_id = tw.get("id_str", "")
-            created = tw.get("tweet_created_at", "")
-            reply_to = tw.get("in_reply_to_screen_name", "")
-
-            prefix = ""
-            if reply_to:
-                prefix = f"↩ 回复 @{reply_to}: "
-
-            # 是否需要翻译
-            need_translation = not contains_chinese(text) and len(text) >= 30
-
-            # 原文
-            out.append(f"> {prefix}{text}")
-
-            # 翻译
-            if need_translation:
-                translation = translate_text(text)
-                if translation:
-                    out.append(f"> 🇨🇳 {translation}")
-                else:
-                    out.append(f"> 🇨🇳 [翻译失败]")
-
-            # 数据行
-            out.append(
-                f"🕐 {format_time(created)} · "
-                f"🔁 {tw.get('retweet_count', 0)} · "
-                f"❤️ {tw.get('favorite_count', 0)} · "
-                f"👁 {tw.get('views_count', 0)} · "
-                f"[原文]({tweet_url(screen_name, tw_id)})"
-            )
+        # 报告抓取异常
+        for e in errors:
+            out.append(f"> ⚠️ [抓取异常: 第{e.get('_page', '?')}页失败 — {e.get('_error', '未知错误')}]")
             out.append("")
 
+        if not real_tweets:
+            continue
+
+        # 信号摘要（≥100 字符时生成）
+        if len(real_tweets) >= 1:
+            summary = generate_signal_summary(name, real_tweets)
+            if summary:
+                out.append(f"> 📌 {summary}")
+                out.append("")
+
+        # 按类型分组
+        groups: dict[str, list[dict]] = {"original": [], "rt": [], "reply": []}
+        for tw in real_tweets:
+            cat = classify_tweet(tw)
+            groups[cat].append(tw)
+
+        non_empty_groups = sum(1 for items in groups.values() if items)
+
+        for cat, label in [("original", "📝 原创"), ("rt", "🔄 转发"), ("reply", "↩ 回复")]:
+            items = groups[cat]
+            if not items:
+                continue
+            # 仅在混合类型时显示分区标题
+            if non_empty_groups > 1:
+                out.append(f"### {label}（{len(items)} 条）")
+                out.append("")
+
+            for tw in items:
+                text = clean_tweet_text(tw)
+                tw_id = tw.get("id_str", "")
+                created = tw.get("tweet_created_at", "")
+                reply_to = tw.get("in_reply_to_screen_name", "")
+
+                prefix = ""
+                if cat == "reply" and reply_to:
+                    prefix = f"↩ 回复 @{reply_to}: "
+
+                # 是否需要翻译
+                need_translation = not contains_chinese(text) and len(text) >= 30
+
+                # 原文
+                out.append(f"> {prefix}{text}")
+
+                # 翻译
+                if need_translation:
+                    translation = translate_text(text)
+                    if translation:
+                        out.append(f"> 🇨🇳 {translation}")
+                    else:
+                        out.append(f"> 🇨🇳 [翻译失败]")
+
+                # 数据行（含页码追溯 comment）
+                page_note = f" <!-- p{tw.get('_page', '?')} -->" if tw.get("_page") else ""
+                out.append(
+                    f"🕐 {format_time(created)} · "
+                    f"🔁 {tw.get('retweet_count', 0)} · "
+                    f"❤️ {tw.get('favorite_count', 0)} · "
+                    f"👁 {tw.get('views_count', 0)} · "
+                    f"[原文]({tweet_url(screen_name, tw_id)}){page_note}"
+                )
+                out.append("")
+
     out.append("---")
-    out.append("*数据来源:[SocialData.tools](https://socialdata.tools) · 翻译由 Google Translate 提供*")
+    out.append("*数据来源:[SocialData.tools](https://socialdata.tools) · 翻译由 DeepSeek 提供*")
     out.append("")
     return "\n".join(out)
 
@@ -308,8 +410,13 @@ def main():
         uid = user["id_str"]
         print(f"  @{sn} (id={uid}) …", end=" ")
         tweets = fetch_tweets(uid, since_utc)
-        to_translate = sum(1 for t in tweets if not contains_chinese(clean_tweet_text(t)) and len(clean_tweet_text(t)) >= 30)
-        print(f"{len(tweets)} 条今天 (需翻译 {to_translate} 条)")
+        real = [t for t in tweets if not t.get("_fetch_error")]
+        errs = [t for t in tweets if t.get("_fetch_error")]
+        to_translate = sum(1 for t in real if not contains_chinese(clean_tweet_text(t)) and len(clean_tweet_text(t)) >= 30)
+        status = f"{len(real)} 条今天 (需翻译 {to_translate} 条)"
+        if errs:
+            status += f" ⚠️ {len(errs)} 页抓取失败"
+        print(status)
 
         tweets_by_user.append((user, tweets))
 

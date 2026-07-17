@@ -128,6 +128,13 @@ def check_xtweets(date_str):
         level = "🔴"
         detail = "0 条推文"
 
+    # 检测抓取异常标记
+    fetch_errors = len(re.findall(r'⚠️ \[抓取异常', text))
+    if fetch_errors > 0:
+        if level == "🟢":
+            level = "🟡"
+        detail += f" · ⚠️ {fetch_errors} 处抓取异常"
+
     return level, detail, declared_count or tweet_starts
 
 
