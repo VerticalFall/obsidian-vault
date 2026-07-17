@@ -89,25 +89,44 @@ def resolve_user(screen_name: str) -> dict | None:
         return None
 
 
-def fetch_tweets(user_id: str, since_utc: str) -> list[dict]:
-    """拉取用户推文，翻页直到推文时间早于 since_utc。
-    注意：API 可能返回乱序推文（如置顶推文在最前），所以不能看到一条旧的就提前 return，
-    而是遍历整页后再判断是否继续翻页。
-    """
-    all_tweets = []
-    cursor = None
-    page = 0
+def fetch_tweets(screen_name: str, since_utc: str) -> list[dict]:
+    """用 Search API 拉取指定用户的推文，按 Latest 时序排列。
 
-    while True:
+    端点: GET /twitter/search?query=from:USERNAME since_time:TIMESTAMP&type=Latest
+
+    为什么用 Search API 而不是 user/{id}/tweets：
+    - user/{id}/tweets 端点不支持任何过滤参数（无 start_time/end_time/max_results），
+      只能拿 ~20/页然后客户端比对时间——API 返回了什么、翻页深度多少，全是黑盒
+    - Search API 用 since_time: 做服务端时间过滤，type=Latest 保证时序，
+      且 cursor 耗尽时有 max_id: 回退机制（Twitter 对 Latest 搜索可能提前截断 cursor）
+
+    去重: 通过 seen_ids 集合防止 max_id 回退时重复推文。
+    安全上限: MAX_PAGES=20（~400 条推文，远超正常日更量）。
+    """
+    MAX_PAGES = 20
+    all_tweets: list[dict] = []
+    seen_ids: set[str] = set()
+    cursor: str | None = None
+    page = 0
+    lowest_id: str | None = None
+
+    while page < MAX_PAGES:
         page += 1
-        path = f"user/{user_id}/tweets"
+
+        # 构建 query: from 限定用户 + since_time 限定时间窗口
+        query = f"from:{screen_name} since_time:{since_utc}"
+        # cursor 耗尽时用 max_id 回退（Twitter 可能提前截断 Latest 搜索的 cursor）
+        if lowest_id is not None and cursor is None:
+            query += f" max_id:{lowest_id}"
+
+        params = f"query={urllib.request.quote(query)}&type=Latest"
         if cursor:
-            path += f"?cursor={urllib.request.quote(cursor)}"
+            params += f"&cursor={urllib.request.quote(cursor)}"
 
         try:
-            data = api_get(path)
+            data = api_get(f"search?{params}")
         except Exception as e:
-            print(f"WARNING: 拉取推文第{page}页失败: {e}", file=sys.stderr)
+            print(f"WARNING: 搜索第{page}页失败: {e}", file=sys.stderr)
             all_tweets.append({"_fetch_error": True, "_page": page, "_error": str(e)})
             break
 
@@ -115,33 +134,30 @@ def fetch_tweets(user_id: str, since_utc: str) -> list[dict]:
         if not tweets:
             break
 
-        # 遍历整页：收集今天的，记录最早时间
-        saw_old = False
-        oldest_in_page = None
+        new_in_page = 0
         for tw in tweets:
+            tid = tw.get("id_str", "")
+            if not tid or tid in seen_ids:
+                continue
+            seen_ids.add(tid)
             tw["_page"] = page
-            created = tw.get("tweet_created_at", "")
-            if not oldest_in_page or created < oldest_in_page:
-                oldest_in_page = created
-            if created >= since_utc:
-                all_tweets.append(tw)
-            else:
-                saw_old = True
+            all_tweets.append(tw)
+            new_in_page += 1
+            if lowest_id is None or int(tid) < int(lowest_id):
+                lowest_id = tid
 
-        # 当前页最早推文 < since，后面的页也不会有今天的了
-        if saw_old and oldest_in_page and oldest_in_page < since_utc:
-            break
+        if new_in_page == 0:
+            break  # 整页全是重复推文，后面的也不会是新的
 
         cursor = data.get("next_cursor")
-        if not cursor:
-            break
 
         time.sleep(0.3)
 
     if all_tweets:
         real = [t for t in all_tweets if not t.get("_fetch_error")]
         errs = [t for t in all_tweets if t.get("_fetch_error")]
-        print(f"    共 {len(real)} 条（{page} 页）" + (f"，⚠️ {len(errs)} 页失败" if errs else ""))
+        cursor_fellback = " + max_id 回退" if lowest_id is not None and page > 1 else ""
+        print(f"    共 {len(real)} 条（{page} 页{cursor_fellback}）" + (f"，⚠️ {len(errs)} 页失败" if errs else ""))
     return all_tweets
 
 
@@ -415,7 +431,7 @@ def main():
             continue
         uid = user["id_str"]
         print(f"  @{sn} (id={uid}) …", end=" ")
-        tweets = fetch_tweets(uid, since_utc)
+        tweets = fetch_tweets(sn, since_utc)
         real = [t for t in tweets if not t.get("_fetch_error")]
         errs = [t for t in tweets if t.get("_fetch_error")]
         to_translate = sum(1 for t in real if not contains_chinese(clean_tweet_text(t)) and len(clean_tweet_text(t)) >= 30)
