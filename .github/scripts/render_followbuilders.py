@@ -39,6 +39,7 @@ BEIJING = timezone(timedelta(hours=8))
 DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "").strip()
 DEEPSEEK_API_BASE = "https://api.deepseek.com/v1/chat/completions"
 DEEPSEEK_MODEL = "deepseek-chat"
+DEEPSEEK_FLASH_MODEL = "deepseek-v4-flash"
 
 
 # ── helpers ────────────────────────────────────────────────────
@@ -98,6 +99,72 @@ def truncate_text(text: str, max_chars: int = 500) -> str:
     return truncated.strip() + " ..."
 
 
+# ── DeepSeek Flash 翻译 ────────────────────────────────────────
+
+def contains_chinese(text: str) -> bool:
+    """判断文本是否含中文。"""
+    return bool(re.search(r'[一-鿿]', text))
+
+
+def translate_to_chinese(text: str) -> str | None:
+    """用 DeepSeek V4 Flash 将英文翻译为中文。失败返回 None。
+
+    使用 flash 模型——更便宜更快，适合批量推文翻译（~38 条/天）。
+    系统提示适配 AI 产业内容，保留技术术语。
+    """
+    if not DEEPSEEK_API_KEY:
+        return None
+    try:
+        body = json.dumps({
+            "model": DEEPSEEK_FLASH_MODEL,
+            "messages": [
+                {
+                    "role": "system",
+                    "content": (
+                        "你是AI行业翻译助手。将英文精确翻译为简体中文。"
+                        "保留技术术语不翻译（如 API、GPU、prompt、fine-tune、RLHF、agent 等）。"
+                        "只输出译文，不要任何解释或前缀。"
+                    ),
+                },
+                {"role": "user", "content": text},
+            ],
+            "max_tokens": 2000,
+            "temperature": 0.1,
+        }).encode("utf-8")
+        req = urllib.request.Request(
+            DEEPSEEK_API_BASE,
+            data=body,
+            headers={
+                "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
+                "Content-Type": "application/json",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=30) as r:
+            data = json.loads(r.read().decode("utf-8"))
+        result = data["choices"][0]["message"]["content"]
+        if not result or not result.strip():
+            return None
+        return result.strip()
+    except Exception as e:
+        print(f"      翻译失败: {e}", file=sys.stderr)
+        return None
+
+
+def translate_text(text: str) -> str | None:
+    """翻译一条推文。只翻译不含中文、≥30 字的英文文本。"""
+    text = text.strip()
+    if not text:
+        return None
+    if contains_chinese(text):
+        return None
+    if len(text) < 30:
+        return None
+    # 超长截断
+    if len(text) > 500:
+        text = text[:500] + "..."
+    return translate_to_chinese(text)
+
+
 # ── DeepSeek 播客摘要 ──────────────────────────────────────────
 
 def summarize_podcast(name: str, title: str, transcript: str) -> str | None:
@@ -150,15 +217,17 @@ def summarize_podcast(name: str, title: str, transcript: str) -> str | None:
 
 # ── 各区块渲染 ──────────────────────────────────────────────────
 
-def render_x(data: dict) -> tuple[str, int, int]:
-    """渲染 X 推文区块。返回 (markdown, builder_count, tweet_count)。"""
+def render_x(data: dict) -> tuple[str, int, int, int, int]:
+    """渲染 X 推文区块。返回 (markdown, builder_count, tweet_count, translated, failed)。"""
     builders = data.get("x") or []
     if not builders:
-        return "", 0, 0
+        return "", 0, 0, 0, 0
 
     out = ["## 🐦 X 动态", ""]
     total_tweets = 0
     builder_count = 0
+    translated = 0
+    failed = 0
 
     for b in builders:
         tweets = b.get("tweets") or []
@@ -193,6 +262,18 @@ def render_x(data: dict) -> tuple[str, int, int]:
                 out.append(f"> {prefix}{line}")
                 prefix = ""  # 仅第一行加前缀
 
+            # 翻译（Flash 模型，≥30 字符英文推文）
+            need_translation = not contains_chinese(text) and len(text) >= 30
+            if need_translation:
+                translation = translate_text(text)
+                if translation:
+                    out.append(f"> 🇨🇳 {translation}")
+                    translated += 1
+                else:
+                    out.append("> 🇨🇳 [翻译失败]")
+                    failed += 1
+                time.sleep(0.2)  # Flash API 限流保护
+
             # 元数据行
             meta_parts = [f"🕐 {format_time(created)}"]
             if retweets:
@@ -205,7 +286,7 @@ def render_x(data: dict) -> tuple[str, int, int]:
             out.append(" · ".join(meta_parts))
             out.append("")
 
-    return "\n".join(out), builder_count, total_tweets
+    return "\n".join(out), builder_count, total_tweets, translated, failed
 
 
 def render_blogs(data: dict) -> tuple[str, int]:
@@ -307,9 +388,9 @@ def render(date_str: str,
     out.append("")
 
     # ── X 推文 ──
-    x_md, n_builders, n_tweets = "", 0, 0
+    x_md, n_builders, n_tweets, n_translated, n_failed = "", 0, 0, 0, 0
     if x_data:
-        x_md, n_builders, n_tweets = render_x(x_data)
+        x_md, n_builders, n_tweets, n_translated, n_failed = render_x(x_data)
 
     # ── 博客 ──
     blogs_md, n_posts = "", 0
@@ -363,10 +444,12 @@ def render(date_str: str,
 
     # ── 尾部 ──
     out.append("---")
-    footer = "*数据来源: [follow-builders](https://github.com/zarazhangrui/follow-builders)"
+    footer_parts = ["*数据来源: [follow-builders](https://github.com/zarazhangrui/follow-builders)"]
+    if n_translated:
+        footer_parts.append("翻译由 DeepSeek V4 Flash 提供")
     if n_summarized:
-        footer += " · 播客摘要由 DeepSeek 提供"
-    footer += "*"
+        footer_parts.append("播客摘要由 DeepSeek 提供")
+    footer = " · ".join(footer_parts) + "*"
     out.append(footer)
     out.append("")
 
@@ -410,6 +493,13 @@ def main():
     with open(path, "w", encoding="utf-8") as f:
         f.write(md)
     print(f"OK: 写入 {path} ({len(md)} 字符)")
+
+    # 翻译统计
+    x_stats = (x_data or {}).get("stats", {})
+    total_tweets = x_stats.get("totalTweets", 0)
+    if total_tweets:
+        # render() 内部已统计，这里打一行汇总
+        print(f"  翻译: DeepSeek V4 Flash")
     return 0
 
 
