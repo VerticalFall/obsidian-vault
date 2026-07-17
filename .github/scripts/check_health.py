@@ -202,15 +202,17 @@ def check_topic_pool():
 def check_translation(date_str):
     """检查 5: X-Tweets 翻译成功率。
 
-    统计 X-Tweets 文件中 `> 🇨🇳` 翻译行数量 与 `翻译失败` 标记。
+    统计 X-Tweets 文件中 `> 🇨🇳` 翻译行数量 与 `[翻译失败]` 标记。
+    注: `> 🇨🇳 [翻译失败]` 表示翻译尝试失败（API 不可用/超时等），
+    与"无需翻译(全中文)"不同——后者意味着没有英文推文需要翻译。
     """
     path = os.path.join(XTWEETS_DIR, f"{date_str}.md")
     text = read_file(path)
     if not text:
         return "🟢", "无数据", 0, 0
 
-    succeeded = len(re.findall(r'> 🇨🇳', text))
-    failed = len(re.findall(r'翻译失败', text))
+    succeeded = len(re.findall(r'> 🇨🇳 (?!\[翻译失败\])', text))
+    failed = len(re.findall(r'> 🇨🇳 \[翻译失败\]', text))
     total = succeeded + failed
 
     if total == 0:

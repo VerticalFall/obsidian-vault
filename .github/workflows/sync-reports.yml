@@ -29,7 +29,7 @@ jobs:
           python-version: "3.12"
 
       - name: 安装 Python 依赖
-        run: pip install translate
+        run: echo "纯标准库 + DeepSeek API,无需额外依赖"
 
       - name: 计算北京日期
         id: date
@@ -45,6 +45,7 @@ jobs:
         continue-on-error: true
         env:
           SOCIALDATA_API_KEY: ${{ secrets.SOCIALDATA_API_KEY }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           TODAY_OVERRIDE: ${{ steps.date.outputs.today }}
         run: python .github/scripts/render_xtweets.py
 

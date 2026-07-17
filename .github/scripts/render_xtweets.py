@@ -148,18 +148,50 @@ def format_time(iso_str: str) -> str:
 
 # ── 翻译 ────────────────────────────────────────────────────────
 
+DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "").strip()
+DEEPSEEK_API_BASE = "https://api.deepseek.com/v1/chat/completions"
+DEEPSEEK_TRANSLATE_MODEL = "deepseek-chat"
+
 def contains_chinese(text: str) -> bool:
     """判断文本是否含中文。"""
     return bool(re.search(r'[一-鿿]', text))
 
 
 def translate_to_chinese(text: str) -> str | None:
-    """用 translate 库将英文翻译为中文。失败返回 None。"""
+    """用 DeepSeek API 将英文翻译为中文。失败返回 None。
+
+    换用 DeepSeek 替代 translate 库(Google Translate 免费后端)，
+    因为 GitHub Actions 出口 IP 被 Google 频繁限流导致翻译静默失效。
+    DeepSeek 翻译质量更好(对金融术语理解更深)，增量成本 ~$0.0002/千字符。
+    """
+    if not DEEPSEEK_API_KEY:
+        print("      DEEPSEEK_API_KEY 未设置，跳过翻译", file=sys.stderr)
+        return None
     try:
-        from translate import Translator
-        translator = Translator(to_lang="zh", from_lang="en")
-        result = translator.translate(text)
-        return result
+        body = json.dumps({
+            "model": DEEPSEEK_TRANSLATE_MODEL,
+            "messages": [
+                {"role": "system", "content": "你是一个专业金融翻译。将英文精确翻译为简体中文。保持专业术语准确(如 DRAM→DRAM、HBM→HBM 不翻译)。只输出译文，不要加任何解释或括号说明。"},
+                {"role": "user", "content": text},
+            ],
+            "max_tokens": 2000,
+            "temperature": 0.1,
+        }).encode("utf-8")
+        req = urllib.request.Request(
+            DEEPSEEK_API_BASE,
+            data=body,
+            headers={
+                "Authorization": f"Bearer {DEEPSEEK_API_KEY}",
+                "Content-Type": "application/json",
+            },
+        )
+        with urllib.request.urlopen(req, timeout=30) as r:
+            data = json.loads(r.read().decode("utf-8"))
+        result = data["choices"][0]["message"]["content"]
+        if not result or not result.strip():
+            print("      翻译返回空内容", file=sys.stderr)
+            return None
+        return result.strip()
     except Exception as e:
         print(f"      翻译失败: {e}", file=sys.stderr)
         return None
@@ -235,6 +267,8 @@ def render(date_str: str, tweets_by_user: list[tuple[dict, list[dict]]]) -> str:
                 translation = translate_text(text)
                 if translation:
                     out.append(f"> 🇨🇳 {translation}")
+                else:
+                    out.append(f"> 🇨🇳 [翻译失败]")
 
             # 数据行
             out.append(

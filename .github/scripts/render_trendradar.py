@@ -79,6 +79,21 @@ def _item_line(i, it):
 
 # ---------- 各区块渲染 ----------
 
+def _format_ai_text(text: str) -> str:
+    """DeepSeek 输出轻量格式化:
+    - 【xxx】→ 加粗 + 换行视觉分组
+    - 连续数字列表项前补换行
+    不改动原文内容,仅增强 Markdown 可读性。
+    """
+    # 【关键词】→ 换行 + 加粗 + 换行
+    text = re.sub(r'【(.+?)】', r'\n\n**\1**\n', text)
+    # "1. " / "2. " / "3. " 列表项前确保有换行（跟在中文标点后）
+    text = re.sub(r'([。；])\s*(\d+)\.\s', r'\1\n\2. ', text)
+    # 折叠可能产生的大量空行到最多 2 个
+    text = re.sub(r"\n{3,}", "\n\n", text)
+    return text.strip()
+
+
 def render_ai(src):
     start = _find_section(src, "ai-section")
     if start == -1:
@@ -96,8 +111,12 @@ def render_ai(src):
     for bt, bc in blocks:
         out.append(f"### {_text(bt)}")
         out.append("")
+        raw = _text(bc)
         # 折叠块内多余空行,避免"松散列表"被 Obsidian 自动整理成紧凑列表(否则本地会出现改动、卡住 pull)
-        out.append(re.sub(r"\n{2,}", "\n", _text(bc)))
+        raw = re.sub(r"\n{2,}", "\n", raw)
+        # 轻量格式化:将 DeepSeek 的【关键词】标记转为加粗+视觉分组,增强可读性
+        formatted = _format_ai_text(raw)
+        out.append(formatted)
         out.append("")
     return "\n".join(out), len(blocks)
 
