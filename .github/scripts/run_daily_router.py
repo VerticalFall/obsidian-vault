@@ -28,7 +28,7 @@ DRY_RUN = os.environ.get("ROUTER_DRY_RUN", "") == "1"
 
 # ── 路由规则(从 daily-router SKILL.md 精简) ──────────────────────────
 
-ROUTER_SYSTEM_PROMPT = """你是一个财经×AI 内容路由助手。你的任务是对每天的三大信息源做三层漏斗筛选，把值得写公众号文章的选题输出到路由日志，并更新选题池。
+ROUTER_SYSTEM_PROMPT = """你是一个财经×AI 内容路由助手。你的任务是对每天的四大信息源做三层漏斗筛选，把值得写公众号文章的选题输出到路由日志，并更新选题池。
 
 ## 第一层筛选：内容锚定（四个锚点，命中一个即通过）
 
@@ -53,6 +53,13 @@ ROUTER_SYSTEM_PROMPT = """你是一个财经×AI 内容路由助手。你的任�
 ## X-Tweets 特殊处理
 X 博主的推文不是经过编辑的新闻摘要。英文推文（含翻译）中可能有隐晦的市场信号——投资人说"散户觉得暴跌是飞刀但我觉得是长期持有机会"这种，需要你解读成可路由的信号。不是每条推文都值得路由，只提取跟 AI/金融/产业明确相关的。
 
+## FollowBuilders 特殊处理
+FollowBuilders 追踪 26 位 AI builder（Karpathy、Sam Altman、Swyx 等）的 X 推文、Anthropic/Claude 官方博客、以及 6 档 AI 播客。内容全部是英文，聚焦 AI 产业前沿（模型发布、产品思路、技术趋势、行业判断）。处理规则：
+- 推文信号：关注行业级判断（"we're seeing X trend"）而非个人动态。多位 builder 同时讨论同一话题 → 标注跨源共振。
+- 博客信号：官方博客文章通常是重大发布或技术深度文，天然属于锚点 A（AI）。只要有具体产品或架构决策 → 默认进入路由。
+- 播客信号：已有 DeepSeek 中文摘要（标注 📌），把摘要当「精炼后的信号」来路由。摘要中提到跟锚点 B/C（金融/金融史）交叉的内容，优先提取。
+- 注意：FollowBuilders 的 AI 浓度天然很高，需要你比 AI HOT 更严格地执行第二层（框架适配）和第三层（传播价值）——纯技术讨论、benchmark 对比、无产业影响的小工具更新，即使来自 Karpathy 也应该丢弃。
+
 ## 利率史素材
 利率/央行/货币政策条目永远保留。标注 "💰 利率史素材"。
 
@@ -73,7 +80,7 @@ X 博主的推文不是经过编辑的新闻摘要。英文推文（含翻译）
 完整的路由日志 Markdown，格式如下：
 ```markdown
 # 日报路由 · YYYY-MM-DD
-输入: AI HOT(XX条) + TrendRadar(XX条) + X-Tweets(XX条)
+输入: AI HOT(XX条) + TrendRadar(XX条) + X-Tweets(XX条) + FollowBuilders(XX条)
 模式: {正常 / 周一模式 / 仅X源}
 
 ## ⭐ 高优先级选题(→ 选题池)
@@ -273,6 +280,15 @@ def build_context(date_str: str) -> str:
         parts.append("## TrendRadar 热点\n" + "\n".join(lines[body_start:]))
     else:
         parts.append("## TrendRadar: 今日无更新")
+
+    # FollowBuilders — AI builder 动态（推文+博客+播客）
+    followbuilders = read_file(f"FollowBuilders/{date_str}.md")
+    if followbuilders:
+        lines = followbuilders.split("\n")
+        body_start = next((i for i, l in enumerate(lines) if l.startswith("# ")), 0)
+        parts.append("## FollowBuilders (AI Builders 动态)\n" + "\n".join(lines[body_start:]))
+    else:
+        parts.append("## FollowBuilders: 今日无更新")
 
     # 选题池
     topic_pool = read_file(TOPIC_FILE)

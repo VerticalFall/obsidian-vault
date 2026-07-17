@@ -3,7 +3,7 @@
 纯标准库，零 LLM 调用，零成本。
 
 检查项:
-  1. 信息源产出（三源文件存在 + 大小 > 200B）
+  1. 信息源产出（四源文件存在 + 大小 > 200B）
   2. X-Tweets 有效推文计数
   3. 路由日志产出（文件存在 + > 500 字符）
   4. 选题池存量（🌱待定 + 💤等待 条目数）
@@ -25,6 +25,7 @@ BEIJING = timezone(timedelta(hours=8))
 AIHOT_DIR = "AI-HOT"
 XTWEETS_DIR = "X-Tweets"
 TR_DIR = "TrendRadar"
+FB_DIR = "FollowBuilders"
 ROUTE_DIR = "_路由"
 TOPIC_FILE = "_选题池.md"
 HEALTH_DIR = "_系统健康"
@@ -64,11 +65,12 @@ def list_recent_files(directory, pattern="*.md", days=7):
 # ═══════════════════════════════════════════════════════════════
 
 def check_sources(date_str):
-    """检查 1: 三源文件存在 + 大小 > 200B。"""
+    """检查 1: 四源文件存在 + 大小 > 200B。"""
     sources = {
         "AI HOT": os.path.join(AIHOT_DIR, f"{date_str}.md"),
         "X-Tweets": os.path.join(XTWEETS_DIR, f"{date_str}.md"),
         "TrendRadar": os.path.join(TR_DIR, f"{date_str}.md"),
+        "FollowBuilders": os.path.join(FB_DIR, f"{date_str}.md"),
     }
     details = {}
     for name, path in sources.items():
@@ -79,12 +81,12 @@ def check_sources(date_str):
     ok_count = sum(1 for d in details.values() if d["ok"])
     missing = [n for n, d in details.items() if not d["ok"]]
 
-    if ok_count == 3:
-        return "🟢", "三源都在", details
-    elif ok_count >= 2:
+    if ok_count == 4:
+        return "🟢", "四源都在", details
+    elif ok_count >= 3:
         return "🟡", f"缺: {', '.join(missing)}", details
     else:
-        return "🔴", f"仅 {ok_count}/3 源在线，缺: {', '.join(missing)}", details
+        return "🔴", f"仅 {ok_count}/4 源在线，缺: {', '.join(missing)}", details
 
 
 def check_xtweets(date_str):
