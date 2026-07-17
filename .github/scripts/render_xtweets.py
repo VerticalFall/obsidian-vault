@@ -39,16 +39,15 @@ def today_beijing() -> str:
     return datetime.now(BEIJING).strftime("%Y-%m-%d")
 
 
-def today_start_utc(date_str: str) -> str:
-    """北京时间 date_str 前一天的 00:00，转为 UTC ISO 字符串。
+def since_date_beijing(date_str: str) -> str:
+    """北京时间 date_str 前一天的日期，返回 YYYY-MM-DD 格式。
 
-    往前偏移一天是为了确保翻页抓全——SocialData API 不传 start_time 参数，
-    只能靠客户端时间过滤。如果窗口只设当天 00:00，凌晨推文可能因 API 翻页深度限制被截断。
-    从昨天 00:00 开始抓，窗口 ~36 小时（昨天 00:00 → 今天 Action 跑的时刻），宁可多抓不漏。
+    往前偏移一天是为了确保 Search API 抓全——Twitter since: 操作符需要 YYYY-MM-DD 格式。
+    从昨天开始抓，窗口 ~36 小时（昨天 00:00 → 今天 Action 跑的时刻），宁可多抓不漏。
     """
     dt = datetime.strptime(date_str, "%Y-%m-%d")
     dt_beijing = dt.replace(tzinfo=BEIJING) - timedelta(days=1)
-    return dt_beijing.isoformat()
+    return dt_beijing.strftime("%Y-%m-%d")
 
 
 def api_get(path: str) -> dict:
@@ -89,16 +88,18 @@ def resolve_user(screen_name: str) -> dict | None:
         return None
 
 
-def fetch_tweets(screen_name: str, since_utc: str) -> list[dict]:
+def fetch_tweets(screen_name: str, since_date: str) -> list[dict]:
     """用 Search API 拉取指定用户的推文，按 Latest 时序排列。
 
-    端点: GET /twitter/search?query=from:USERNAME since_time:TIMESTAMP&type=Latest
+    端点: GET /twitter/search?query=from:USERNAME since:YYYY-MM-DD&type=Latest
 
     为什么用 Search API 而不是 user/{id}/tweets：
     - user/{id}/tweets 端点不支持任何过滤参数（无 start_time/end_time/max_results），
       只能拿 ~20/页然后客户端比对时间——API 返回了什么、翻页深度多少，全是黑盒
-    - Search API 用 since_time: 做服务端时间过滤，type=Latest 保证时序，
+    - Search API 用 since: 做服务端时间过滤（YYYY-MM-DD 格式），type=Latest 保证时序，
       且 cursor 耗尽时有 max_id: 回退机制（Twitter 对 Latest 搜索可能提前截断 cursor）
+
+    since_date: YYYY-MM-DD 格式的日期字符串（北京时间前一天，窗口 ~36h）
 
     去重: 通过 seen_ids 集合防止 max_id 回退时重复推文。
     安全上限: MAX_PAGES=20（~400 条推文，远超正常日更量）。
@@ -113,8 +114,9 @@ def fetch_tweets(screen_name: str, since_utc: str) -> list[dict]:
     while page < MAX_PAGES:
         page += 1
 
-        # 构建 query: from 限定用户 + since_time 限定时间窗口
-        query = f"from:{screen_name} since_time:{since_utc}"
+        # 构建 query: from 限定用户 + since 限定时间窗口
+        # since:YYYY-MM-DD — SocialData/Twitter 原生日期操作符（inclusive）
+        query = f"from:{screen_name} since:{since_date}"
         # cursor 耗尽时用 max_id 回退（Twitter 可能提前截断 Latest 搜索的 cursor）
         if lowest_id is not None and cursor is None:
             query += f" max_id:{lowest_id}"
@@ -414,8 +416,8 @@ def render(date_str: str, tweets_by_user: list[tuple[dict, list[dict]]]) -> str:
 
 def main():
     date_str = today_beijing()
-    since_utc = today_start_utc(date_str)
-    print(f"目标日期(北京): {date_str}  →  UTC since: {since_utc}")
+    since_date = since_date_beijing(date_str)
+    print(f"目标日期(北京): {date_str}  →  搜索 since: {since_date}")
 
     screen_names = load_following()
     if not screen_names:
@@ -431,7 +433,7 @@ def main():
             continue
         uid = user["id_str"]
         print(f"  @{sn} (id={uid}) …", end=" ")
-        tweets = fetch_tweets(sn, since_utc)
+        tweets = fetch_tweets(sn, since_date)
         real = [t for t in tweets if not t.get("_fetch_error")]
         errs = [t for t in tweets if t.get("_fetch_error")]
         to_translate = sum(1 for t in real if not contains_chinese(clean_tweet_text(t)) and len(clean_tweet_text(t)) >= 30)
