@@ -98,6 +98,26 @@ jobs:
           TODAY_OVERRIDE: ${{ steps.date.outputs.today }}
         run: python .github/scripts/check_health.py
 
+      - name: 判断是否为周一
+        id: weekday
+        run: |
+          DOW=$(TZ=Asia/Shanghai date +%u)
+          if [ "$DOW" = "1" ]; then
+            echo "is_monday=true" >> "$GITHUB_OUTPUT"
+            echo "Monday detected — will run weekly distill"
+          else
+            echo "is_monday=false" >> "$GITHUB_OUTPUT"
+            echo "Not Monday — skip weekly distill (DOW=$DOW)"
+          fi
+
+      - name: 周度蒸馏 Phase 1-2 (仅周一执行)
+        if: steps.weekday.outputs.is_monday == 'true'
+        continue-on-error: true
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          ROUTER_MODEL: deepseek-v4-pro
+        run: python .github/scripts/run_weekly_distill.py
+
       - name: 提交并推送变更
         run: |
           git config user.name "github-actions[bot]"
