@@ -116,10 +116,8 @@ DISTILL_SYSTEM_PROMPT = """你是「AI×金融」内容系统的周度蒸馏分�
 ### 🧊 已冷却
 | 原选题 | 日期 | 冷却原因 |
 
-### 📊 选题池健康度
-- 清理前: 待脚本填充
-- 清理后: 待脚本填充
-- 评估: {健康 / 偏低 / 需要清理}
+### 📝 回溯已写文章
+> ⚠️ 审核时手动补充。
 ```
 
 ===TOPIC_OPS===
@@ -453,6 +451,10 @@ def archive_topic_pool(topic_ops: dict[str, list[str]],
             continue
         title = cols[1]
 
+        # 跳过脏数据：纯占位符行（如 "选题"、空标题等）
+        if not title or re.match(r'^[⭐·/ ]*选题$', title):
+            continue
+
         # 判断该条目是否属于上周
         full_date = f"2026-{current_date}" if current_date else ""
         if not full_date or full_date > last_sunday:
@@ -497,6 +499,8 @@ def archive_topic_pool(topic_ops: dict[str, list[str]],
         if len(cols) < 2:
             continue
         title = cols[1]
+        if not title or re.match(r'^[⭐·/ ]*选题$', title):
+            continue
         for kw, op in keyword_op.items():
             if kw in title and op == "archive":
                 remove_from_dormant.append({"title": title})
@@ -764,9 +768,7 @@ def main():
 - 本周归档: {len(archived)} 条
 - 评估: {health_assessment}
 
----
-
-## 三、本周选题归档
+### 📦 本周归档
 
 > 以下选题从 🔥 区移除，原因见「处理」列。完整记录保留在选题池底部 `## 📦 归档` 索引。
 
@@ -774,7 +776,7 @@ def main():
 
 ---
 
-## 四、可复用框架（待审核）
+## 三、可复用框架（待审核）
 
 > ⚠️ Phase 3 — 需人工审核后填写。
 
@@ -783,7 +785,7 @@ def main():
 
 ---
 
-## 五、观点回顾（待审核）
+## 四、观点回顾（待审核）
 
 > ⚠️ Phase 4 — 需人工审核后填写。
 
@@ -792,7 +794,7 @@ def main():
 
 ---
 
-## 六、下周关注
+## 五、下周关注
 
 （审核时手动填写）
 
