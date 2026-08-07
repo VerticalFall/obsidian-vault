@@ -102,7 +102,7 @@ Obsidian Vault（本地知识库）
   │   ├── _选题池.md     ← 选题池
   │   ├── _观点.md       ← 我的核心判断
   │   └── .github/       ← Actions + Python 脚本
-  ├── 系统/技能库/        ← 7 个 Claude skill
+  ├── 系统/技能库/        ← 8 个 Claude skill
   ├── 输出/公众号/        ← 已发布文章
   └── .claude/skills/ → 符号链接到技能库
 ```

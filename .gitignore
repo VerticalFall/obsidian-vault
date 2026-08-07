@@ -12,6 +12,7 @@
 .trash/
 
 # Claude 会话记录（聊天日志，非知识资产，不备份）
+# 注意：.claudian/claudian-settings.json（插件配置）作为配置备份，不在忽略范围
 .claudian/sessions/
 
 # .claude/skills 是 junction，指向技能库本体（本体已在备份范围，避免重复）
