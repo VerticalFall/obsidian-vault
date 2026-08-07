@@ -17,7 +17,7 @@ tags: [技能库, 索引]
 | [[daily-router/SKILL.md\|daily-router]] | daily_router | `run_daily_router.py`（DeepSeek 三层漏斗） |
 | [[weekly-distill/SKILL.md\|weekly-distill]] | weekly_distill | `run_weekly_distill.py`（周度信号蒸馏） |
 | [[health-monitor/SKILL.md\|health-monitor]] | 日常监控 | `check_health.py`（L1 零 LLM 体检） |
-| [[weekly-backup/SKILL.md\|weekly-backup]] | 全库备份 | 周一随蒸馏：vault 本地内容 → 远程 `vault-backup` 分支 |
+| [[weekly-backup/SKILL.md\|weekly-backup]] | 全库备份 | 手动快照兜底（每日自动双向同步由 `系统/scripts/sync-vault.ps1` 计划任务承担） |
 | [[book-summary/SKILL.md\|book-summary]] | 书籍核心观点提炼 | 诚实提炼作者核心思想（不绑定系统） |
 
 ## 目录联接说明

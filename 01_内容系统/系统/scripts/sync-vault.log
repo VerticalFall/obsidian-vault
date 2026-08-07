@@ -170,3 +170,27 @@ At C:\Users\user\Documents\Obsidian Vault\01_内容系统\系统\scripts\sync-va
  
  * branch            vault-backup -> FETCH_HEAD
 Already up to date.
+[main e566efe] backup: 每日同步 2026-08-08
+ 4 files changed, 79 insertions(+), 15 deletions(-)
+ delete mode 100644 "01_\345\206\205\345\256\271\347\263\273\347\273\237/\347\263\273\347\273\237/inbox/\346\265\213\350\257\225-\345\206\262\347\252\201.md"
+ delete mode 100644 "01_\345\206\205\345\256\271\347\263\273\347\273\237/\347\263\273\347\273\237/inbox/\346\265\213\350\257\225-\346\234\254\345\234\260\346\216\250\351\200\201.md"
+ delete mode 100644 "01_\345\206\205\345\256\271\347\263\273\347\273\237/\347\263\273\347\273\237/inbox/\346\265\213\350\257\225-\350\277\234\347\250\213\345\206\231\345\205\245.md"
+git.exe : To https://github.com/VerticalFall/obsidian-vault.git
+At C:\Users\user\Documents\Obsidian Vault\01_内容系统\系统\scripts\sync-vault.ps1:41 char:5
++     & $git -C $repo push origin main:vault-backup *>> $log
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (To https://gith...idian-vault.git:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+   d3121d6..e566efe  main -> vault-backup
+[2026-08-08 00:47:04] === sync done ===
+[2026-08-08 00:50:20] === sync start ===
+git.exe : From https://github.com/VerticalFall/obsidian-vault
+At C:\Users\user\Documents\Obsidian Vault\01_内容系统\系统\scripts\sync-vault.ps1:18 char:1
++ & $git -C $repo pull --ff-only origin vault-backup *>> $log
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (From https://gi.../obsidian-vault:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ * branch            vault-backup -> FETCH_HEAD
+Already up to date.

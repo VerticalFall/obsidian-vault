@@ -1,12 +1,12 @@
 ---
 name: weekly-backup
-description: 全库远程备份（weekly-backup）。把 vault 全部本地内容（书籍/输出/技能/框架/配置，排除每日日报子仓库与缓存）提交并 push 到私有仓库 VerticalFall/obsidian-vault 的 vault-backup 分支。每周一与 weekly-distill 一起执行；防止磁盘丢失/重装导致知识库再次全丢。在用户说"备份/全库备份/提交备份/每周备份/做个备份"时使用。
+description: 全库手动备份（weekly-backup）。把 vault 全部本地内容（书籍/输出/技能/框架/配置，排除每日日报子仓库与缓存）提交并 push 到私有仓库 VerticalFall/obsidian-vault 的 vault-backup 分支。每日双向同步（sync-vault.ps1，计划任务 13:00 + 登录时）已自动覆盖；本技能保留为手动全量快照与周一存档兜底。防止磁盘丢失/重装导致知识库再次全丢。在用户说"备份/全库备份/提交备份/做个备份/手动快照"时使用。
 ---
 
 # weekly-backup · 全库远程备份
 
 > 目的：把 vault 里**不在每日日报 git 仓库管辖内**的本地资产（书籍、公众号输出、技能库、蒸馏定稿、改进提案、框架、封面图、Obsidian 配置）定期推送到远程私有仓库，避免 C 盘丢失/重装时再次全丢。
-> 频率：**每周一随 weekly-distill 一起做**；也随时可按需触发。
+> 频率：**每日由 `sync-vault.ps1` 自动同步**（计划任务 `ObsidianVault-SyncVault-13h` + `-Logon`，远程→本地 pull + 本地→远程 push，见 P-20260808-02）；本技能保留为**手动全量快照 / 周一存档兜底**，随时可按需触发。
 
 ## 一、备份范围
 
@@ -49,14 +49,15 @@ description: 全库远程备份（weekly-backup）。把 vault 全部本地内�
    ```
 6. 若本周还跑了 `每日日报` 的 `pull-reports.ps1`，顺带确认其日志 OK（拉取链路正常）。
 
-## 四、每周一与 weekly-distill 联动的建议顺序
+## 四、与每日自动同步的关系
 
-1. 先跑 `weekly-distill`（读 7 天路由 → 信号群 → 草稿 → 用户确认 → 定稿到 `01_内容系统/系统/蒸馏/`）；
-2. 定稿完成后再跑本技能做全库快照——这样当周蒸馏定稿也一并入库备份。
+- **每日自动同步**（`01_内容系统/系统/scripts/sync-vault.ps1`，计划任务 `ObsidianVault-SyncVault-13h` / `-Logon`）已覆盖全库增量：本地任意改动当天自动 push，远程（机器人收件箱）改动当天自动 pull。
+- **本技能定位**：手动全量快照（大改动前、周存档、或用户明确要求"做个备份"）；周一蒸馏定稿后跑一次可留明确的周存档 commit（不跑也不影响——每日同步已覆盖）。
+- 手动快照与每日同步共用同一仓库与分支，互不冲突；冲突保护（本地为权威，冲突中止不覆盖）由 `sync-vault.ps1` 承担。
 
 ## 五、红线
 
 - **不 push 每日日报仓库**（那是 GitHub Action 的活；本地 `01_内容系统/知识库/每日日报/` 的 git 操作只 pull，不 push）。
 - **不带入会话日志与缓存**：若 `git status` 出现 `.claudian/sessions/` 或 `.obsidian/workspace`，检查 `.gitignore` 后重试，不要强行 add。
 - **提交信息规范**：`backup: 全库快照 YYYY-MM-DD`，便于回滚定位。
-- 首次初始化已由 2026-08-07 完成（提交 `0c07320`）；此后每周增量即可。
+- 首次初始化已由 2026-08-07 完成（提交 `0c07320`）；此后每日增量由 `sync-vault.ps1` 自动完成，手动跑本技能只产生额外快照 commit。
