@@ -1,0 +1,27 @@
+# 全库备份仓库 .gitignore
+# 本仓库用于把 vault 非 git 内容定期备份到远程 vault-backup 分支。
+# 配合 01_内容系统/系统/技能库/weekly-backup/SKILL.md 使用。
+
+# 每日日报子仓库（自带 git + 远程 main 自动同步，不重复备份）
+01_内容系统/知识库/每日日报/
+
+# Obsidian 本地 UI 状态与缓存（不备份）
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache
+.trash/
+
+# Claude 会话记录（聊天日志，非知识资产，不备份）
+.claudian/sessions/
+
+# .claude/skills 是 junction，指向技能库本体（本体已在备份范围，避免重复）
+.claude/skills/
+
+# 系统 / 编辑器杂项
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Python
+__pycache__/
+*.pyc
