@@ -1,0 +1,10 @@
+﻿[2026-08-08 00:45:23] === sync start ===
+git.exe : From https://github.com/VerticalFall/obsidian-vault
+At C:\Users\user\Documents\Obsidian Vault\01_内容系统\系统\scripts\sync-vault.ps1:18 char:1
++ & $git -C $repo pull --ff-only origin vault-backup *>> $log
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (From https://gi.../obsidian-vault:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+ * branch            vault-backup -> FETCH_HEAD
+Already up to date.
