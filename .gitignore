@@ -15,3 +15,7 @@ _preview/
 
 # Python
 __pycache__/
+
+# 本地计划任务脚本(不上传)
+.scripts/
+

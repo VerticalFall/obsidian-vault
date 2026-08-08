@@ -6,12 +6,14 @@
   1. 信息源产出（四源文件存在 + 大小 > 200B）
   2. X-Tweets 有效推文计数
   3. 路由日志产出（文件存在 + > 500 字符）
-  4. 选题池存量（🌱待定 + 💤等待 条目数）
+  4. 选题池存量（🔥/🌿/💤 条目数 + 表格质量：模板残留/重复行）
   5. 翻译成功率（翻译失败比例）
+  6. 待验证问题（未处理条目数，非空 → 🟡）
 
 输出:
   _系统健康/YYYY-MM-DD.md     — 每日健康报告
   _系统健康/_告警摘要.md       — 滚动告警摘要（🔴 和 🟡）
+  _系统健康/待验证问题.md     — 待人工核实的条目（追加式，处理完删除对应行）
 """
 
 import os
@@ -30,7 +32,7 @@ ROUTE_DIR = "_路由"
 TOPIC_FILE = "_选题池.md"
 HEALTH_DIR = "_系统健康"
 ALERT_FILE = os.path.join(HEALTH_DIR, "_告警摘要.md")
-TO_VERIFY_FILE = os.path.join(HEALTH_DIR, "_待追加_待验证问题.md")
+TO_VERIFY_FILE = os.path.join(HEALTH_DIR, "待验证问题.md")
 
 
 def bao_date():
@@ -168,6 +170,7 @@ def check_topic_pool():
     counts = {"🔥": 0, "🌿": 0, "💤": 0}
     current = None
     in_table = False
+    seen_rows = []
     for line in text.split("\n"):
         s = line.strip()
         m = re.match(r'^##\s*(🔥|🌿|💤|✅)', s)
@@ -196,10 +199,22 @@ def check_topic_pool():
         if first_cell == "⸺":
             continue
         counts[current] += 1
+        seen_rows.append(s)
 
     total = counts["🔥"] + counts["🌿"] + counts["💤"]
     detail = f"{total} 条(🔥{counts['🔥']} 🌿{counts['🌿']} 💤{counts['💤']})"
 
+    # 表格质量（P-20260808-04）：模板残留行（含 < 占位符）+ 完全重复行
+    issues = []
+    template_rows = [r for r in seen_rows if "<" in r]
+    if template_rows:
+        issues.append(f"{len(template_rows)} 行模板残留")
+    dup_rows = len(seen_rows) - len(set(seen_rows))
+    if dup_rows:
+        issues.append(f"{dup_rows} 行重复")
+
+    if issues:
+        return "🟡", detail + " · 表格质量: " + "、".join(issues), total
     if total >= 5:
         return "🟢", detail, total
     elif total >= 3:
@@ -240,6 +255,17 @@ def check_translation(date_str):
 # 告警联动
 # ═══════════════════════════════════════════════════════════════
 
+def check_pending_verification():
+    """检查 6: 待验证问题文件中未处理条目的数量。非空 → 🟡（提醒闭环，不进告警摘要）。"""
+    text = read_file(TO_VERIFY_FILE)
+    if not text:
+        return "🟢", "无待处理", 0
+    pending = len(re.findall(r'^\s*-\s*\[\s*\]', text, re.M))
+    if pending == 0:
+        return "🟢", "无待处理", 0
+    return "🟡", f"{pending} 条待处理", pending
+
+
 def load_alert_history():
     """读取告警摘要，返回 {检查项: [(日期, 级别), ...]} 用于判断连续告警。"""
     text = read_file(ALERT_FILE)
@@ -273,9 +299,25 @@ def check_consecutive(item, level, history, date_str, threshold=3):
 
 
 def update_alert_summary(date_str, results):
-    """更新告警摘要，追加今日 🔴/🟡。返回需联动追加到待验证问题的列表。"""
+    """更新告警摘要，追加今日 🔴/🟡。返回本次实际写入待验证问题的列表。"""
     os.makedirs(HEALTH_DIR, exist_ok=True)
     history = load_alert_history()
+
+    existing = read_file(ALERT_FILE)
+    if not existing:
+        existing = (
+            "# 告警摘要\n\n"
+            "> 仅记录 🔴 和 🟡。🟢 恢复时追加一条恢复记录。\n\n"
+            "| 日期 | 检查项 | 级别 | 详情 |\n"
+            "|------|--------|:---:|------|\n"
+        )
+
+    # 已记录行键（日期|检查项）：同日同项不重复追加，防手动重跑污染连续天数统计
+    recorded = set()
+    for line in existing.split("\n"):
+        m = re.match(r'\|\s*(\d{4}-\d{2}-\d{2})\s*\|\s*([^|]+?)\s*\|', line)
+        if m:
+            recorded.add((m.group(1), m.group(2).strip()))
 
     alerts = []
     to_verify = []
@@ -283,37 +325,40 @@ def update_alert_summary(date_str, results):
     for item_name, (level, detail) in results:
         if level not in ("🔴", "🟡"):
             continue
-
+        if (date_str, item_name) in recorded:
+            continue
         should_notify, reason = check_consecutive(item_name, level, history, date_str)
         alerts.append(f"| {date_str} | {item_name} | {level} | {detail} |")
-
         if should_notify:
             to_verify.append(f"- [ ] [{date_str}] L1 告警: {item_name} — {reason}（{detail}）")
 
-    # 写告警行
-    existing = read_file(ALERT_FILE)
-    if not existing:
-        header = (
-            "# 告警摘要\n\n"
-            "> 仅记录 🔴 和 🟡。🟢 恢复时追加一条恢复记录。\n\n"
-            "| 日期 | 检查项 | 级别 | 详情 |\n"
-            "|------|--------|:---:|------|\n"
-        )
-        new_content = header + "\n".join(alerts) + "\n"
-    else:
+    if alerts:
         new_content = existing.rstrip() + "\n" + "\n".join(alerts) + "\n"
+        with open(ALERT_FILE, "w", encoding="utf-8") as f:
+            f.write(new_content)
 
-    with open(ALERT_FILE, "w", encoding="utf-8") as f:
-        f.write(new_content)
-
-    # 写待验证追加
+    # 待验证问题（P-20260808-03）：追加式写入，同日同检查项不重复追加；
+    # 人工核实处理后由人删除对应行（或改为 ✅ 并注明结论）
+    fresh = []
     if to_verify:
-        with open(TO_VERIFY_FILE, "w", encoding="utf-8") as f:
-            f.write("# 待追加到 待验证问题.md\n\n")
-            f.write("以下条目需由 PM/DevOps 手动追加到 vault 的 `05_系统维护/待验证问题.md`:\n\n")
-            f.write("\n".join(to_verify) + "\n")
+        verify_existing = read_file(TO_VERIFY_FILE)
+        if not verify_existing:
+            verify_existing = (
+                "# 待验证问题\n\n"
+                "> 健康检查自动追加（🔴 或连续 🟡 时）。人工核实处理后**删除对应行**"
+                "（或改为 ✅ 并注明结论）。随每日日报仓库同步到远程。\n\n"
+            )
+        else:
+            verify_existing = verify_existing.rstrip() + "\n"
+        for tv in to_verify:
+            marker = tv.split(" — ")[0]
+            if marker not in verify_existing:
+                fresh.append(tv)
+        if fresh:
+            with open(TO_VERIFY_FILE, "w", encoding="utf-8") as f:
+                f.write(verify_existing + "\n".join(fresh) + "\n")
 
-    return to_verify
+    return fresh
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -344,6 +389,10 @@ def main():
     tr_level, tr_detail, tr_ok, tr_fail = check_translation(date_str)
     print(f"  [翻译] {tr_level} {tr_detail}")
 
+    # 6. 待验证问题
+    pv_level, pv_detail, pv_count = check_pending_verification()
+    print(f"  [待验证问题] {pv_level} {pv_detail}")
+
     # ── 写健康报告 ──
     os.makedirs(HEALTH_DIR, exist_ok=True)
     report_path = os.path.join(HEALTH_DIR, f"{date_str}.md")
@@ -358,12 +407,13 @@ def main():
         f"| 3 | 路由日志 | {rl_level} | {rl_detail} |",
         f"| 4 | 选题池存量 | {tp_level} | {tp_detail} |",
         f"| 5 | 翻译成功率 | {tr_level} | {tr_detail} |",
+        f"| 6 | 待验证问题 | {pv_level} | {pv_detail} |",
         "",
     ]
 
     # 汇总
-    reds = sum(1 for lv in [src_level, xt_level, rl_level, tp_level, tr_level] if lv == "🔴")
-    yellows = sum(1 for lv in [src_level, xt_level, rl_level, tp_level, tr_level] if lv == "🟡")
+    reds = sum(1 for lv in [src_level, xt_level, rl_level, tp_level, tr_level, pv_level] if lv == "🔴")
+    yellows = sum(1 for lv in [src_level, xt_level, rl_level, tp_level, tr_level, pv_level] if lv == "🟡")
     if reds:
         lines.append(f"> 🔴 {reds} 项异常  🟡 {yellows} 项警告")
     elif yellows:
@@ -386,7 +436,7 @@ def main():
     ]
     to_verify = update_alert_summary(date_str, results)
     if to_verify:
-        print(f"⚠ 待追加到待验证问题: {len(to_verify)} 条")
+        print(f"⚠ 待验证问题追加: {len(to_verify)} 条")
         for tv in to_verify:
             print(f"  {tv}")
 
