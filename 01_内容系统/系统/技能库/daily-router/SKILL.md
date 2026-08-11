@@ -12,7 +12,7 @@ description: >
 # daily_router · 每日路由
 
 > 脚本：`01_内容系统/知识库/每日日报/.github/scripts/run_daily_router.py`
-> 模型：DeepSeek（环境变量 `ROUTER_MODEL`，默认 `deepseek-v4-pro`）
+> 模型：DeepSeek（环境变量 `ROUTER_MODEL`，默认 `deepseek-v4-flash`）
 
 ## 这是什么 / 何时用
 
