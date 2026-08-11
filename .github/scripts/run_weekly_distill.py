@@ -10,7 +10,7 @@
 
 环境变量:
   DEEPSEEK_API_KEY   — API Key（必需）
-  ROUTER_MODEL        — 模型（默认 deepseek-v4-pro）
+  ROUTER_MODEL        — 模型（默认 deepseek-v4-flash）
   TODAY_OVERRIDE      — 指定日期 YYYY-MM-DD（默认北京时间今天）
   DRY_RUN             — 若设为 "1" 则只写草稿不修改选题池
 """
@@ -23,7 +23,7 @@ import urllib.request
 from datetime import datetime, timezone, timedelta
 
 BEIJING = timezone(timedelta(hours=8))
-MODEL = os.environ.get("ROUTER_MODEL", "deepseek-v4-pro")
+MODEL = os.environ.get("ROUTER_MODEL", "deepseek-v4-flash")
 API_BASE = "https://api.deepseek.com/v1/chat/completions"
 ROUTE_DIR = os.environ.get("ROUTE_OUT_DIR", "_路由")
 TOPIC_FILE = os.environ.get("TOPIC_FILE", "_选题池.md")

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""自动日报路由 — 用 DeepSeek V4 Pro 跑 daily-router 三层漏斗。
+"""自动日报路由 — 用 DeepSeek V4 Flash 跑 daily-router 三层漏斗。
 
 纯标准库(urllib + json + re),运行时读取 AI-HOT / X-Tweets / TrendRadar,
 调用 DeepSeek API,产出 _路由/YYYY-MM-DD.md 并更新 _选题池.md。
 
 环境变量:
   DEEPSEEK_API_KEY   — API Key(必需)
-  ROUTER_MODEL        — 模型(默认 deepseek-v4-pro)
+  ROUTER_MODEL        — 模型(默认 deepseek-v4-flash)
   TODAY_OVERRIDE      — 指定日期(YYYY-MM-DD,不设则用北京时间今天)
   ROUTER_DRY_RUN      — 若设为 "1" 则只预览不写文件
 """
@@ -19,7 +19,7 @@ import urllib.request
 from datetime import datetime, timezone, timedelta
 
 BEIJING = timezone(timedelta(hours=8))
-MODEL = os.environ.get("ROUTER_MODEL", "deepseek-v4-pro")
+MODEL = os.environ.get("ROUTER_MODEL", "deepseek-v4-flash")
 API_BASE = "https://api.deepseek.com/v1/chat/completions"
 ROUTE_DIR = os.environ.get("ROUTE_OUT_DIR", "_路由")
 TOPIC_FILE = os.environ.get("TOPIC_FILE", "_选题池.md")
