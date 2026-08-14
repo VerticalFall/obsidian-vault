@@ -49,6 +49,6 @@
 - 提案状态机：待执行 → 执行中 → 待验收 → 已验收 ✅ / 已关闭
 - 提案格式规范见 `技能库/pm/SKILL.md` §四（文件结构骨架 + 模板 + 硬性规则），示例 `改进提案/2026-08-08-改进提案.md`
 
-## 技能索引（8 个，全部在 `01_内容系统/系统/技能库/`）
+## 技能索引（10 个，全部在 `01_内容系统/系统/技能库/`）
 
-`pm` · `devops` · `daily-router` · `weekly-distill` · `weekly-backup` · `health-monitor` · `book-summary` · `wechat-writing`
+`pm` · `devops` · `daily-router` · `weekly-distill` · `weekly-backup` · `health-monitor` · `book-summary` · `wechat-writing` · `humanizer` · `research-paper-writing`

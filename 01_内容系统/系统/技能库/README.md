@@ -4,9 +4,9 @@ type: index
 tags: [技能库, 索引]
 ---
 
-# 技能库索引（8 个 Claude 技能）
+# 技能库索引（10 个 Claude 技能）
 
-> Claude Code 通过 vault 根目录 `.claude/skills` 目录联接（junction）加载本目录的 8 个技能。
+> Claude Code 通过 vault 根目录 `.claude/skills` 目录联接（junction）加载本目录的 10 个技能。
 > 目录名用 ASCII 便于 Claude Code 稳定加载；中文标签写在 description 中（模型靠它触发）。
 
 | 目录 | 中文标签 | 对应脚本/角色 |
@@ -19,6 +19,8 @@ tags: [技能库, 索引]
 | [[health-monitor/SKILL.md\|health-monitor]] | 日常监控 | `check_health.py`（L1 零 LLM 体检） |
 | [[weekly-backup/SKILL.md\|weekly-backup]] | 全库备份 | 手动快照兜底（每日自动双向同步由 `系统/scripts/sync-vault.ps1` 计划任务承担） |
 | [[book-summary/SKILL.md\|book-summary]] | 书籍核心观点提炼 | 诚实提炼作者核心思想（不绑定系统） |
+| [[humanizer/SKILL.md\|humanizer]] | 去 AI 味润色 | 识别并改写 AI 写作痕迹（Wikipedia "Signs of AI writing" 33 模式，MIT） |
+| [[research-paper-writing/SKILL.md\|research-paper-writing]] | 学术论文写作 | ML/CV/NLP 论文分节写作/改写/自审（整理自彭思达笔记，MIT） |
 
 ## 目录联接说明
 
