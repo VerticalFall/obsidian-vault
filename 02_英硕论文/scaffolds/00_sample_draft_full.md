@@ -19,6 +19,14 @@ Under accuracy, NB leads at small training sizes (0.600 vs 0.576 at n=32), with 
 
 The generative–discriminative choice on financial text is therefore data- and metric-dependent. For risk-sensitive applications where the negative class matters, a discriminative model with class weighting is the safer default; in small-data settings, NB with a uniform prior is a cost-free rescue.
 
+本文主要研究的领域是金融情感分析，顾名思义即是利用情感分析的方法判断金融新闻的情感倾向，辅助决策者进行交易决策和风险管理，但事实上，将情感分析应用在金融领域是相当困难的，因为金融语言会颠倒日常语义（例如“成本下降”可能反而是好消息，然而却可能被机器错误的判断为是坏消息），然而请专家进行逐个标注的成本又相当昂贵并且消耗大量的时间，但是这个需求却又是相当真实的。
+
+因此本文主要通过研究金融短语库（Financial PhraseBank，共4,846个句子，三个类别，由16位金融专家标注）上比较了生成式分类器（多项朴素贝叶斯，NB）与判别式分类器（线性支持向量机，SVM），并围绕三个研究问题展开：学习曲线、标签不确定性。
+
+实验结果显示，NB在小训练规模下领先，当样本在约n=256至512之间出现交叉点，当样本量增大后，SVM的效果更好，这与Ng–Jordan的预测一致。然而在F1（macro-F1）上，SVM在所有规模下均领先，随着标签一致性下降，两种模型均出现性能退化，但NB的消极类别完全崩溃，而SVM的F1值仍然有不错的水平，使用均匀先验后，NB的消极类别召回率从0.151提升至0.456，F1从0.515提升至0.632；而采用类别平衡权重的SVM仍然是整体最优模型
+
+因此，在金融文本上选择生成式还是判别式模型，取决于数据和评估指标。在数据量相对大的场景，尤其是在风险敏感型应用，带类别权重的判别式模型是更安全的默认选择；而在小数据场景下，采用均匀先验的NB则是更好的方案。
+
 ---
 
 # 1. Introduction（预算 ~650 词 · 样稿 ~560）
@@ -35,9 +43,17 @@ Yet the task is deceptively difficult for general-purpose methods. Financial lan
 
 This scarcity raises a concrete practical question: *given little data, which model family should we trust?* Classical statistical learning has a theoretical answer, and this thesis tests it in the financial domain.
 
+
+金融文本的自动分析在信息化的时代极具价值，因为这类文本深刻影响着市场动向，尤其是像是巨头公司（苹果，微软）的财报公告、顶级投行（高盛，摩根大通）的分析师报告，还有美联储，白宫的资讯都会引发剧烈的价格波动，金融情感分析的任务，正是从这类文本中提取其情感倾向——即判定某条陈述对一家公司而言属于正面消息、中性消息还是负面消息。
+
+然而，对于通用型方法而言，这项任务看似简单，实则极难。与其他情感分析的场景不同，金融语言常常颠倒日常语义：“成本下降”对一家公司而言是积极信号，而“利润下降”则是消极信号，通用型情感词典在处理这类句子时会出现系统性误判。然而，可靠的标注需要依赖领域专业知识，这使得标注过程既缓慢又昂贵；在我们数据集中，每条金融短语库（PhraseBank）句子均由多达八位金融专家进行了标注。其结果是结构性的：带标注的金融文本十分稀缺，并且这种稀缺状态将持续存在。
+
+这种稀缺性引出了一个切实的实践问题：研究不同的公司或者消息面的时候，有的主体文本数据量多，有的数据量较少。在数据较少的情况下，我们应当使用哪种模型？ 经典统计学习理论对此已有理论层面的答案，而本论文的目标正是在金融领域中对这一答案进行实证检验。
+
 ## 1.2 Generative versus discriminative: the theoretical question
 
 *段落角色：method-advantage（理论定位）。模板 2 的压缩版：主张 → 两阶段 → 交叉点 → 本文检验。*
+这一段的问题在于没有准确的点名Ng and Jordan (2002)做实验的数据集跟具体的过程
 
 Ng and Jordan (2002) showed that generative classifiers reach their asymptotic error faster than discriminative ones: a generative model's estimation error shrinks roughly as O(log n), while a discriminative model's shrinks as O(n). Their analysis predicts a two-phase picture — the generative model wins on small samples, the discriminative model wins in the large-data limit, and a crossover exists in between. Naive Bayes (NB) and the linear Support Vector Machine (SVM) are the canonical representatives of the two families, and both are cheap, interpretable, and competitive on small text corpora. We deliberately restrict attention to these classic linear models rather than large language models: the regime under study — scarce data — is precisely where LLMs are least practical and least interpretable, and where a theoretically grounded choice matters most (§2.4 returns to this).
 
@@ -81,13 +97,19 @@ This theory is our test bed: RQ1 asks whether the predicted crossover appears on
 
 *段落角色：method（定义）。注意 2.3 埋钩子：NB 的平滑参数 = 先验，为 RQ3 埋伏笔。*
 
+加一些公式详细说明2.3.1朴素贝叶斯
+2.3.2支持向量机增加一个图片说明解释
+
 Naive Bayes is the representative generative classifier: it models the joint distribution of features and labels under a conditional-independence assumption, then classifies by Bayes' rule. Despite the assumption being false in practice, NB is near-optimal under zero-one loss in many settings (Domingos & Pazzani, 1997; Zhang, 2004). For text, we use the multinomial variant with Laplace smoothing; the smoothing parameter acts as a prior over class proportions — a detail that becomes central in RQ3 (§3.6). The SVM is the representative discriminative classifier: it learns a maximum-margin decision boundary directly, without modelling the data distribution (Cortes & Vapnik, 1995), and it has long been one of the strongest linear learners for text (Joachims, 1998). We use the linear-kernel form, so that the two models consume identical features and differ only in learning philosophy — generative versus discriminative.
 
 ## 2.4 Classic models in the LLM era
 
 *段落角色：positioning（回应"都 2026 年了还研究 NB/SVM？"——口试必问，必须正面答）。*
 
-Why study NB and SVM when large language models dominate the field? Three reasons. First, data: LLMs need large in-domain corpora to fine-tune, and the entire PhraseBank is smaller than a single paragraph of a modern pretraining corpus — in the regime this thesis studies, LLM fine-tuning is often not even applicable. Second, cost and reproducibility: NB and SVM train in seconds on a laptop, with deterministic, fully documented configurations (Appendix B), whereas LLM results depend on sampling, decoding, and prompt choices. Third, interpretability: the linear decision boundary and class-conditional probabilities are directly inspectable, which matters in regulated financial settings. This is not to claim classic models beat LLMs; it is to claim the question "which classic model, and under what data conditions" is still the one that is practically answerable for scarce, high-stakes financial text (cf. Wang & Manning, 2012, on strong simple linear baselines).
+Why study NB and SVM when large language models dominate the field? Three reasons. 
+First, data: LLMs need large in-domain corpora to fine-tune, and the entire PhraseBank is smaller than a single paragraph of a modern pretraining corpus — in the regime this thesis studies, LLM fine-tuning is often not even applicable. 
+Second, cost and reproducibility: NB and SVM train in seconds on a laptop, with deterministic, fully documented configurations (Appendix B), whereas LLM results depend on sampling, decoding, and prompt choices. 
+Third, interpretability: the linear decision boundary and class-conditional probabilities are directly inspectable, which matters in regulated financial settings. This is not to claim classic models beat LLMs; it is to claim the question "which classic model, and under what data conditions" is still the one that is practically answerable for scarce, high-stakes financial text (cf. Wang & Manning, 2012, on strong simple linear baselines).
 
 ## 2.5 Label noise and class imbalance
 
@@ -103,9 +125,8 @@ Two further properties of real financial data complicate the picture. The first 
 
 ## 3.1 Data: the Financial PhraseBank
 
-*段落角色：data（可复现的第一块砖）。*
 
-We use the Financial PhraseBank (Malo et al., 2014), a corpus of 4,846 English sentences sampled from financial news, each annotated for polarity — positive, neutral, or negative — from the perspective of a stock investor ("does this news affect the company's share price?"). Annotation was performed by 16 finance professionals (3 researchers and 13 MSc finance students), with every sentence annotated 5–8 times. Crucially for this thesis, the corpus publishes an agreement score per sentence; the four nested agreement subsets — 2,264 sentences on which all annotators agree, and 3,453 / 4,217 / 4,846 at the 75% / 66% / 50% thresholds — form the experimental field for RQ2. Class distribution is strongly imbalanced: neutral 59.4%, positive 28.1%, negative 12.5% (Table 1). The dataset is released under CC BY-NC-SA 3.0 and used for non-commercial research only; 【示例解释：伦理结论一句——经与导师确认后使用】.
+We use the Financial PhraseBank (Malo et al., 2014), a corpus of 4,846 English sentences sampled from financial news, each annotated for polarity — positive, neutral, or negative — from the perspective of a stock investor ("does this news affect the company's share price?"). Annotation was performed by 16 finance professionals (3 researchers and 13 MSc finance students), with every sentence annotated 5–8 times. Crucially for this thesis, the corpus publishes an agreement score per sentence; the four nested agreement subsets — 2,264 sentences on which all annotators agree, and 3,453 / 4,217 / 4,846 at the 75% / 66% / 50% thresholds — form the experimental field for RQ2. Class distribution is strongly imbalanced: neutral 59.4%, positive 28.1%, negative 12.5% (Table 1). The dataset is released under CC BY-NC-SA 3.0 and used for non-commercial research only; 
 
 ## 3.2 Preprocessing and features
 
