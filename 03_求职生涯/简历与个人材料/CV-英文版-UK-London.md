@@ -15,20 +15,23 @@ MSc Statistical Data Science graduate (University of Birmingham, Sept 2026) comf
 
 ## Selected Projects
 
-**stock-monitor — Automated Multi-market Equity Analysis & Daily Report System** (2025–2026)
-- Automated daily collection and storage for 20+ equities across 4 markets (yfinance with AKShare/baostock fallback; Tavily news), cutting manual research time by ~90%.
+**stock-monitor — Automated Multi-market Equity Analysis & Daily Report System** (2025–2026, open-source MIT)
+- Automated daily collection and storage for 20+ equities across 4 markets (yfinance primary; AKShare/baostock A-share fallback; Tavily real-time news), cutting manual research time by ~90%.
 - Built a configurable LLM analysis layer (multiple mainstream providers) scoring candidates with Buffett-value and Fisher-growth frameworks plus DCF valuation — surfaced 5+ potential opportunities daily.
-- Shipped a Flask + ECharts dashboard with mobile alerts on a GitHub Actions daily cron; designed the architecture and reviewed all code (AI-assisted pair programming). github.com/VerticalFall/stock-monitor
+- Cross-validated DCF growth assumptions across PEG-implied, consensus-estimate and historical sources (50% cap), preventing single-quarter earnings spikes from distorting valuations.
+- Shipped a Flask + ECharts dashboard (candlesticks, dual-factor radar charts, margin-of-safety buy ranges) with Feishu card alerts on a GitHub Actions weekday cron; runtime data-integrity checks and per-report AI cost tracking (~$0.003 with default model).
+- Designed the architecture and reviewed all code (AI-assisted pair programming). github.com/VerticalFall/stock-monitor
 
-**obsidian-vault — Automated News Knowledge Base & Bilingual Daily Briefing** (2025–2026)
-- Engineered a GitHub Actions pipeline aggregating 4 source categories (AI news, tracked X/Twitter figures, trend feeds, builder blogs) into a searchable Markdown knowledge base.
+**obsidian-vault — Automated News Knowledge Base & Bilingual Daily Briefing** (2025–2026, open-source)
+- Engineered a GitHub Actions pipeline aggregating 4 automated content lines (AI news radar, trend radar, tracked indie builders, X/Twitter feeds) into a searchable Markdown knowledge base.
 - Designed a DeepSeek-powered 3-stage topic router distilling 100+ daily articles into a 5-minute bilingual (CN/EN) briefing — a production-style text classification/routing pipeline.
-- Added zero-cost system health monitoring; running continuously since late 2025. github.com/VerticalFall/obsidian-vault
+- Built 4 per-source renderers plus a health-check script (data-integrity and pipeline self-testing with alerts to a system-health log); 160+ editions produced automatically since July 2026 at zero infrastructure cost. github.com/VerticalFall/obsidian-vault
 
 ## Experience
 
 **Data Operations Intern — Tungee** (AI sales-intelligence SaaS, ~1,000 staff) ｜ Guangzhou ｜ Jun–Sep 2024
-- Replaced manual logging with a scheduled pipeline collecting daily KPIs (followers, views, comments) for 50+ KOL accounts on Douyin and Bilibili【add data volume if known】.
+- Replaced manual logging with a scheduled pipeline collecting daily KPIs (followers, views, comments) for 50+ KOL accounts on Douyin and Bilibili (10k+ data rows processed daily).
+- Ran retention/funnel analyses on KOL accounts【add object & key finding — one line】; insights fed weekly content-strategy reviews.
 - Built Tableau dashboards on performance trends and audience engagement, used in weekly content reviews.
 - Turned data into content-strategy recommendations, helping the team identify top-performing content formats ~2× faster.
 

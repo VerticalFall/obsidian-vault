@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>杨洛华 — 数据分析 / 数据科学</title>
+<style>
+  @page { size: A4; margin: 9.5mm 12mm; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: 'Microsoft YaHei','微软雅黑','PingFang SC',sans-serif; font-size:9.3pt; color:#1a1a1a; line-height:1.3; }
+  .name { font-size:18pt; font-weight:700; letter-spacing:2px; text-align:center; }
+  .contact { text-align:center; font-size:9pt; color:#333; margin-top:3pt; }
+  .intent { text-align:center; font-size:9.3pt; color:#222; margin-top:2.5pt; }
+  hr.head { border:none; border-top:1.5px solid #1a1a1a; margin:6pt 0 3pt; }
+  h2 { font-size:10.5pt; font-weight:700; letter-spacing:2px; border-bottom:.8px solid #8a8a8a; padding-bottom:1.5pt; margin:6pt 0 3.5pt; }
+  .row { display:flex; justify-content:space-between; align-items:baseline; }
+  .ttl { font-weight:700; }
+  .date { color:#444; white-space:nowrap; padding-left:8px; font-size:9pt; }
+  ul { list-style:none; margin:1.5pt 0 0 0; }
+  li { margin-bottom:1.1pt; }
+  li::before { content:"\2022"; margin-right:6px; color:#555; }
+  .sub { margin-top:2.5pt; }
+  .ph { color:#c05621; font-style:italic; }
+</style>
+</head>
+<body>
+
+<div class="name">杨洛华</div>
+<div class="contact">📱 +86【手机号】（英国 +44 7906 84527<span class="ph">【核对】</span>） ｜ ✉️ luohua.yang@gmail.com ｜ 微信：【微信号】 ｜ 🔗 github.com/VerticalFall</div>
+<div class="intent"><b>求职意向：</b>数据分析师 / 数据科学（2027 届海归应届） ｜ 现居：英国伯明翰（支持远程面试） ｜ 到岗：2026-12 起（英国岗可随时；国内按 2027 届批次）</div>
+<hr class="head">
+
+<h2>教育经历</h2>
+<div class="row"><span class="ttl">英国伯明翰大学 ｜ MSc 统计与数据科学（Statistical Data Science）</span><span class="date">2025.09 – 2026.09</span></div>
+<p style="font-size:8.8pt; color:#444;">学位论文 2026-09 提交，学位证预计 2026 年底落款<span class="ph">【确认】</span></p>
+<ul>
+<li>硕士论文《金融新闻情感分析中的生成式与判别式分类器》：基于 Financial PhraseBank（<b>4,846 条</b>金融新闻句、3 分类、16 位金融专家标注），系统对比朴素贝叶斯（生成式）与线性 SVM（判别式）</li>
+<li>实证检验 Ng–Jordan 学习曲线理论：小样本下生成式占优、交叉点 n≈256–512；全量数据下 SVM 最优（准确率 0.757 vs 0.698，macro-F1 0.691 vs 0.515）</li>
+<li>设计标注一致性（标签噪声代理）与类别不平衡两组鲁棒性实验：通过类先验/类权重调整，将稀有负类召回从 0.151 提升至 0.456</li>
+<li>主修：机器学习、深度学习、统计建模、计量经济学<span class="ph">【成绩 Distinction 确认后加注】</span></li>
+</ul>
+<div class="row" style="margin-top:3.5pt;"><span class="ttl">广东外语外贸大学 ｜ 统计学 学士</span><span class="date">2021.09 – 2025.06</span></div>
+<p class="sub" style="margin-top:1pt;">主修：概率论、数理统计、计量经济学</p>
+
+<h2>实习经历</h2>
+<div class="row"><span class="ttl">探迹科技（Tungee，AI 销售 SaaS，约 1000 人）｜ 数据运营实习生</span><span class="date">2024.06 – 2024.09 · 广州</span></div>
+<ul>
+<li>搭建 <b>50+ 抖音/B 站 KOL 账号</b>日度 KPI（粉丝/播放/评论）定时采集管道，替代人工逐日登记，实现运营数据自动入库（日均处理 <b>万级</b> 数据行）</li>
+<li>做过 KOL 运营的<b>留存/漏斗分析</b><span class="ph">【补 1-2 句：分析对象 + 关键结论】</span>，结论进周会支撑内容策略</li>
+<li>开发 Tableau 互动看板，呈现运营趋势与粉丝互动规律，支撑每周内容复盘会</li>
+<li>基于数据输出内容策略建议，帮助运营组将高转化内容形式的识别效率提升约 2 倍</li>
+</ul>
+
+<h2>项目经历</h2>
+<div class="row"><span class="ttl">stock-monitor：多市场股票监控与日报系统（个人项目，开源 MIT）</span><span class="date">2025 – 2026</span></div>
+<ul>
+<li>自动化多源数据管道（yfinance 主数据源 + AKShare/baostock A 股容灾 + Tavily 实时新闻），覆盖 4 市场 20+ 标的，人工研究时间下降约 90%</li>
+<li>多厂商 LLM 分析层按巴菲特价值/费雪成长框架 + DCF 估值自动产出候选股日报，日均识别 5+ 潜在机会</li>
+<li>DCF 增长假设经 PEG 隐含增长/一致预期/历史增速<b>多源交叉验证</b>（50% 封顶），防止单季财报跳升导致的估值虚高</li>
+<li>Flask + ECharts 看板（K 线、双因子雷达图、安全边际买入区间）、飞书卡片告警、GitHub Actions 工作日定时调度</li>
+<li>工程化：数据完整性自检、AI 调用成本追踪（默认模型约 $0.003/份报告）；架构设计与代码评审由本人主导（与 Claude Code 结对开发）</li>
+</ul>
+<div class="row" style="margin-top:4pt;"><span class="ttl">全球 AI 新闻知识库与双语日报系统（个人项目，开源）</span><span class="date">2025 – 2026</span></div>
+<ul>
+<li>GitHub Actions 定时聚合 <b>4 条内容线</b>（AI 热点、趋势雷达、关注的独立开发者、X/Twitter 动态）自动清洗入库</li>
+<li>设计 DeepSeek 驱动的<b>三层漏斗路由</b>，将每日 100+ 篇文章蒸馏为 5 分钟中英双语简报（等价于生产级文本分类/路由管道）</li>
+<li>配套 4 个独立渲染脚本 + 自研健康检查（数据完整性/管道状态自检，异常自动写入系统健康告警）</li>
+<li>2026-07 起累计自动产出 <b>160+ 期</b>双语日报，全程零基础设施成本（GitHub Actions 免费额度）</li>
+</ul>
+
+<h2>科研与校园经历</h2>
+<div class="row"><span class="ttl">广东外语外贸大学 科研项目成员</span><span class="date">2021 – 2025</span></div>
+<ul>
+<li>负责东南亚（泰/印尼/新加坡）舆情数据采集：自建周更增量爬虫（requests + MySQL），支撑偏好/标注分析管道</li>
+</ul>
+
+<h2>技能</h2>
+<ul>
+<li><b>数据分析</b>：SQL（窗口函数/留存/漏斗/去重）、Tableau、ECharts、自动化报表管道、指标体系<span class="ph">【AB 测试如已补学请加】</span></li>
+<li><b>数据科学</b>：统计推断与假设检验、机器学习分类与情感分析（scikit-learn / PyTorch）、学习曲线与样本效率分析（Ng–Jordan）</li>
+<li><b>数据工程与 LLM</b>：GitHub Actions / cron 定时管道、爬虫（requests）、MySQL、REST API；多厂商 LLM 集成、RAG 基础</li>
+<li><b>工具</b>：Git、Docker、Flask、Linux、飞书开放平台</li>
+<li><b>语言</b>：中文（母语）、英语（工作流利）</li>
+</ul>
+
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Luohua Yang — Data Analyst / Junior Data Scientist</title>
+<style>
+  @page { size: A4; margin: 9mm 11mm; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: Calibri,'Segoe UI',Arial,sans-serif; font-size:9.15pt; color:#1a1a1a; line-height:1.24; }
+  .name { font-size:19pt; font-weight:700; letter-spacing:.5px; text-align:center; }
+  .contact { text-align:center; font-size:8.7pt; color:#333; margin-top:2pt; }
+  .rtw { text-align:center; font-size:8.6pt; margin-top:2pt; color:#333; }
+  hr.head { border:none; border-top:1.5px solid #1a1a1a; margin:6pt 0 3pt; }
+  h2 { font-size:10pt; text-transform:uppercase; letter-spacing:1.2px; border-bottom:.8px solid #8a8a8a; padding-bottom:1.5pt; margin:6.5pt 0 3.5pt; }
+  .item { margin-bottom:3.5pt; }
+  .row { display:flex; justify-content:space-between; align-items:baseline; }
+  .ttl { font-weight:700; }
+  .date { color:#444; white-space:nowrap; padding-left:8px; font-size:8.8pt; }
+  ul { list-style:none; margin:2pt 0 0 9pt; }
+  li { margin-bottom:1.1pt; text-indent:-7px; padding-left:7px; }
+  li::before { content:"\2022"; margin-right:5px; color:#555; }
+  .skills p { margin-top:2pt; }
+  .ph { color:#c05621; font-style:italic; }
+  a { color:#1a1a1a; text-decoration:none; }
+</style>
+</head>
+<body>
+
+<div class="name">Luohua Yang</div>
+<div class="contact">Selly Oak, Birmingham, UK &nbsp;|&nbsp; +44 7906 84527<span class="ph">【verify phone digits】</span> &nbsp;|&nbsp; luohua.yang@gmail.com &nbsp;|&nbsp; <a href="https://www.linkedin.com/in/%E6%B4%9B%E5%8D%8E-%E6%9D%A8-3ba236406/">linkedin.com/in/luohua-yang</a> &nbsp;|&nbsp; github.com/VerticalFall</div>
+<div class="rtw"><b>Right to work in the UK: Graduate Route visa (2 years, no sponsorship required)</b> — application submitted on course completion; currently on Student visa until 31 Jan 2027<span class="ph">【update once approved】</span></div>
+<hr class="head">
+
+<h2>Summary</h2>
+<p>MSc Statistical Data Science graduate (University of Birmingham, Sept 2026) comfortable owning complete data workflows — scheduled collection and storage, SQL analysis, BI dashboards (Tableau, ECharts), and LLM-assisted reporting. Statistics and finance background keeps analysis grounded in real business problems. Bilingual English/Chinese. Two production-grade personal projects run daily on GitHub Actions; architecture and review led end-to-end with AI pair programming (Claude Code).</p>
+
+<h2>Selected Projects</h2>
+
+<div class="item">
+<div class="row"><span class="ttl">stock-monitor — Automated Multi-market Equity Analysis &amp; Daily Report System</span><span class="date">2025–2026 · open-source MIT</span></div>
+<ul>
+<li>Automated daily collection and storage for 20+ equities across 4 markets (yfinance primary; AKShare/baostock A-share fallback; Tavily real-time news), cutting manual research time by ~90%.</li>
+<li>Built a configurable LLM analysis layer (multiple mainstream providers) scoring candidates with Buffett-value and Fisher-growth frameworks plus DCF valuation — surfaced 5+ potential opportunities daily.</li>
+<li>Cross-validated DCF growth assumptions across PEG-implied, consensus-estimate and historical sources (50% cap), preventing single-quarter earnings spikes from distorting valuations.</li>
+<li>Shipped a Flask + ECharts dashboard (candlesticks, dual-factor radar charts, margin-of-safety buy ranges) with Feishu card alerts on a GitHub Actions weekday cron; runtime data-integrity checks and per-report AI cost tracking (~$0.003 with default model).</li>
+<li>Designed the architecture and reviewed all code (AI-assisted pair programming). github.com/VerticalFall/stock-monitor</li>
+</ul>
+</div>
+
+<div class="item">
+<div class="row"><span class="ttl">obsidian-vault — Automated News Knowledge Base &amp; Bilingual Daily Briefing</span><span class="date">2025–2026 · open-source</span></div>
+<ul>
+<li>Engineered a GitHub Actions pipeline aggregating 4 automated content lines (AI news radar, trend radar, tracked indie builders, X/Twitter feeds) into a searchable Markdown knowledge base.</li>
+<li>Designed a DeepSeek-powered 3-stage topic router distilling 100+ daily articles into a 5-minute bilingual (CN/EN) briefing — a production-style text classification/routing pipeline.</li>
+<li>Built 4 per-source renderers plus a health-check script (data-integrity and pipeline self-testing with alerts to a system-health log); 160+ editions produced automatically since July 2026 at zero infrastructure cost. github.com/VerticalFall/obsidian-vault</li>
+</ul>
+</div>
+
+<h2>Experience</h2>
+
+<div class="item">
+<div class="row"><span class="ttl">Data Operations Intern — Tungee</span> <span class="ttl2">(AI sales-intelligence SaaS, ~1,000 staff)</span><span class="date">Guangzhou · Jun–Sep 2024</span></div>
+<ul>
+<li>Replaced manual logging with a scheduled pipeline collecting daily KPIs (followers, views, comments) for 50+ KOL accounts on Douyin and Bilibili (10k+ data rows processed daily).</li>
+<li>Ran retention/funnel analyses on KOL accounts<span class="ph">【add object &amp; key finding — one line】</span>; insights fed weekly content-strategy reviews.</li>
+<li>Built Tableau dashboards on performance trends and audience engagement, used in weekly content reviews.</li>
+<li>Turned data into content-strategy recommendations, helping the team identify top-performing content formats ~2× faster.</li>
+</ul>
+</div>
+
+<h2>Education</h2>
+
+<div class="item">
+<div class="row"><span class="ttl">University of Birmingham — MSc, Statistical Data Science</span><span class="date">2025–2026</span></div>
+<p style="margin-top:1pt; font-size:8.8pt; color:#444;">Dissertation submitted Sept 2026; results pending<span class="ph">【update when confirmed — e.g. Distinction】</span></p>
+<ul>
+<li>Thesis <i>Generative vs. Discriminative Classifiers for Financial Sentiment Analysis</i>: benchmarked multinomial Naive Bayes vs linear SVM on Financial PhraseBank (4,846 expert-labelled financial news sentences, 3 classes), empirically testing Ng–Jordan learning-curve theory — generative lead with crossover at n≈256–512; SVM best at full scale (accuracy 0.757 vs 0.698; macro-F1 0.691 vs 0.515).</li>
+<li>Robustness experiments on label noise (annotator agreement) and class imbalance: recovered the rare negative class from recall 0.151 → 0.456 via class-prior/weight adjustment.</li>
+<li>Coursework: machine learning, deep learning, statistical modelling, econometrics.</li>
+</ul>
+</div>
+
+<div class="item">
+<div class="row"><span class="ttl">Guangdong University of Foreign Studies — BSc, Statistics</span><span class="date">2021–2025</span></div>
+<p style="margin-top:1.5pt;">Probability, statistical inference, econometrics. Research project member: built and maintained a weekly incremental news crawler (requests, MySQL) for Southeast Asia news sources.</p>
+</div>
+
+<h2>Skills</h2>
+<div class="skills">
+<p><b>SQL</b> (joins, window functions, aggregations) · <b>Python</b> (pandas, NumPy, scikit-learn, PyTorch) · <b>Statistics &amp; hypothesis testing</b> · <b>ML classification &amp; sentiment analysis</b> · <b>BI</b>: Tableau, ECharts · <b>Pipelines</b>: GitHub Actions, cron, requests, MySQL, REST APIs · <b>LLM integration</b> (multi-provider, RAG basics) · Git, Docker, Flask, Linux</p>
+<p><b>Languages</b>: Mandarin (native) · English (professional working proficiency)</p>
+</div>
+
+</body>
+</html>
