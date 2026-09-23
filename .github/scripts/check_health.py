@@ -5,10 +5,12 @@
 检查项:
   1. 信息源产出（四源文件存在 + 大小 > 200B）
   2. X-Tweets 有效推文计数
-  3. 路由日志产出（文件存在 + > 500 字符）
+  3. 路由日志产出（文件存在 + > 500 字符 + ⭐/普通两区完整未截断）
   4. 选题池存量（🔥/🌿/💤 条目数 + 表格质量：模板残留/重复行）
   5. 翻译成功率（翻译失败比例）
   6. 待验证问题（未处理条目数，非空 → 🟡）
+  7. 每日精选产出（_每日精选/当天.md 存在且四区完整）
+  8. 路由覆盖率（近 7 天「上游有输入却无路由产出」的天数——查趋势性失效）
 
 输出:
   _系统健康/YYYY-MM-DD.md     — 每日健康报告
@@ -30,6 +32,7 @@ TR_DIR = "TrendRadar"
 FB_DIR = "FollowBuilders"
 ROUTE_DIR = "_路由"
 TOPIC_FILE = "_选题池.md"
+DIGEST_DIR = os.environ.get("DIGEST_OUT_DIR", "_每日精选")
 HEALTH_DIR = "_系统健康"
 ALERT_FILE = os.path.join(HEALTH_DIR, "_告警摘要.md")
 TO_VERIFY_FILE = os.path.join(HEALTH_DIR, "待验证问题.md")
@@ -143,7 +146,11 @@ def check_xtweets(date_str):
 
 
 def check_route_log(date_str):
-    """检查 3: _路由/当天.md 存在 + 字符数 > 500。"""
+    """检查 3: _路由/当天.md 存在 + 字符数 > 500 + **结构完整未被截断**。
+
+    只查字符数会漏掉"日志落盘了但被输出预算砍半"这种情况——那正是选题池
+    断供 6 周却只报 🟡 的原因。所以这里同时查两个区是否都在。
+    """
     path = os.path.join(ROUTE_DIR, f"{date_str}.md")
     text = read_file(path)
 
@@ -151,10 +158,83 @@ def check_route_log(date_str):
         return "🔴", "路由日志缺失", 0
 
     char_count = len(text)
-    if char_count >= 500:
-        return "🟢", f"{char_count} 字符", char_count
-    else:
+    if char_count < 500:
         return "🔴", f"仅 {char_count} 字符(不足 500)", char_count
+
+    # 结构完整性：⭐ 区与普通选题区都必须在，否则是输出被截断
+    missing = []
+    if "高优先级选题" not in text:
+        missing.append("高优先级区")
+    if "普通选题" not in text:
+        missing.append("普通选题区")
+    if missing:
+        return "🟡", f"{char_count} 字符，但缺 {'/'.join(missing)}（疑被截断）", char_count
+    return "🟢", f"{char_count} 字符", char_count
+
+
+def check_router_coverage(days=7):
+    """检查 8: 近 N 天里「上游有输入、路由却无产出」的天数。
+
+    为什么需要这一项：检查 1 只看当天四源是否在线，检查 3 只看当天路由日志；
+    两者都发现不了**长期趋势性失效**——实测路由日志 39 份 / 83 天，也就是说
+    一半以上的日子上游明明有内容、路由却没产出，而旧健康检查全程只报 🟡/🔴
+    的「路由日志缺失」，没有任何一项把它归因为"路由步骤反复失败"。
+
+    判定口径（保守）：某天算"本应有路由"需要当日四源里**至少两份**文件有实质内容
+    （>200B）。只有一份源的边角日子不算，避免误报。
+    """
+    def _has_content(path):
+        return file_size(path) > 200
+
+    should_have, produced, missing = 0, 0, []
+    for i in range(days):
+        d = (datetime.now(BEIJING) - timedelta(days=i)).strftime("%Y-%m-%d")
+        present = sum(
+            1 for p in (
+                os.path.join(AIHOT_DIR, f"{d}.md"),
+                os.path.join(XTWEETS_DIR, f"{d}.md"),
+                os.path.join(TR_DIR, f"{d}.md"),
+                os.path.join(FB_DIR, f"{d}.md"),
+            ) if _has_content(p)
+        )
+        if present < 2:
+            continue
+        should_have += 1
+        if _has_content(os.path.join(ROUTE_DIR, f"{d}.md")):
+            produced += 1
+        else:
+            missing.append(d)
+
+    if should_have == 0:
+        return "🟢", f"近 {days} 天无可判定日期", 0
+    lost = should_have - produced
+    detail = f"{produced}/{should_have} 天有产出"
+    if lost == 0:
+        return "🟢", detail, 0
+    if lost >= should_have / 2:
+        return "🔴", f"{detail}，缺 {lost} 天（路由步骤反复失败）", lost
+    return "🟡", f"{detail}，缺 {'、'.join(missing[-3:])}", lost
+
+
+def check_digest(date_str):
+    """检查 7: _每日精选/当天.md 存在且不是空壳。
+
+    这是**产出层**体检：旧健康检查只盯着采集/筛选，没有任何一项能发现
+    "系统在跑但两个月没产出过东西"。
+    """
+    path = os.path.join(DIGEST_DIR, f"{date_str}.md")
+    text = read_file(path)
+    if not text:
+        return "🟡", "当日精选缺失", 0
+
+    char_count = len(text)
+    if char_count < 300:
+        return "🟡", f"仅 {char_count} 字符（疑似空壳）", char_count
+
+    missing = [s for s in ("今天最重要的", "数字速览", "今天可写") if s not in text]
+    if missing:
+        return "🟡", f"{char_count} 字符，但缺 {'/'.join(missing)}", char_count
+    return "🟢", f"{char_count} 字符", char_count
 
 
 def check_topic_pool():
@@ -393,6 +473,14 @@ def main():
     pv_level, pv_detail, pv_count = check_pending_verification()
     print(f"  [待验证问题] {pv_level} {pv_detail}")
 
+    # 7. 每日精选（产出层）
+    dg_level, dg_detail, dg_count = check_digest(date_str)
+    print(f"  [每日精选] {dg_level} {dg_detail}")
+
+    # 8. 路由覆盖率（趋势性失效）
+    rc_level, rc_detail, rc_lost = check_router_coverage()
+    print(f"  [路由覆盖率] {rc_level} {rc_detail}")
+
     # ── 写健康报告 ──
     os.makedirs(HEALTH_DIR, exist_ok=True)
     report_path = os.path.join(HEALTH_DIR, f"{date_str}.md")
@@ -408,12 +496,15 @@ def main():
         f"| 4 | 选题池存量 | {tp_level} | {tp_detail} |",
         f"| 5 | 翻译成功率 | {tr_level} | {tr_detail} |",
         f"| 6 | 待验证问题 | {pv_level} | {pv_detail} |",
+        f"| 7 | 每日精选产出 | {dg_level} | {dg_detail} |",
+        f"| 8 | 路由覆盖率(7天) | {rc_level} | {rc_detail} |",
         "",
     ]
 
     # 汇总
-    reds = sum(1 for lv in [src_level, xt_level, rl_level, tp_level, tr_level, pv_level] if lv == "🔴")
-    yellows = sum(1 for lv in [src_level, xt_level, rl_level, tp_level, tr_level, pv_level] if lv == "🟡")
+    levels = [src_level, xt_level, rl_level, tp_level, tr_level, pv_level, dg_level, rc_level]
+    reds = sum(1 for lv in levels if lv == "🔴")
+    yellows = sum(1 for lv in levels if lv == "🟡")
     if reds:
         lines.append(f"> 🔴 {reds} 项异常  🟡 {yellows} 项警告")
     elif yellows:
@@ -433,6 +524,8 @@ def main():
         ("3.路由日志", (rl_level, rl_detail)),
         ("4.选题池", (tp_level, tp_detail)),
         ("5.翻译", (tr_level, tr_detail)),
+        ("7.每日精选", (dg_level, dg_detail)),
+        ("8.路由覆盖率", (rc_level, rc_detail)),
     ]
     to_verify = update_alert_summary(date_str, results)
     if to_verify:

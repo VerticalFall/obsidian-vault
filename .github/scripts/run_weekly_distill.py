@@ -10,7 +10,7 @@
 
 环境变量:
   DEEPSEEK_API_KEY   — API Key（必需）
-  ROUTER_MODEL        — 模型（默认 deepseek-v4-flash）
+  ROUTER_MODEL        — 模型（默认 deepseek-flash = V4.1 Flash）
   TODAY_OVERRIDE      — 指定日期 YYYY-MM-DD（默认北京时间今天）
   DRY_RUN             — 若设为 "1" 则只写草稿不修改选题池
 """
@@ -23,7 +23,7 @@ import urllib.request
 from datetime import datetime, timezone, timedelta
 
 BEIJING = timezone(timedelta(hours=8))
-MODEL = os.environ.get("ROUTER_MODEL", "deepseek-v4-flash")
+MODEL = os.environ.get("ROUTER_MODEL", "deepseek-flash")
 API_BASE = "https://api.deepseek.com/v1/chat/completions"
 ROUTE_DIR = os.environ.get("ROUTE_OUT_DIR", "_路由")
 TOPIC_FILE = os.environ.get("TOPIC_FILE", "_选题池.md")
@@ -183,8 +183,22 @@ def is_table_sep(line: str) -> bool:
 
 
 def is_data_row(line: str) -> bool:
+    """是否选题池表格的**数据**行。
+
+    必须排除表头行（`| 选题 | 钩子 | 角度 | 系列 |`）——表头是普通文本，
+    不是 `|---|` 分隔行，朴素的"以 | 开头且不含 ---"判定会把它算成数据行，
+    导致每个日期组都多算 1 条，直接抬高「选题池存量」指标。
+    """
     s = line.strip()
-    return s.startswith("|") and not set(s) <= set("|-: ") and "---" not in s
+    if not s.startswith("|"):
+        return False
+    if set(s) <= set("|-: ") or "---" in s:
+        return False
+    cols = [c.strip() for c in s.split("|")]
+    # cols[0] 为空（前导 |），第一列内容在 cols[1]
+    if len(cols) >= 2 and cols[1] in ("选题", "周次", "日期"):
+        return False
+    return True
 
 
 def iso_week(date_str: str) -> str:
@@ -234,6 +248,9 @@ def call_deepseek(system: str, user: str, max_tokens: int = 12000) -> str:
             {"role": "user", "content": user},
         ],
         "max_tokens": max_tokens,
+        # 关闭思考模式（官方文档：默认打开，effort 默认 high）。蒸馏是格式固定的
+        # 结构化产出，思维链无增益却会先吃掉 max_tokens 预算。
+        "thinking": {"type": "disabled"},
         "temperature": 0.3,
     }).encode("utf-8")
     req = urllib.request.Request(
@@ -353,21 +370,27 @@ def parse_topic_ops(topic_ops_text: str) -> dict[str, list[str]]:
 
 
 def count_pool_stats(text: str) -> dict[str, int]:
-    """统计选题池各分区条目数。"""
+    """统计选题池各分区条目数。
+
+    注意：**任何** `## ` 标题都必须结束当前分区。旧实现在遇到「✅ 已发布」和
+    「📦 归档」时不重置 in_section，导致这两个区的表格行被并进前一个分区 ——
+    实测把 📦 归档的 152 条历史记录全算成 💤 存量，直接抬高「选题池存量」指标。
+    """
     hot = 0
     evergreen = 0
     dormant = 0
     in_section = ""
     for line in text.split("\n"):
         s = line.strip()
-        if s.startswith("## 🔥"):
-            in_section = "hot"
-        elif s.startswith("## 🌿"):
-            in_section = "evergreen"
-        elif s.startswith("## 💤"):
-            in_section = "dormant"
-        elif s.startswith("## ") and "归档" not in s and "已发布" not in s:
-            in_section = ""
+        if s.startswith("## "):
+            if s.startswith("## 🔥"):
+                in_section = "hot"
+            elif s.startswith("## 🌿"):
+                in_section = "evergreen"
+            elif s.startswith("## 💤"):
+                in_section = "dormant"
+            else:
+                in_section = ""  # ✅ 已发布 / 📦 归档 / 其他区不计入存量
         if in_section == "hot" and is_data_row(s):
             hot += 1
         elif in_section == "evergreen" and is_data_row(s):

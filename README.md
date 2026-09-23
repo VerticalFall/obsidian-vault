@@ -112,8 +112,61 @@ AI HOT + X Tweets + TrendRadar（采集层，本仓库）
 - **X Tweets 源**依赖 SocialData.tools API（付费，$0.0002/条，约 $0.30/月）和 `translate` Python 库。若 API Key 失效或余额不足，该 step 会静默跳过（`continue-on-error: true`）。
 - **日报路由源**依赖 `DEEPSEEK_API_KEY`（约 $0.018/天）。Key 失效或余额不足时该 step 静默跳过，`_路由/` 与 `_选题池.md` 当日不更新，L1 健康检查会在 `_告警摘要.md` 里报 🔴。
 - 想调整：改 `sync-reports.yml` 里的 `cron`（调度），或各渲染脚本里的参数。
-- 本地 `.scripts/` 下有测试脚本：`test-xtweets.ps1`、`pull-reports.ps1`。
+- 本地 `.scripts/` 下有测试脚本：`pull-reports.ps1`、`_test_pull_reports.ps1`（stash 兜底回归测试）。
+
+## ⚠️ 维护红线：DeepSeek 模型名会过期
+
+**这类 bug 不报错、只静默降级**，所以每次动模型名之前先读这一节。
+
+| 模型名 | 状态 |
+|--------|------|
+| `deepseek-flash` | ✅ **当前应使用**（V4.1 Flash，2026-09-10 上线） |
+| `deepseek-v4-flash` | ⚠️ 旧名，2026-09-10 起被 V4.1 Flash 取代（仅兼容路由，勿新用） |
+| `deepseek-v4-pro` | ⚠️ 2026-09-14 起被路由到 V4.1 Flash，官方计划下线（勿新用） |
+| `deepseek-chat` | ❌ **2026-07-24 已停用** |
+| `deepseek-reasoner` | ❌ **2026-07-24 已停用** |
+
+**已经踩过的坑（2026-09-23 复盘）**：翻译脚本一直写死 `deepseek-chat`，停用后
+X-Tweets 翻译全挂，`_告警摘要.md` 里 🔴「翻译成功率 0/N」**从 2026-07-25 断续报了
+两个月没人定位到根因**。同一失效模式还影响 FollowBuilders 的播客摘要。
+
+**机械守卫**：`_test_model_names.py` —— 源码/配置里出现上表中 ❌/⚠️ 的名字即测试失败。
+改动模型相关代码后请跑：
+
+```powershell
+cd "C:\Users\user\Documents\Obsidian Vault\01_内容系统\知识库\每日日报"
+python _test_model_names.py
+```
+
+### 思考模式也必须显式声明
+
+DeepSeek 文档：「**思考模式默认打开，且 effort 默认为 `high`**」。思维链与正文**共用
+`max_tokens`**，所以短预算调用会被思维链占满而拿不到正文。
+
+- 本仓库所有 LLM 调用点都显式写了 `"thinking": {"type": "disabled"}`（任务是结构化产出/纯转换，思维链无增益）；
+- **新增 LLM 调用点时必须一并声明**，否则 `_test_model_names.py` 会失败；
+- 另注意：思考模式下 `temperature` 不生效，关闭后才真正起作用；
+- 若确实需要思考模式（开放推理类任务），必须**同时**提高 `max_tokens` 以容纳思维链。
+
+## 本地回归测试
+
+| 测试 | 覆盖 |
+|------|------|
+| `_test_router_pool.py` | 选题提取、去重精度、写入断言、截断检测（20 项） |
+| `_test_router_e2e.py` | 路由 `main()` 端到端：完整/截断/API 失败/缺标记四种响应（15 项） |
+| `_test_daily_digest.py` | 精选渲染、降级产物、数字与标题提取质量（41 项） |
+| `_test_model_names.py` | 模型名 + 思考模式声明守卫（11 项） |
+| `_test_request_body.py` | 拦截 urlopen 验证真实出站 JSON（12 项） |
+
+均离线运行（mock LLM / 假 urlopen，不联网、不改正式产物）：
+
+```powershell
+python _test_router_pool.py; python _test_router_e2e.py; python _test_daily_digest.py
+python _test_model_names.py; python _test_request_body.py
+```
 
 ---
 
-> 📌 最后更新：2026-07-13 — 新增自动日报路由（DeepSeek V4 Pro）+ 选题池看板 + L1 系统健康监控
+> 📌 最后更新：2026-09-23 — 修复路由输出截断与选题池断供、新增每日精选产出层、
+> 健康检查扩至 8 项、统一 DeepSeek 模型名并关闭思考模式，新增模型名/思考模式/出站报文
+> 三类守卫（详见 `01_内容系统/系统/改进提案/2026-09-23-改进提案.md`）

@@ -38,8 +38,11 @@ BEIJING = timezone(timedelta(hours=8))
 # DeepSeek 配置（复用现有 env）
 DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "").strip()
 DEEPSEEK_API_BASE = "https://api.deepseek.com/v1/chat/completions"
-DEEPSEEK_MODEL = "deepseek-chat"
-DEEPSEEK_FLASH_MODEL = "deepseek-v4-flash"
+# 模型名：deepseek-chat 别名已于 2026-07-24 停用（见 DeepSeek V4 公告）；
+# deepseek-v4-flash 亦已被 2026-09-10 的 V4.1 Flash 取代（旧名仅作兼容路由）。
+# 统一改用当前模型名 deepseek-flash。
+DEEPSEEK_MODEL = "deepseek-flash"
+DEEPSEEK_FLASH_MODEL = "deepseek-flash"
 
 
 # ── helpers ────────────────────────────────────────────────────
@@ -129,6 +132,9 @@ def translate_to_chinese(text: str) -> str | None:
                 {"role": "user", "content": text},
             ],
             "max_tokens": 2000,
+            # 关闭思考模式（默认打开且 effort=high）：翻译是纯转换任务，
+            # 思维链与正文共用 max_tokens，白吃预算甚至挤掉正文。
+            "thinking": {"type": "disabled"},
             "temperature": 0.1,
         }).encode("utf-8")
         req = urllib.request.Request(
@@ -194,6 +200,8 @@ def summarize_podcast(name: str, title: str, transcript: str) -> str | None:
                 },
             ],
             "max_tokens": 300,
+            # 必须关闭思考模式：预算仅 300 token，思维链一展开就轮不到摘要正文。
+            "thinking": {"type": "disabled"},
             "temperature": 0.1,
         }).encode("utf-8")
 

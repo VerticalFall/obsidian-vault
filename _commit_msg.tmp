@@ -1,0 +1,59 @@
+fix(pipeline): 修复选题池断供/翻译失效，新增每日精选产出层
+
+本轮针对内容生产线做了一次系统性排查，修掉五层根因（详见
+01_内容系统/系统/改进提案/2026-09-23-改进提案.md，共 12 条提案）。
+
+## 修复
+
+1. 路由输出截断致选题池断供
+   - 新增 extract_topic_pool.py：选题池表格行改由脚本从路由日志**确定性解析**，
+     不再依赖模型的第二段输出（那段一直被输出预算截掉）
+   - run_daily_router.py：prompt 统一两个选题区格式、移除重复的 POOL_UPDATES 段、
+     新增截断检测（缺区/末句悬空即告警，不再静默）
+   - 修正日期计数逻辑（旧实现会把 `### 08-09` 的数字吸进计数）
+
+2. 模型名停用致翻译静默失效两个月
+   - `deepseek-chat` 于 2026-07-24 停用，render_xtweets.py 一直写死它，
+     与 2026-07-25 起的 🔴「翻译成功率 0/N」告警时间吻合
+   - 统一改用 deepseek-flash（V4.1 Flash，2026-09-10 上线）
+
+3. 思考模式默认开启，吃光短预算调用
+   - 官方文档：「思考模式默认打开，且 effort 默认为 high」，思维链与正文共用
+     max_tokens；100/300 token 的翻译调用因此拿不到正文
+   - 7 个 LLM 调用点全部显式 `thinking: disabled`
+
+4. 新增每日精选产出层（P-20260811-02 立项 6 周未执行）
+   - render_daily_digest.py：四源 + 路由日志 → _每日精选/YYYY-MM-DD.md
+     （今天最重要的 / 数字速览 / 领域速览 / 今天可写）
+   - LLM 不可用时产出「降级版精选」（机械提取），产出层不再单点依赖
+
+5. 系统自检链路
+   - check_health.py 新增检查 7「每日精选产出」、检查 8「路由覆盖率(7天)」
+     （实测近 30 天 29 个可判定日期只有 3 天有路由产出）
+   - 检查 3 增加结构完整性校验（只查字符数会漏掉"落盘但被截断"）
+   - 修 count_pool_stats 分区边界 + is_data_row 表头误判
+     （旧实现把 📦 归档的 152 条历史记录算成 💤 存量，🔥 虚高 8 条）
+   - Action 新增告警摘要步骤：健康报告+精选写入运行页，告警不再只躺在文件里
+   - LLM 失败/缺源/截断通过 ::warning:: / ::error:: 注解显示在运行页
+
+6. 本地同步兜底
+   - .scripts/pull-reports.ps1 补 stash 兜底（对齐 sync-vault.ps1）：
+     纯 CRLF 差异曾阻塞 ff-only pull 达 38 天
+
+## 测试
+
+新增五套离线测试（mock LLM / 假 urlopen，不联网、不改正式产物）：
+  _test_router_pool.py         20 项  提取/去重/写入/截断检测
+  _test_router_e2e.py          15 项  路由 main() 端到端（四种响应形态）
+  _test_daily_digest.py        41 项  精选渲染/降级产物/提取质量
+  _test_model_names.py         11 项  模型名 + 思考模式声明守卫
+  _test_request_body.py        12 项  拦截 urlopen 验证真实出站 JSON
+  _test_pipeline_integration.py 10 项  路由写池 → 蒸馏读池 接缝验证
+合计 109 项全绿。
+
+## 未验证（需线上）
+
+- 翻译是否恢复、路由失败是否减少：本地无 API Key，属强推断
+- 路由 90% 失败率的根因未定位（已排除输入缺失/过长/模型名无效）
+
+Co-Authored-By: Claude <noreply@anthropic.com>

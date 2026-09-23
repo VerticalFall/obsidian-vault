@@ -6,7 +6,7 @@
 
 环境变量:
   DEEPSEEK_API_KEY   — API Key(必需)
-  ROUTER_MODEL        — 模型(默认 deepseek-v4-flash)
+  ROUTER_MODEL        — 模型(默认 deepseek-flash = V4.1 Flash)
   TODAY_OVERRIDE      — 指定日期(YYYY-MM-DD,不设则用北京时间今天)
   ROUTER_DRY_RUN      — 若设为 "1" 则只预览不写文件
 """
@@ -15,16 +15,25 @@ import json
 import os
 import re
 import sys
+import urllib.error
 import urllib.request
 from datetime import datetime, timezone, timedelta
 
+# 选题池行从路由日志确定性提取（相对导入，脚本与提取器同目录）
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from extract_topic_pool import dedupe_topics, parse_route_log as extract_topics, to_pool_row  # noqa: E402
+
 BEIJING = timezone(timedelta(hours=8))
-MODEL = os.environ.get("ROUTER_MODEL", "deepseek-v4-flash")
+MODEL = os.environ.get("ROUTER_MODEL", "deepseek-flash")
 API_BASE = "https://api.deepseek.com/v1/chat/completions"
 ROUTE_DIR = os.environ.get("ROUTE_OUT_DIR", "_路由")
 TOPIC_FILE = os.environ.get("TOPIC_FILE", "_选题池.md")
 VIEWPOINT_FILE = os.environ.get("VIEWPOINT_FILE", "_观点.md")
 DRY_RUN = os.environ.get("ROUTER_DRY_RUN", "") == "1"
+# 输出预算。模型输出上限受 API 侧限制（设过头会整个请求 400），所以不靠"加大
+# max_tokens"解决截断，而是靠**结构上省预算**：选题池表格行改由脚本从路由日志
+# 确定性提取，模型不再重复生成一份 POOL_UPDATES（那正是被截断掉的部分）。
+MAX_TOKENS = int(os.environ.get("ROUTER_MAX_TOKENS", "8192"))
 
 # ── 路由规则(从 daily-router SKILL.md 精简) ──────────────────────────
 
@@ -84,20 +93,24 @@ FollowBuilders 追踪 26 位 AI builder（Karpathy、Sam Altman、Swyx 等）的
 模式: {正常 / 周一模式 / 仅X源}
 
 ## ⭐ 高优先级选题(→ 选题池)
+
+每条一个 `### NN.` 小节，字段固定如下（字段名不要改写）：
+
 ### 01. <选题标题>
 - 来源: <具体来源和日期>
 - 锚点: <命中的锚点>
-- 框架: <选用的标尺书+简述如何用>
+- 框架: <标尺书 + 一句怎么用，50 字内>
 - 传播: X/5(冲突/新鲜/情绪/解释/关联)
-- 选题角度: <100-200字,写这篇文章的角度和建议>
+- 选题角度: <80-150字。为省输出预算，不要重复「钩子」里已经写过的话>
 - merge_hint: {无 / 建议与"XX"合并为XX系列}
 - 观点信号:{印证 V几,一句依据 / 挑战 V几,一句依据 / 无关}
 
 (最多3条)
 
 ## 普通选题(→ 选题池)
-| # | 选题 | 来源 | 得分 | 框架 | 观点信号 | 说明 |
-(无上限)
+
+**格式与高优先级完全一致**（`### NN.` 小节 + 同样 7 个字段，序号从 01 重新开始），
+只是传播分 2-4 分、不占当日 ⭐ 名额。不要用表格。
 
 ## 🔄 更新现有选题
 ### 更新: <选题池里的选题名>
@@ -112,32 +125,21 @@ FollowBuilders 追踪 26 位 AI builder（Karpathy、Sam Altman、Swyx 等）的
 ## 📊 本周跨天信号(仅在周一模式或有累积信号时)
 ```
 
-===TOPIC_POOL_UPDATES===
-需要写入 🔥 新进 区表格的新选题，每条一行表格行。路由器自动放入当日日期子标题 `### MM-DD` 下的表格中：
-```
-| ⭐/· <选题标题> | <钩子——一句"然后呢？"> | <角度——独特的分析切入点，不贴书名标签> | <系列：独立 / ◈ XXX #N> |
-```
-(无新条目则写 "无")
-要求：
-- 钩子要有传播力——让读者说"卧槽然后呢"。用具体冲突、数字、反差。
-- 角度不要写"《叙事经济学》——xxx"这种书封标签。写具体的分析切入，比如"用市场先生隐喻讲两个估值体系互殴"。
-- 系列字段：独立成文写"独立"，有前后关系写"◈ AI 泡沫三部曲 #2"这种带序号和前后锚点的格式。
+**写完 `## ⭐ 高优先级选题` 与 `## 普通选题` 两个区是硬性要求**——选题池靠这两个区的
+`### NN.` 小节确定性提取，缺一个区就等于当天不产出选题。宁可每条角度写短一点，
+也要把两个区都写完。
 
-===TOPIC_UPDATES===
-需要修改的已有选题，每行一条。路由器跨所有分区搜索表格中"选题"列关键词匹配：
-```
-| <原选题关键词> | <新信号——要更新到🌿区"最新信号"列的文本> |
-```
-(无需修改则写 "无")
+**不要再输出 `===TOPIC_POOL_UPDATES===` 或 `===TOPIC_UPDATES===` 段**：选题池表格行
+由脚本从上面的路由日志自动提取，你不需要（也不应该）重复生成一遍。所有信息写进
+路由日志正文即可。
 
 ---
 
 ## 约束
-- 高优先级 ≤3 条/天
+- 高优先级 ≤3 条/天，普通选题 ≤5 条/天
 - 丢弃条目列出理由,不要静默丢弃
 - 利率史永远不丢
 - 同一日期不重复路由
-- 选题池维护:新条目放入 🔥 新进 区当日日期子标题下的表格;更新已有条目时不限分区,以选题列关键词匹配表格行
 - merge_hint 要落到具体操作,不用模糊语言
 
 现在开始对以下日报内容执行路由。"""
@@ -202,7 +204,7 @@ def list_routes(route_dir: str, days: int = 3) -> list[str]:
     return files[:days]
 
 
-def call_deepseek(system: str, user: str, max_tokens: int = 8000) -> str:
+def call_deepseek(system: str, user: str, max_tokens: int = MAX_TOKENS) -> str:
     api_key = os.environ.get("DEEPSEEK_API_KEY", "").strip()
     if not api_key:
         raise RuntimeError("DEEPSEEK_API_KEY 环境变量未设置")
@@ -214,6 +216,12 @@ def call_deepseek(system: str, user: str, max_tokens: int = 8000) -> str:
             {"role": "user", "content": user},
         ],
         "max_tokens": max_tokens,
+        # 关闭思考模式。官方文档：「思考模式默认打开，且 effort 默认为 high」——
+        # 也就是说思维链会先占用输出预算，而 max_tokens 同时覆盖思维链与正文。
+        # 本任务是**结构化提取**（输出格式已在 system prompt 里固定死），
+        # 思维链没有增益，却会挤掉本该写进路由日志的预算（截断的另一成因）。
+        # 注意：思考模式下 temperature 不生效（文档明示），关闭后它才真正起作用。
+        "thinking": {"type": "disabled"},
         "temperature": 0.3,
     }).encode("utf-8")
 
@@ -225,8 +233,17 @@ def call_deepseek(system: str, user: str, max_tokens: int = 8000) -> str:
             "Content-Type": "application/json",
         },
     )
-    with urllib.request.urlopen(req, timeout=180) as r:
-        data = json.loads(r.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=180) as r:
+            data = json.loads(r.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        # 把 API 的响应体带出来 —— "模型名不存在"和"额度耗尽"都是 4xx，
+        # 但只有响应体说得清是哪一种（旧代码只抛裸 HTTPError，看不出原因）。
+        try:
+            detail = e.read().decode("utf-8", "replace")[:400]
+        except Exception:  # noqa: BLE001
+            detail = "(响应体读取失败)"
+        raise RuntimeError(f"HTTP {e.code} {e.reason} — {detail}") from e
     content = data["choices"][0]["message"]["content"]
     if not content or not content.strip():
         raise RuntimeError("DeepSeek 返回了空内容 — 可能是模型不可用、Key 额度耗尽或服务端限流")
@@ -317,6 +334,40 @@ def build_context(date_str: str) -> str:
 
 # ── main ────────────────────────────────────────────────────────
 
+def detect_truncation(route_log: str) -> list[str]:
+    """检测路由日志是否被输出预算截断。
+
+    截断是选题池断供 6 周的根因，但旧代码对它**完全静默** —— 所以加了这层
+    体检：缺区、末尾悬空都算异常，交由调用方打印并计入告警。
+    """
+    problems: list[str] = []
+    if "高优先级选题" not in route_log:
+        problems.append("缺「高优先级选题」区")
+    if "普通选题" not in route_log:
+        problems.append("缺「普通选题」区")
+    # 末尾悬空：最后一行以这些结尾，说明句子没写完就被切了
+    last = ""
+    for line in reversed(route_log.splitlines()):
+        if line.strip():
+            last = line.strip()
+            break
+    if last.endswith(("，", "、", "：", ":", "——", "-", "（", "(", "和", "与", "的")):
+        problems.append(f"末尾句子未写完（…{last[-24:]}）")
+    return problems
+
+
+def gh_annotate(level: str, message: str) -> None:
+    """在 GitHub Actions 运行页顶部产生注解。
+
+    本步骤是 `continue-on-error: true`，退出码再大也显示为成功 —— 路由连续
+    多日失败而流水线全绿，就是这个原因。注解是唯一能让"每天都没跑成"被
+    一眼看到的手段（`::warning::` / `::error::` 由 Actions 解析为注解）。
+    非 Actions 环境（本地跑）会原样打印，不影响使用。
+    """
+    message = message.replace("\n", " ").replace("%", "%25").replace("\r", "%0D")
+    print(f"::{level} title=日报路由::{message}", flush=True)
+
+
 def main():
     date_str = bao_date()
     print(f"=== 日报路由 · {date_str} ===")
@@ -326,15 +377,20 @@ def main():
     context = build_context(date_str)
     print(f"上下文约 {len(context)} 字符")
 
-    # 调 DeepSeek
+    # 调 DeepSeek —— 失败必须说清是 Key、模型名还是限流
     print("调用 DeepSeek API …")
-    raw = call_deepseek(ROUTER_SYSTEM_PROMPT, context)
+    try:
+        raw = call_deepseek(ROUTER_SYSTEM_PROMPT, context)
+    except Exception as exc:  # noqa: BLE001 — 要原样上报原因
+        reason = f"{type(exc).__name__}: {exc}"
+        print(f"ERROR: DeepSeek 调用失败 —— {reason}")
+        gh_annotate("error", f"DeepSeek 调用失败（模型 {MODEL}）：{reason} —— 当日无路由日志、选题池不更新")
+        return 1
     print(f"响应 {len(raw)} 字符")
 
     # 解析
     sections = parse_sections(raw)
     route_log = sections.get("ROUTE_LOG", "").strip()
-    topic_pool_new = sections.get("TOPIC_POOL_UPDATES", "").strip()
     topic_updates = sections.get("TOPIC_UPDATES", "").strip()
 
     # 清理 markdown 围栏
@@ -345,17 +401,38 @@ def main():
 
     if not route_log:
         print("ERROR: 未解析出 ROUTE_LOG")
-        # 兜底：整个响应当作路由日志
+        gh_annotate("warning", "响应里没有 ===ROUTE_LOG=== 段，已把整个响应当作路由日志兜底")
+        # 兜底：整个响应当作路由日志（选题池仍可从其中提取）
         route_log = raw
-        topic_pool_new = ""
-        topic_updates = ""
+
+    # ── 截断体检（截断曾是静默的，这是 6 周无人发现的原因）──
+    problems = detect_truncation(route_log)
+    if problems:
+        print("WARNING: 路由日志疑似被截断 —— " + "；".join(problems))
+        gh_annotate("warning", "路由日志疑似被截断：" + "；".join(problems))
+
+    # ── 从路由日志确定性提取选题池行 ──
+    # 不再依赖模型的 ===TOPIC_POOL_UPDATES=== 段：路由日志正文会吃掉大部分
+    # 输出预算，那段经常生成不出来（选题池断供 6 周的根因）。
+    topics = extract_topics(route_log)
+    pool_text = read_file(TOPIC_FILE)
+    kept, skipped = dedupe_topics(topics, pool_text)
+    print(f"从路由日志提取选题 {len(topics)} 条，去重后 {len(kept)} 条")
+    for s in skipped:
+        print(f"  跳过: {s['title'][:40]} — {s['skip_reason']}")
+    if not topics:
+        # 明确失败，不静默跳过
+        print("ERROR: 路由日志中未提取到任何选题（两区都缺失或被截断）——选题池本次不更新")
+        gh_annotate("error", "路由日志里提取不到任何选题（两区缺失或被截断）—— 当日选题池不会更新")
 
     if DRY_RUN:
         # 写文件避免 Windows GBK 终端编码问题
         with open("_router_dryrun_route.md", "w", encoding="utf-8") as f:
             f.write(route_log)
         with open("_router_dryrun_topics.md", "w", encoding="utf-8") as f:
-            f.write(f"=== TOPIC_POOL_UPDATES ===\n{topic_pool_new}\n\n=== TOPIC_UPDATES ===\n{topic_updates}")
+            f.write("=== 提取到的选题池行 ===\n")
+            f.write("\n".join(to_pool_row(t) for t in kept) or "(无)")
+            f.write(f"\n\n=== TOPIC_UPDATES ===\n{topic_updates}")
         print("DRY_RUN: wrote _router_dryrun_route.md and _router_dryrun_topics.md")
         return 0
 
@@ -367,13 +444,13 @@ def main():
     print(f"OK: {route_path}")
 
     # 更新选题池
-    update_topic_pool(topic_pool_new, topic_updates, date_str)
+    update_topic_pool(kept, topic_updates, date_str)
 
     return 0
 
 
-def update_topic_pool(new_entries: str, updates: str, date_str: str):
-    """更新选题池（表格格式）。
+def update_topic_pool(topics: list[dict], updates: str, date_str: str):
+    """把提取出的选题写入选题池（表格格式）。
 
     格式：
       ## 🔥 新进
@@ -386,6 +463,9 @@ def update_topic_pool(new_entries: str, updates: str, date_str: str):
       1. 找 `## 🔥` 标题
       2. 在 🔥 区内找或建 `### MM-DD` 子标题
       3. 在日期子标题下的表格分隔行后插入新行
+
+    `topics` 为 extract_topic_pool.parse_route_log 解析出的结构化选题；
+    表格行由 to_pool_row 生成，不再依赖模型的第二段输出。
     """
     existing = read_file(TOPIC_FILE)
     if not existing:
@@ -393,11 +473,13 @@ def update_topic_pool(new_entries: str, updates: str, date_str: str):
         return
 
     # ── 空操作提前返回 ──
-    has_new = bool(new_entries.strip()) and new_entries.strip() != "无"
+    has_new = bool(topics)
     has_upd = bool(updates.strip()) and updates.strip() != "无"
     if not has_new and not has_upd:
         print("OK: 无新选题/更新项，选题池未修改")
         return
+
+    new_rows = [to_pool_row(t) for t in topics] if has_new else []
 
     lines = existing.split("\n")
 
@@ -427,76 +509,78 @@ def update_topic_pool(new_entries: str, updates: str, date_str: str):
         return s.startswith("|") and not set(s) <= set("|-: ") and "---" not in s
 
     # ── 插入新条目（表格格式）──
-    if has_new:
-        new_rows = []
-        for le in new_entries.strip().split("\n"):
-            le = le.strip()
-            if le.startswith("|") and not le.startswith("|---"):
-                new_rows.append(le)
+    if new_rows:
+        date_marker = f"### {mmdd}"
+        date_sub_idx = -1
+        for i in range(hot_start, hot_end):
+            if lines[i].strip().startswith(date_marker):
+                date_sub_idx = i
+                break
 
-        if new_rows:
-            date_marker = f"### {mmdd}"
-            date_sub_idx = -1
-            for i in range(hot_start, hot_end):
-                if lines[i].strip().startswith(date_marker):
-                    date_sub_idx = i
+        if date_sub_idx >= 0:
+            # 日期子标题已存在 → 在表格分隔行后插入，并把「（N 条）」改成实际行数
+            sep_idx = -1
+            in_date_table = False
+            for j in range(date_sub_idx, hot_end):
+                s = lines[j].strip()
+                if s.startswith("### ") and j != date_sub_idx:
+                    break  # 到了下一个日期组
+                if s.startswith("|"):
+                    in_date_table = True
+                if in_date_table and set(s) <= set("|-: "):
+                    sep_idx = j
                     break
-
-            if date_sub_idx >= 0:
-                # 日期子标题已存在 → 在表格分隔行后插入
-                sep_idx = -1
-                in_date_table = False
-                for j in range(date_sub_idx, hot_end):
+            if sep_idx >= 0:
+                insert_at = sep_idx + 1
+                for i, row in enumerate(new_rows):
+                    lines.insert(insert_at + i, row)
+                # 计数只数本日期组的数据行：必须先排除表头行
+                # （`| 选题 | 钩子 | 角度 | 系列 |` 会被朴素判定当成数据行），
+                # 并在遇到下一个 `###` / `##` 时停止，避免把后续日期组也算进来。
+                total = 0
+                for j in range(date_sub_idx + 1, len(lines)):
                     s = lines[j].strip()
-                    if s.startswith("### ") and j != date_sub_idx:
-                        break  # 到了下一个日期组
-                    if s.startswith("|"):
-                        in_date_table = True
-                    if in_date_table and set(s) <= set("|-: "):
-                        sep_idx = j
+                    if s.startswith("### ") or s.startswith("## "):
                         break
-                if sep_idx >= 0:
-                    insert_at = sep_idx + 1
-                    for i, row in enumerate(new_rows):
-                        lines.insert(insert_at + i, row)
-                    # 更新日期子标题计数
-                    for j in range(date_sub_idx, min(date_sub_idx + 3, len(lines))):
-                        if lines[j].strip().startswith("### "):
-                            import re as _re
-                            lines[j] = _re.sub(r'（\d+ 条）', f'（{_re.sub(r"[^0-9]", "", lines[j].strip())} 条）', lines[j])
-                            break
+                    if is_data_row(s) and "选题" not in s.split("|")[1]:
+                        total += 1
+                lines[date_sub_idx] = re.sub(
+                    r"（\d+\s*条）", f"（{total} 条）", lines[date_sub_idx]
+                )
             else:
-                # 日期子标题不存在 → 建日期组（### MM-DD + 表头 + 分隔行 + 数据行）
-                date_line = f"### {mmdd}（{len(new_rows)} 条）"
-                header = "| 选题 | 钩子 | 角度 | 系列 |"
-                sep = "|------|------|------|------|"
+                print(f"WARNING: {date_marker} 下找不到表格分隔行，选题池未插入新行")
+        else:
+            # 日期子标题不存在 → 建日期组（### MM-DD + 表头 + 分隔行 + 数据行）
+            date_line = f"### {mmdd}（{len(new_rows)} 条）"
+            header = "| 选题 | 钩子 | 角度 | 系列 |"
+            sep = "|------|------|------|------|"
 
-                # 找到插入位置：🔥 区内第一个已有日期子标题之前，否则 🔥 区末尾
-                insert_at = -1
+            # 找到插入位置：🔥 区内第一个已有日期子标题之前，否则 🔥 区末尾
+            insert_at = -1
+            for j in range(hot_start + 1, hot_end):
+                if lines[j].strip().startswith("### "):
+                    insert_at = j
+                    break
+            if insert_at < 0:
+                # 🔥 区没有日期子标题 → 插在 🔥 区提示行之后
                 for j in range(hot_start + 1, hot_end):
-                    if lines[j].strip().startswith("### "):
-                        insert_at = j
+                    if lines[j].strip().startswith(">"):
+                        insert_at = j + 1
                         break
                 if insert_at < 0:
-                    # 🔥 区没有日期子标题 → 插在 🔥 区提示行之后
-                    for j in range(hot_start + 1, hot_end):
-                        if lines[j].strip().startswith(">"):
-                            insert_at = j + 1
-                            break
-                    if insert_at < 0:
-                        insert_at = hot_start + 2
+                    insert_at = hot_start + 2
 
-                # 插入：空行 → ### 日期 → 空行 → 表头 → 分隔 → 数据行 → 空行
-                lines.insert(insert_at, "")
-                lines.insert(insert_at, date_line)
-                lines.insert(insert_at + 1, "")
-                lines.insert(insert_at + 2, header)
-                lines.insert(insert_at + 3, sep)
-                for i, row in enumerate(new_rows):
-                    lines.insert(insert_at + 4 + i, row)
-                lines.insert(insert_at + 4 + len(new_rows), "")
+            # 插入：空行 → ### 日期 → 空行 → 表头 → 分隔 → 数据行 → 空行
+            lines.insert(insert_at, "")
+            lines.insert(insert_at, date_line)
+            lines.insert(insert_at + 1, "")
+            lines.insert(insert_at + 2, header)
+            lines.insert(insert_at + 3, sep)
+            for i, row in enumerate(new_rows):
+                lines.insert(insert_at + 4 + i, row)
+            lines.insert(insert_at + 4 + len(new_rows), "")
 
-            print(f"OK: 选题池 🔥 新区 ({mmdd}) 新增 {len(new_rows)} 条")
+        print(f"OK: 选题池 🔥 新区 ({mmdd}) 新增 {len(new_rows)} 条")
 
     # ── 更新已有条目（跨区搜索表格行的选题列关键词）──
     if has_upd:

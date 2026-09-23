@@ -180,7 +180,12 @@ def format_time(iso_str: str) -> str:
 
 DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "").strip()
 DEEPSEEK_API_BASE = "https://api.deepseek.com/v1/chat/completions"
-DEEPSEEK_TRANSLATE_MODEL = "deepseek-chat"
+# DeepSeek 模型名。曾用 "deepseek-chat"，该别名**已于 2026-07-24 停用**
+# （官方 V4 公告：deepseek-chat / deepseek-reasoner 三个月后停止使用）。
+# 停用后翻译请求全部失败 —— 与 2026-07-25 起连续出现的 🔴「翻译成功率 0/N」告警
+# 时间完全吻合，即该告警报了两个月没人定位到根因。
+# 现用 deepseek-flash（V4.1 Flash，2026-09-10 上线的当前模型）。
+DEEPSEEK_TRANSLATE_MODEL = "deepseek-flash"
 
 def contains_chinese(text: str) -> bool:
     """判断文本是否含中文。"""
@@ -205,6 +210,10 @@ def translate_to_chinese(text: str) -> str | None:
                 {"role": "user", "content": text},
             ],
             "max_tokens": 2000,
+            # 关闭思考模式。翻译是纯转换任务，思维链无增益；更要紧的是
+            # **思考模式下思维链与正文共用 max_tokens**，短预算调用会被思维链
+            # 占满而拿不到正文（下方 100 token 的语种判断尤其致命）。
+            "thinking": {"type": "disabled"},
             "temperature": 0.1,
         }).encode("utf-8")
         req = urllib.request.Request(
@@ -274,6 +283,9 @@ def generate_signal_summary(name: str, tweets: list[dict]) -> str | None:
                 {"role": "user", "content": combined},
             ],
             "max_tokens": 100,
+            # 必须关闭思考模式：预算只有 100 token，而思维链也计入 max_tokens，
+            # 思维链一展开就永远轮不到正文 —— 该调用会必然失败。
+            "thinking": {"type": "disabled"},
             "temperature": 0.1,
         }).encode("utf-8")
         req = urllib.request.Request(

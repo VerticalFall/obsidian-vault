@@ -86,11 +86,30 @@ jobs:
         continue-on-error: true
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          ROUTER_MODEL: deepseek-v4-flash
+          # deepseek-flash = V4.1 Flash（2026-09-10 上线）。旧名 deepseek-v4-flash
+          # 仅作兼容路由，deepseek-v4-pro 已于 2026-09-14 起被路由到 V4.1 Flash，
+          # deepseek-chat/reasoner 更早已于 2026-07-24 停用 —— 统一用当前名。
+          ROUTER_MODEL: deepseek-flash
+          # 输出预算：模型输出上限受 API 侧限制，设过头会整个请求 400。
+          # 截断问题靠结构解决（选题池行改由脚本从路由日志确定性提取，
+          # 模型不再重复生成 POOL_UPDATES 段），不靠加大这个值。
+          ROUTER_MAX_TOKENS: "8192"
           TODAY_OVERRIDE: ${{ steps.date.outputs.today }}
           ROUTE_OUT_DIR: _路由
           TOPIC_FILE: _选题池.md
         run: python .github/scripts/run_daily_router.py
+
+      - name: 每日精选 (四源 + 路由 → 一份当日精选)
+        continue-on-error: true
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DIGEST_MODEL: deepseek-flash
+          DIGEST_OUT_DIR: _每日精选
+          # LLM 失败时脚本会自动产出「降级版精选」（机械提取，非归零）。
+          # 若要在此期间直接跳过 LLM，取消下一行注释：
+          # DIGEST_NO_LLM: "1"
+          TODAY_OVERRIDE: ${{ steps.date.outputs.today }}
+        run: python .github/scripts/render_daily_digest.py
 
       - name: L1 系统健康检查
         continue-on-error: true
@@ -115,7 +134,7 @@ jobs:
         continue-on-error: true
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          ROUTER_MODEL: deepseek-v4-flash
+          ROUTER_MODEL: deepseek-flash
         run: python .github/scripts/run_weekly_distill.py
 
       - name: 提交并推送变更
@@ -129,3 +148,29 @@ jobs:
             git commit -m "chore: 同步每日报告 ${{ steps.date.outputs.today }}"
             git push
           fi
+
+      # 告警落地：把健康报告 + 当日精选显示在 Actions 运行页。
+      # 旧链路只把告警写进 _告警摘要.md，没人打开就等于没告警
+      # （🔴 从 08-16 连报 40 天后才被发现）。
+      - name: 告警与精选摘要（显示在运行页）
+        if: always()
+        continue-on-error: true
+        run: |
+          TODAY="${{ steps.date.outputs.today }}"
+          {
+            echo "## 📊 系统健康 · $TODAY"
+            echo ""
+            if [ -f "_系统健康/$TODAY.md" ]; then
+              cat "_系统健康/$TODAY.md"
+            else
+              echo "⚠️ 未生成当日健康报告"
+            fi
+            echo ""
+            echo "## 📰 每日精选 · $TODAY"
+            echo ""
+            if [ -f "_每日精选/$TODAY.md" ]; then
+              cat "_每日精选/$TODAY.md"
+            else
+              echo "⚠️ 未生成当日精选（检查 DEEPSEEK_API_KEY 与各源产出）"
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
