@@ -27,3 +27,6 @@ _每日精选/
 _选题池_提案.md
 _选题池.md.bak
 
+# 救援 bundle(本地提交的完整快照;万一 reset 也能从这里恢复,不入库)
+_rescue_bundle.git
+
