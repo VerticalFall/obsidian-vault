@@ -11,6 +11,7 @@
   6. 待验证问题（未处理条目数，非空 → 🟡）
   7. 每日精选产出（_每日精选/当天.md 存在且四区完整）
   8. 路由覆盖率（近 7 天「上游有输入却无路由产出」的天数——查趋势性失效）
+  9. 写作产出（选题池 ✅ 已发布 最近日期距今天数——查目的侧停滞）
 
 输出:
   _系统健康/YYYY-MM-DD.md     — 每日健康报告
@@ -214,6 +215,66 @@ def check_router_coverage(days=7):
     if lost >= should_have / 2:
         return "🔴", f"{detail}，缺 {lost} 天（路由步骤反复失败）", lost
     return "🟡", f"{detail}，缺 {'、'.join(missing[-3:])}", lost
+
+
+def check_writing_output(date_str, stale_days=14):
+    """检查 9: 写作产出是否停滞（选题池 ✅ 已发布 的最近日期距今天数）。
+
+    为什么需要这一项：本系统最靠近"目的"的一环是**写成公众号文章**，但此前 8 项
+    检查里没有任何一项能发现"整条线在跑、却两个月没产出"。实测：✅ 已发布 区最近
+    日期为 07-22，至 09-23 已停滞约 63 天，而健康报告长期只显示 🟡「选题池存量」
+    —— 那是**输入侧**指标，与产出侧无关。
+
+    判定：以选题池 ✅ 已发布 区的最大 MM-DD 为最近发布日。
+    """
+    text = read_file(TOPIC_FILE)
+    if not text:
+        return "🟡", "选题池不存在，无法判断写作产出", 0
+
+    if "## ✅" not in text:
+        return "🟡", "选题池缺「✅ 已发布」区，无法判断写作产出", 0
+    section = text.split("## ✅", 1)[1].split("\n## ", 1)[0]
+
+    dates = []
+    for line in section.splitlines():
+        s = line.strip()
+        if not s.startswith("|") or set(s) <= set("|-: ") or "---" in s:
+            continue
+        cols = [c.strip() for c in s.split("|")]
+        if len(cols) < 2:
+            continue
+        m = re.match(r"^(\d{4})-(\d{2})-(\d{2})$|^(\d{2})-(\d{2})$", cols[1])
+        if not m:
+            continue
+        if m.group(1):  # YYYY-MM-DD
+            dates.append((int(m.group(1)), int(m.group(2)), int(m.group(3))))
+        else:           # MM-DD → 补年份
+            dates.append((int(date_str[:4]), int(m.group(4)), int(m.group(5))))
+
+    if not dates:
+        return "🟡", "「✅ 已发布」区无有效日期条目", 0
+
+    try:
+        today = datetime.strptime(date_str, "%Y-%m-%d")
+    except ValueError:
+        today = datetime.now(BEIJING).replace(tzinfo=None)
+    latest = max(dates)
+    try:
+        latest_dt = datetime(latest[0], latest[1], latest[2])
+    except ValueError:
+        return "🟡", f"「✅ 已发布」区日期不合法: {latest}", 0
+
+    gap = (today - latest_dt).days
+    latest_str = f"{latest[0]:04d}-{latest[1]:02d}-{latest[2]:02d}"
+
+    # 日期在未来：多为跨年（池里只写 MM-DD，补的是今天年份）。不误报为停滞。
+    if gap < 0:
+        return "🟢", f"最近发布 {latest_str}", 0
+    if gap >= 30:
+        return "🔴", f"写作产出已停滞 {gap} 天（最近发布 {latest_str}）", gap
+    if gap >= stale_days:
+        return "🟡", f"{gap} 天无新发布（最近 {latest_str}）", gap
+    return "🟢", f"最近发布 {latest_str}（{gap} 天前）", 0
 
 
 def check_digest(date_str):
@@ -481,6 +542,10 @@ def main():
     rc_level, rc_detail, rc_lost = check_router_coverage()
     print(f"  [路由覆盖率] {rc_level} {rc_detail}")
 
+    # 9. 写作产出（目的侧：有没有文章出来）
+    wo_level, wo_detail, wo_gap = check_writing_output(date_str)
+    print(f"  [写作产出] {wo_level} {wo_detail}")
+
     # ── 写健康报告 ──
     os.makedirs(HEALTH_DIR, exist_ok=True)
     report_path = os.path.join(HEALTH_DIR, f"{date_str}.md")
@@ -498,11 +563,12 @@ def main():
         f"| 6 | 待验证问题 | {pv_level} | {pv_detail} |",
         f"| 7 | 每日精选产出 | {dg_level} | {dg_detail} |",
         f"| 8 | 路由覆盖率(7天) | {rc_level} | {rc_detail} |",
+        f"| 9 | 写作产出 | {wo_level} | {wo_detail} |",
         "",
     ]
 
     # 汇总
-    levels = [src_level, xt_level, rl_level, tp_level, tr_level, pv_level, dg_level, rc_level]
+    levels = [src_level, xt_level, rl_level, tp_level, tr_level, pv_level, dg_level, rc_level, wo_level]
     reds = sum(1 for lv in levels if lv == "🔴")
     yellows = sum(1 for lv in levels if lv == "🟡")
     if reds:
@@ -526,6 +592,7 @@ def main():
         ("5.翻译", (tr_level, tr_detail)),
         ("7.每日精选", (dg_level, dg_detail)),
         ("8.路由覆盖率", (rc_level, rc_detail)),
+        ("9.写作产出", (wo_level, wo_detail)),
     ]
     to_verify = update_alert_summary(date_str, results)
     if to_verify:
