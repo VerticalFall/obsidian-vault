@@ -11,7 +11,10 @@ description: >
 # weekly_distill · 周度蒸馏
 
 > 脚本：`01_内容系统/知识库/每日日报/.github/scripts/run_weekly_distill.py`
-> 模型：DeepSeek（环境变量 `ROUTER_MODEL`，默认 `deepseek-v4-flash`）
+> 模型：DeepSeek（环境变量 `ROUTER_MODEL`，默认 `deepseek-flash` = V4.1 Flash）
+>
+> ⚠️ 不要改用已停用/被取代的模型名（`deepseek-chat` 2026-07-24 停用；
+> `deepseek-v4-flash` 2026-09-10 起被 V4.1 Flash 取代）。守卫见 `每日日报/_test_model_names.py`。
 
 ## 这是什么 / 何时用
 

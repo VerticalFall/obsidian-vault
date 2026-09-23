@@ -12,7 +12,10 @@ description: >
 # daily_router · 每日路由
 
 > 脚本：`01_内容系统/知识库/每日日报/.github/scripts/run_daily_router.py`
-> 模型：DeepSeek（环境变量 `ROUTER_MODEL`，默认 `deepseek-v4-flash`）
+> 模型：DeepSeek（环境变量 `ROUTER_MODEL`，默认 `deepseek-flash` = V4.1 Flash）
+>
+> ⚠️ **不要改用 `deepseek-chat`（2026-07-24 停用）或 `deepseek-v4-flash`（2026-09-10 起
+> 被 V4.1 Flash 取代，旧名仅兼容路由）**。模型名守卫见 `每日日报/_test_model_names.py`。
 
 ## 这是什么 / 何时用
 
