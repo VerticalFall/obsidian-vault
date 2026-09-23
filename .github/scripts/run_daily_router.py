@@ -415,6 +415,15 @@ def main():
     # 不再依赖模型的 ===TOPIC_POOL_UPDATES=== 段：路由日志正文会吃掉大部分
     # 输出预算，那段经常生成不出来（选题池断供 6 周的根因）。
     topics = extract_topics(route_log)
+    # 丢弃字段不全的选题：日志被截断时，最后一条常只有标题而没有钩子/角度，
+    # 直接写入会产出空单元格的脏行（用户看板里就是一行没用的占位）。
+    complete = [t for t in topics if t["title"].strip() and t["hook"].strip() and t["angle"].strip()]
+    dropped = len(topics) - len(complete)
+    topics = complete
+    if dropped:
+        print(f"跳过字段不全的选题 {dropped} 条（日志被截断，缺钩子或角度）")
+        gh_annotate("warning", f"有 {dropped} 条选题因日志截断字段不全被跳过（未写入选题池）")
+
     pool_text = read_file(TOPIC_FILE)
     kept, skipped = dedupe_topics(topics, pool_text)
     print(f"从路由日志提取选题 {len(topics)} 条，去重后 {len(kept)} 条")

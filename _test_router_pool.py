@@ -67,6 +67,18 @@ def main() -> int:
     check("合成完整日志不误报", R.detect_truncation(clean) == [],
           "；".join(R.detect_truncation(clean)))
 
+    # ── 3d. 字段完整性过滤：截断日志的最后一条不得写进选题池 ──
+    # 真实日志 2026-09-23 的第三条只有标题（钩子/角度在被切掉的部分），
+    # 不过滤就会在用户看板里留下一行没用的占位。
+    def _complete(ts):
+        return [t for t in ts if t["title"].strip() and t["hook"].strip() and t["angle"].strip()]
+
+    check("截断日志确实含字段不全的选题（前提成立）",
+          len(_complete(topics)) < len(topics),
+          f"提取 {len(topics)} 条，完整 {len(_complete(topics))} 条")
+    check("完整性过滤后无空单元格",
+          all(t["hook"].strip() and t["angle"].strip() for t in _complete(topics)))
+
     # ── 3c. 失败可见性：注解格式 + API 失败必须非静默 ──
     import io
     from contextlib import redirect_stdout
