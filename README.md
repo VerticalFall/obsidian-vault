@@ -152,17 +152,20 @@ DeepSeek 文档：「**思考模式默认打开，且 effort 默认为 `high`**�
 
 | 测试 | 覆盖 |
 |------|------|
-| `_test_router_pool.py` | 选题提取、去重精度、写入断言、截断检测（20 项） |
+| `_test_router_pool.py` | 选题提取、去重精度、写入断言、截断检测、字段完整性（22 项） |
 | `_test_router_e2e.py` | 路由 `main()` 端到端：完整/截断/API 失败/缺标记四种响应（15 项） |
 | `_test_daily_digest.py` | 精选渲染、降级产物、数字与标题提取质量（41 项） |
 | `_test_model_names.py` | 模型名 + 思考模式声明守卫（11 项） |
 | `_test_request_body.py` | 拦截 urlopen 验证真实出站 JSON（12 项） |
+| `_test_pipeline_integration.py` | 路由写池 → 蒸馏读池 接缝验证（10 项） |
+| `_test_health_checks.py` | 健康检查 7/8/9 判定契约与分档边界（14 项） |
 
-均离线运行（mock LLM / 假 urlopen，不联网、不改正式产物）：
+均离线运行（mock LLM / 假 urlopen / 临时文件，不联网、不改正式产物）：
 
 ```powershell
 python _test_router_pool.py; python _test_router_e2e.py; python _test_daily_digest.py
 python _test_model_names.py; python _test_request_body.py
+python _test_pipeline_integration.py; python _test_health_checks.py
 ```
 
 ---
