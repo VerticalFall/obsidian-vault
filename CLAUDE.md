@@ -11,7 +11,7 @@
 └── 系统/            # 运维层：技能库、改进提案、机器人、蒸馏、scripts、inbox
 ```
 
-- `01_内容系统/系统/技能库/`：全部技能（SKILL.md），经 `.claude/skills/` junction 加载，改完即时生效
+- `01_内容系统/系统/技能库/`：全部技能（SKILL.md），经 `.claude/skills/`（Claude Code）与 `.dsh/skills`（DeepSeek Harness）两个 junction 加载同一批技能，改完即时生效
 - `01_内容系统/知识库/每日日报/`：内容生产线（采集 → 路由 → 选题池 → 写作 → 输出），自带子 git 仓库
 - `01_内容系统/系统/改进提案/`：PM 提案（`YYYY-MM-DD-改进提案.md`），状态机见其 README
 
@@ -33,7 +33,7 @@
 ## 内容红线（不可逾越）
 
 - `_观点.md` / `_选题池.md` / 公众号文章正文的内容修改 → **必须经用户确认**后才动手
-- 书籍提炼（book-summary）：忠于作者原意、不编造、不绑定知识库框架
+- 书籍提炼（book-summary）：忠于作者原意、不编造、不绑定知识库框架；**素材必须可追溯**——不许用模型记忆充当作者观点、不许用盗版全书，二手转述标「据 XX 转述」，查不到就写 `（待补）`（细则见 `技能库/book-summary/SKILL.md` §二/§四）
 - 机器人（CowAgent）写入仅限 `01_内容系统/系统/inbox/`，命名 `微信-YYYYMMDD-HHmm.md`
 - PM 只出提案不执行；不编造问题（观测 vs 推测必须标注）；每条提案必须有可验证的验收标准
 
@@ -49,6 +49,6 @@
 - 提案状态机：待执行 → 执行中 → 待验收 → 已验收 ✅ / 已关闭
 - 提案格式规范见 `技能库/pm/SKILL.md` §四（文件结构骨架 + 模板 + 硬性规则），示例 `改进提案/2026-08-08-改进提案.md`
 
-## 技能索引（10 个，全部在 `01_内容系统/系统/技能库/`）
+## 技能索引（11 个，全部在 `01_内容系统/系统/技能库/`）
 
-`pm` · `devops` · `daily-router` · `weekly-distill` · `weekly-backup` · `health-monitor` · `book-summary` · `wechat-writing` · `humanizer` · `research-paper-writing`
+`pm` · `devops` · `daily-router` · `daily-digest` · `weekly-distill` · `weekly-backup` · `health-monitor` · `book-summary` · `wechat-writing` · `humanizer` · `research-paper-writing`
