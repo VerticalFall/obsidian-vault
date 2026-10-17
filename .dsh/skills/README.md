@@ -4,9 +4,9 @@ type: index
 tags: [技能库, 索引]
 ---
 
-# 技能库索引（11 个 Claude 技能）
+# 技能库索引（12 个 Claude 技能）
 
-> Claude Code 通过 vault 根目录 `.claude/skills` 目录联接（junction）加载本目录的 11 个技能；DeepSeek Harness（DSH）通过 vault 根目录 `.dsh/skills` 联接加载同一批技能（2026-08-14 新增）。
+> Claude Code 通过 vault 根目录 `.claude/skills` 目录联接（junction）加载本目录的 12 个技能；DeepSeek Harness（DSH）通过 vault 根目录 `.dsh/skills` 联接加载同一批技能（2026-08-14 新增）。
 > 目录名用 ASCII 便于稳定加载；中文标签写在 description 中（模型靠它触发）。
 
 | 目录 | 中文标签 | 对应脚本/角色 |
@@ -22,6 +22,7 @@ tags: [技能库, 索引]
 | [[book-summary/SKILL.md\|book-summary]] | 书籍核心观点提炼 | 报书名 → 自动查证素材（来源分级/禁盗版）→ 诚实提炼作者核心思想（不绑定系统） |
 | [[humanizer/SKILL.md\|humanizer]] | 去 AI 味润色 | 识别并改写 AI 写作痕迹（Wikipedia "Signs of AI writing" 33 模式，MIT） |
 | [[research-paper-writing/SKILL.md\|research-paper-writing]] | 学术论文写作 | ML/CV/NLP 论文分节写作/改写/自审（整理自彭思达笔记，MIT） |
+| [[report-teardown/SKILL.md\|report-teardown]] | 研报拆解与复盘 | `step4_freeze.py` / `step5_score.py`（冻结研报 → 论据池 → 证伪判据 → 到期打分，服务于 `04_投研报告分析与回测/`） |
 
 ## 目录联接说明
 

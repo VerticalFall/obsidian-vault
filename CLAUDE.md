@@ -49,6 +49,9 @@
 - 提案状态机：待执行 → 执行中 → 待验收 → 已验收 ✅ / 已关闭
 - 提案格式规范见 `技能库/pm/SKILL.md` §四（文件结构骨架 + 模板 + 硬性规则），示例 `改进提案/2026-08-08-改进提案.md`
 
-## 技能索引（11 个，全部在 `01_内容系统/系统/技能库/`）
+## 技能索引（12 个，全部在 `01_内容系统/系统/技能库/`）
 
-`pm` · `devops` · `daily-router` · `daily-digest` · `weekly-distill` · `weekly-backup` · `health-monitor` · `book-summary` · `wechat-writing` · `humanizer` · `research-paper-writing`
+`pm` · `devops` · `daily-router` · `daily-digest` · `weekly-distill` · `weekly-backup` · `health-monitor` · `book-summary` · `wechat-writing` · `humanizer` · `research-paper-writing` · `report-teardown`
+
+> `report-teardown`（2026-10-17 新增）服务于 `04_投研报告分析与回测/`，负责把卖方研报拆成可证伪的
+> claim 并到期判分；它在 vault 内的目录结构、数据源与已知缺口见 `04_投研报告分析与回测/00_系统设计.md`。
