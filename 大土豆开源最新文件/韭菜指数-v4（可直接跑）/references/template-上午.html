@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>韭菜指数 · {{日期}} 上午 · {{标题短语}}</title>
+<!--
+  ══════════════════════════════════════════════════════════════
+  韭菜指数 v4.0 · 上午版模板（可见中文字数预算：≤1500）
+  填写规则（三层信息法）：
+  · hero 标题 = 当天最关键的对比/反转 + 具体数据，≤28字
+  · lead 导语 ≤130字，只写结论：发生了什么+关键数字+一句定性
+  · 五温度计：分数按 references/scoring-v4.md 锚点复算
+    · t-desc ≤14字，写清分数从哪来
+    · 温度计SVG色柱颜色按五档色阶替换（红#c0392b/橙#ff7a00/黄#e8c34a/青#2e9c82/绿#0a8f5b）
+    · 色柱高度公式：水银柱 y = 51 + (100-分数)×0.7（约），高度 = 分数×0.7
+  · 围观榜 TOP6：desc ≤45字（数字+断症），chg 放最硬的一个数
+  · 吵架现场 3 架：每架多方+空方各 ≤60字，空方必须带一条可查证依据
+  · 下午盯什么 3 条：每条 = 可验证的具体条件（收盘后要对答案的）
+  · 全文涨红跌绿（A 股口径），页脚免责必带
+  ══════════════════════════════════════════════════════════════
+-->
+<style>
+:root{--ink:#0d1117;--paper:#f7f4ec;--paper2:#efe9dc;--line:#d8cfbb;--soft:#6b6457;--up:#c0392b;--up-bg:#fbeae7;--dn:#0a8f5b;--dn-bg:#e6f4ec;--accent:#1f4e79;--hl:#ff7a00;--hl-bg:#fff0b3;--fun:#e74c3c}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--paper);color:var(--ink);line-height:1.8}
+.wrap{max-width:750px;margin:0 auto;padding:0 20px 60px}
+.hero{padding:36px 0 20px;border-bottom:2px solid var(--ink)}
+.kicker{font-size:12px;letter-spacing:3px;color:var(--accent);font-weight:700}
+.hero h1{font-size:22px;font-weight:800;line-height:1.55;margin:10px 0 8px}
+.hero h1 em{font-style:normal;color:var(--fun);border-bottom:3px solid var(--fun)}
+.meta{font-size:12px;color:var(--soft)}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.badge{font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px;border:1px solid var(--line);background:#fff}
+.badge.up{color:var(--up);border-color:#eccac4;background:var(--up-bg)}
+.badge.dn{color:var(--dn);border-color:#bfe0cd;background:var(--dn-bg)}
+.badge.hl{color:var(--hl);border-color:var(--hl);background:var(--hl-bg)}
+.lead{font-size:14px;line-height:2;margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.lead b{color:var(--fun)}
+.lead .up-t{color:var(--up);font-weight:800}.lead .dn-t{color:var(--dn);font-weight:800}
+.eyebrow{display:flex;align-items:center;gap:10px;margin:30px 0 12px}
+.eyebrow .num{font-size:12px;font-weight:800;color:#fff;background:var(--ink);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.eyebrow .label{font-size:13px;letter-spacing:1px;color:var(--accent);font-weight:700}
+.sec-title{font-size:19px;font-weight:800;margin-bottom:6px}
+.sec-desc{font-size:13px;color:var(--soft);margin-bottom:10px}
+/* 温度计 */
+.thermo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 10px 14px}
+.thermo{text-align:center;display:flex;flex-direction:column;align-items:center}
+.thermo svg{width:56px;height:140px;display:block}
+.t-name{font-size:12px;font-weight:800;margin-top:4px}
+.t-val{font-size:20px;font-weight:800;line-height:1.1}
+.t-tag{font-size:10px;font-weight:800;margin-top:3px;padding:1px 7px;border-radius:4px;white-space:nowrap}
+.t-desc{font-size:10px;color:var(--soft);margin-top:3px;line-height:1.5;padding:0 2px}
+.thermo-note{font-size:12.5px;color:var(--soft);margin-top:10px;text-align:center;line-height:1.8}
+.thermo-note b{color:var(--fun)}
+/* 排行卡 */
+.rank-card{display:grid;grid-template-columns:36px 1fr 74px;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 15px;margin:6px 0}
+.rank-card.top1{border:2px solid var(--fun);box-shadow:3px 3px 0 var(--fun)}
+.rank-card.top2{border:2px solid var(--hl);box-shadow:3px 3px 0 var(--hl)}
+.rank-num{font-size:20px;font-weight:800;text-align:center}
+.rank-num.r1{color:var(--fun)}.rank-num.r2{color:var(--hl)}.rank-num.r3{color:var(--accent)}
+.rank-info .name{font-size:14px;font-weight:800;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rank-info .desc{font-size:12px;color:var(--soft);margin-top:2px;line-height:1.7}
+.chg{font-size:11px;font-weight:700;padding:2px 6px;border-radius:3px}
+.chg-up{color:var(--up);background:var(--up-bg)}.chg-dn{color:var(--dn);background:var(--dn-bg)}
+.tag{font-size:10px;font-weight:700;padding:1px 7px;border-radius:4px;background:var(--paper2);border:1px solid var(--line);color:var(--ink)}
+/* 吵架现场 */
+.quote-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:8px 0}
+.quote-card .q-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.quote-card .q-title{font-size:13.5px;font-weight:800;color:var(--accent)}
+.quote-card .q-side{font-size:10px;font-weight:800;padding:2px 8px;border-radius:4px}
+.side-bull{color:var(--up);background:var(--up-bg);border:1px solid #eccac4}
+.side-bear{color:var(--dn);background:var(--dn-bg);border:1px solid #bfe0cd}
+.quote-card .q-body{font-size:12.5px;line-height:1.85}
+.quote-card .q-body b{color:var(--fun)}
+/* 下午看点 */
+.watch-list{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:8px 0}
+.watch-item{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed rgba(0,0,0,.08)}
+.watch-item:last-child{border-bottom:none}
+.watch-item .wn{font-size:14px;font-weight:800;color:var(--hl);flex-shrink:0}
+.watch-item .wt{font-size:13px;font-weight:800;display:block}
+.watch-item .wd{font-size:12px;color:var(--soft);line-height:1.75}
+.footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--soft);line-height:1.9}
+.footer b{color:var(--ink)}
+.up-t{color:var(--up);font-weight:700}.dn-t{color:var(--dn);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============ 头部（lead ≤130字） ============ -->
+<div class="hero">
+  <div class="kicker">韭菜指数 · 上午版 · {{日期}} {{星期}}</div>
+  <h1>{{主标题·含最关键的对比/反转+数据}}</h1>
+  <div class="meta">数据截至上午 11:30 收盘 · 环比基准：昨日（{{昨日日期}}）全天 · 采集：通达信</div>
+  <div class="badges">
+    <span class="badge up">{{badge·指数涨}}</span>
+    <span class="badge dn">{{badge·量能/跌幅}}</span>
+    <span class="badge hl">{{badge·当日最显眼数字}}</span>
+    <span class="badge">{{badge·其他}}</span>
+  </div>
+  <div class="lead">
+    {{导语≤130字：发生了什么+关键数字+一句定性。L1结论层，不写推理过程}}
+  </div>
+</div>
+
+<!-- ============ ① 五温度计（分数按scoring-v4锚点复算） ============ -->
+<div class="eyebrow"><div class="num">①</div><div class="label">五支温度计</div></div>
+<div class="sec-title">今早市场体温</div>
+<div class="sec-desc">色阶：红=过热 / 橙=温暖 / 黄=中性 / 青绿=偏冷 / 绿=冰冷 · 打分锚定见数据说明</div>
+<div class="thermo-grid">
+  <!-- 每支：分数{{市场热度}}、色阶标签、t-desc≤14字；SVG水银柱颜色/高度按分数换算 -->
+  <div class="thermo">
+    <svg viewBox="0 0 56 140"><rect x="24" y="8" width="8" height="104" rx="4" fill="#efe9dc" stroke="#d8cfbb"/><circle cx="28" cy="122" r="13" fill="#fff" stroke="#d8cfbb"/><rect x="26" y="{{柱y}}" width="4" height="{{柱高}}" rx="2" fill="{{色阶色}}"/><circle cx="28" cy="122" r="8" fill="{{色阶色}}"/></svg>
+    <div class="t-name">市场热度</div><div class="t-val" style="color:{{色阶色}}">{{分数}}</div>
+    <div class="t-tag" style="color:{{色阶色}};background:{{色阶浅底}}">{{色阶标签}}</div>
+    <div class="t-desc">{{≤14字·分数从哪来}}</div>
+  </div>
+  <div class="thermo"><!-- 赚钱效应，同上 --></div>
+  <div class="thermo"><!-- 讨论热度（成交额环比口径），同上 --></div>
+  <div class="thermo"><!-- 恐贪情绪（封板率口径），同上 --></div>
+  <div class="thermo"><!-- 风险偏好（进攻vs防御组涨幅差口径），同上 --></div>
+</div>
+<div class="thermo-note">💡 一句话点睛：<b>{{≤20字·如"人回血了，钱还没回来"}}</b>{{≤30字补充}}</div>
+
+<!-- ============ ② 围观榜 TOP6（desc≤45字） ============ -->
+<div class="eyebrow"><div class="num">②</div><div class="label">围观榜 TOP6</div></div>
+<div class="sec-title">今早韭菜在围观什么</div>
+<div class="sec-desc">按上午盘面热度 + 涨停贡献排序，今天早上什么热就排什么（反路径依赖：不沿用昨日榜单）</div>
+
+<div class="rank-card top1">
+  <div class="rank-num r1">1</div>
+  <div class="rank-info">
+    <div class="name">{{emoji 板块名}} <span class="tag">{{标签}}</span></div>
+    <div class="desc">{{≤45字：数字+断症}}</div>
+  </div>
+  <div class="chg chg-up">{{最硬的一个数}}</div>
+</div>
+<!-- 2-6 名同结构；第1名红框、第2名橙框 -->
+
+<!-- ============ ③ 吵架现场（3架，每边≤60字） ============ -->
+<div class="eyebrow"><div class="num">③</div><div class="label">吵架现场</div></div>
+<div class="sec-title">今早韭菜吵最凶的三架</div>
+
+<div class="quote-card">
+  <div class="q-head"><div class="q-title">架一：{{辩题}}</div><span class="q-side side-bear">{{多空定性}}</span></div>
+  <div class="q-body">
+    多方：{{≤60字·带数字}}<br>
+    空方：<b>{{≤60字·必须带一条可查证依据}}</b>
+  </div>
+</div>
+<!-- 架二、架三同结构 -->
+
+<!-- ============ ④ 下午盯什么（3条·全部写成收盘后可对答案的条件） ============ -->
+<div class="eyebrow"><div class="num">④</div><div class="label">下午盯什么</div></div>
+<div class="watch-list">
+  <div class="watch-item"><div class="wn">1</div><div><span class="wt">{{可验证条件}}</span><span class="wd">{{≤40字·验证逻辑}}</span></div></div>
+  <div class="watch-item"><div class="wn">2</div><div><!-- 同上 --></div></div>
+  <div class="watch-item"><div class="wn">3</div><div><!-- 同上 --></div></div>
+</div>
+<!-- ⚠️ 这3条=今天全天版「验证点对答案」的输入，必须具体可判定 -->
+
+<!-- ============ 页脚 ============ -->
+<div class="footer">
+  <b>数据说明</b>：指数/个股行情为通达信 {{日期}} 上午收盘快照；涨停数据为通达信条件选股口径（截至 11:30）；量能为财联社盘中预估；散户发言样本 {{N}} 条，来源：{{平台列表}}。<br>
+  <b>打分锚定</b>：五温度计按 scoring-v4 公式复算{{如有输入缺失/降级在此注明}}。<br>
+  <b>颜色约定</b>：红涨绿跌（A 股口径）。<br>
+  ⚠️ 本报告为娱乐化的散户行为观察，不构成任何投资建议。投资有风险，吃瓜需理性。
+</div>
+
+</div>
+</body>
+</html>

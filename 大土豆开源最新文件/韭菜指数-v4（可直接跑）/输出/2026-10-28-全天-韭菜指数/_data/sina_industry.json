@@ -1,0 +1,443 @@
+[
+ {
+  "code": "new_stock",
+  "name": "次新股",
+  "count": 164,
+  "pct": 5.0503000430516,
+  "amount": 61861108422.0,
+  "leader": "12.600",
+  "leader_pct": 54.6
+ },
+ {
+  "code": "new_jxhy",
+  "name": "机械行业",
+  "count": 211,
+  "pct": 4.4680467797362,
+  "amount": 79340426079.0,
+  "leader": "59.300",
+  "leader_pct": 636.3
+ },
+ {
+  "code": "new_dzqj",
+  "name": "电子器件",
+  "count": 152,
+  "pct": 4.2650730765389,
+  "amount": 117781377253.0,
+  "leader": "17.380",
+  "leader_pct": 111.98
+ },
+ {
+  "code": "new_jjhy",
+  "name": "家具行业",
+  "count": 16,
+  "pct": 2.914798206278,
+  "amount": 1901826292.0,
+  "leader": "0.640",
+  "leader_pct": 9.89
+ },
+ {
+  "code": "new_qczz",
+  "name": "汽车制造",
+  "count": 103,
+  "pct": 2.8889207698755,
+  "amount": 41001547522.0,
+  "leader": "0.190",
+  "leader_pct": 2.06
+ },
+ {
+  "code": "new_yqyb",
+  "name": "仪器仪表",
+  "count": 48,
+  "pct": 2.7980945401246,
+  "amount": 17058306352.0,
+  "leader": "2.620",
+  "leader_pct": 39.0
+ },
+ {
+  "code": "new_syhy",
+  "name": "石油行业",
+  "count": 24,
+  "pct": 2.5706594885599,
+  "amount": 6586171457.0,
+  "leader": "0.600",
+  "leader_pct": 6.63
+ },
+ {
+  "code": "new_cmyl",
+  "name": "传媒娱乐",
+  "count": 40,
+  "pct": 2.4750928593745,
+  "amount": 14569432190.0,
+  "leader": "1.040",
+  "leader_pct": 6.24
+ },
+ {
+  "code": "new_hghy",
+  "name": "化工行业",
+  "count": 150,
+  "pct": 2.4140124786235,
+  "amount": 38785069193.0,
+  "leader": "0.860",
+  "leader_pct": 9.42
+ },
+ {
+  "code": "new_dzxx",
+  "name": "电子信息",
+  "count": 247,
+  "pct": 1.9317363813987,
+  "amount": 111429335289.0,
+  "leader": "3.310",
+  "leader_pct": 30.86
+ },
+ {
+  "code": "new_hqhy",
+  "name": "化纤行业",
+  "count": 26,
+  "pct": 1.6672841793257,
+  "amount": 6573167591.0,
+  "leader": "0.440",
+  "leader_pct": 4.88
+ },
+ {
+  "code": "new_fdsb",
+  "name": "发电设备",
+  "count": 65,
+  "pct": 1.4468467732047,
+  "amount": 16117291124.0,
+  "leader": "1.330",
+  "leader_pct": 22.39
+ },
+ {
+  "code": "new_slzp",
+  "name": "塑料制品",
+  "count": 33,
+  "pct": 1.411281513523,
+  "amount": 5508399685.0,
+  "leader": "0.240",
+  "leader_pct": 4.82
+ },
+ {
+  "code": "new_qtxy",
+  "name": "其它行业",
+  "count": 202,
+  "pct": 1.3908515371352,
+  "amount": 14129902945.0,
+  "leader": "6.400",
+  "leader_pct": 40.0
+ },
+ {
+  "code": "new_hbhy",
+  "name": "环保行业",
+  "count": 27,
+  "pct": 1.3906261496579,
+  "amount": 2130623441.0,
+  "leader": "0.310",
+  "leader_pct": 4.84
+ },
+ {
+  "code": "new_ylqx",
+  "name": "医疗器械",
+  "count": 31,
+  "pct": 1.3775911834164,
+  "amount": 6210229926.0,
+  "leader": "0.760",
+  "leader_pct": 11.19
+ },
+ {
+  "code": "new_fjzz",
+  "name": "飞机制造",
+  "count": 14,
+  "pct": 1.306255077173,
+  "amount": 6427370482.0,
+  "leader": "0.660",
+  "leader_pct": 16.53
+ },
+ {
+  "code": "new_dqhy",
+  "name": "电器行业",
+  "count": 58,
+  "pct": 1.2904048273322,
+  "amount": 15910395109.0,
+  "leader": "1.540",
+  "leader_pct": 16.9
+ },
+ {
+  "code": "new_kfq",
+  "name": "开发区",
+  "count": 10,
+  "pct": 1.1668785997457,
+  "amount": 934397323.0,
+  "leader": "0.920",
+  "leader_pct": 41.42
+ },
+ {
+  "code": "new_blhy",
+  "name": "玻璃行业",
+  "count": 19,
+  "pct": 1.1285500747384,
+  "amount": 8106289210.0,
+  "leader": "0.380",
+  "leader_pct": 7.71
+ },
+ {
+  "code": "new_jdhy",
+  "name": "家电行业",
+  "count": 37,
+  "pct": 1.0682727392623,
+  "amount": 11909631511.0,
+  "leader": "1.040",
+  "leader_pct": 22.38
+ },
+ {
+  "code": "new_mtc",
+  "name": "摩托车",
+  "count": 6,
+  "pct": 0.90812774330256,
+  "amount": 918625455.0,
+  "leader": "0.380",
+  "leader_pct": 10.57
+ },
+ {
+  "code": "new_fzhy",
+  "name": "纺织行业",
+  "count": 42,
+  "pct": 0.89472249977291,
+  "amount": 2966282475.0,
+  "leader": "0.550",
+  "leader_pct": 10.54
+ },
+ {
+  "code": "new_ysbz",
+  "name": "印刷包装",
+  "count": 20,
+  "pct": 0.88754412506304,
+  "amount": 4167870192.0,
+  "leader": "0.100",
+  "leader_pct": 3.13
+ },
+ {
+  "code": "new_ysjs",
+  "name": "有色金属",
+  "count": 72,
+  "pct": 0.84415700426992,
+  "amount": 34165815520.0,
+  "leader": "2.150",
+  "leader_pct": 29.37
+ },
+ {
+  "code": "new_snhy",
+  "name": "水泥行业",
+  "count": 26,
+  "pct": 0.84249460597966,
+  "amount": 2761372214.0,
+  "leader": "0.430",
+  "leader_pct": 7.26
+ },
+ {
+  "code": "new_zzhy",
+  "name": "造纸行业",
+  "count": 24,
+  "pct": 0.82928224192165,
+  "amount": 3325514245.0,
+  "leader": "0.470",
+  "leader_pct": 7.28
+ },
+ {
+  "code": "new_swzz",
+  "name": "生物制药",
+  "count": 155,
+  "pct": 0.82755546511234,
+  "amount": 34047583561.0,
+  "leader": "1.650",
+  "leader_pct": 9.92
+ },
+ {
+  "code": "new_dlhy",
+  "name": "电力行业",
+  "count": 62,
+  "pct": 0.67297672803057,
+  "amount": 16415015649.0,
+  "leader": "0.700",
+  "leader_pct": 14.59
+ },
+ {
+  "code": "new_fzxl",
+  "name": "服装鞋类",
+  "count": 49,
+  "pct": 0.41599195935005,
+  "amount": 6285063398.0,
+  "leader": "0.030",
+  "leader_pct": 0.28
+ },
+ {
+  "code": "new_jtys",
+  "name": "交通运输",
+  "count": 87,
+  "pct": 0.39461202807816,
+  "amount": 12993700214.0,
+  "leader": "0.530",
+  "leader_pct": 10.84
+ },
+ {
+  "code": "new_mthy",
+  "name": "煤炭行业",
+  "count": 41,
+  "pct": 0.37102960715987,
+  "amount": 10969127447.0,
+  "leader": "0.310",
+  "leader_pct": 5.11
+ },
+ {
+  "code": "new_fdc",
+  "name": "房地产",
+  "count": 123,
+  "pct": 0.28361326698708,
+  "amount": 14940607535.0,
+  "leader": "0.500",
+  "leader_pct": 5.45
+ },
+ {
+  "code": "new_fzjx",
+  "name": "纺织机械",
+  "count": 8,
+  "pct": 0.24255024255024,
+  "amount": 1536946262.0,
+  "leader": "0.070",
+  "leader_pct": 2.36
+ },
+ {
+  "code": "new_sybh",
+  "name": "商业百货",
+  "count": 93,
+  "pct": 0.19639572355227,
+  "amount": 18452488660.0,
+  "leader": "0.450",
+  "leader_pct": 4.92
+ },
+ {
+  "code": "new_jzjc",
+  "name": "建筑建材",
+  "count": 91,
+  "pct": 0.14443079178253,
+  "amount": 9600946934.0,
+  "leader": "0.550",
+  "leader_pct": 8.23
+ },
+ {
+  "code": "new_glql",
+  "name": "公路桥梁",
+  "count": 20,
+  "pct": 0.05746654626057,
+  "amount": 1453191498.0,
+  "leader": "0.080",
+  "leader_pct": 3.18
+ },
+ {
+  "code": "new_nyhf",
+  "name": "农药化肥",
+  "count": 46,
+  "pct": 0.029903561015724,
+  "amount": 6004658626.0,
+  "leader": "0.220",
+  "leader_pct": 4.35
+ },
+ {
+  "code": "new_zhhy",
+  "name": "综合行业",
+  "count": 33,
+  "pct": 0.023824650571792,
+  "amount": 3097392846.0,
+  "leader": "0.240",
+  "leader_pct": 8.06
+ },
+ {
+  "code": "new_gthy",
+  "name": "钢铁行业",
+  "count": 60,
+  "pct": 0.0098251129887994,
+  "amount": 6632305723.0,
+  "leader": "0.430",
+  "leader_pct": 9.81
+ },
+ {
+  "code": "new_gsgq",
+  "name": "供水供气",
+  "count": 25,
+  "pct": -0.011467232383464,
+  "amount": 1733274162.0,
+  "leader": "0.030",
+  "leader_pct": 1.11
+ },
+ {
+  "code": "new_nlmy",
+  "name": "农林牧渔",
+  "count": 64,
+  "pct": -0.014331634011015,
+  "amount": 13275155139.0,
+  "leader": "1.070",
+  "leader_pct": 11.77
+ },
+ {
+  "code": "new_sphy",
+  "name": "食品行业",
+  "count": 58,
+  "pct": -0.082345191040843,
+  "amount": 9155470295.0,
+  "leader": "0.130",
+  "leader_pct": 1.82
+ },
+ {
+  "code": "new_jdly",
+  "name": "酒店旅游",
+  "count": 35,
+  "pct": -0.20361751639518,
+  "amount": 3811747959.0,
+  "leader": "0.340",
+  "leader_pct": 11.32
+ },
+ {
+  "code": "new_jrhy",
+  "name": "金融行业",
+  "count": 51,
+  "pct": -0.44780489485197,
+  "amount": 40014749687.0,
+  "leader": "0.210",
+  "leader_pct": 8.11
+ },
+ {
+  "code": "new_wzwm",
+  "name": "物资外贸",
+  "count": 21,
+  "pct": -0.79275198187995,
+  "amount": 2441663978.0,
+  "leader": "0.050",
+  "leader_pct": 4.61
+ },
+ {
+  "code": "new_tchy",
+  "name": "陶瓷行业",
+  "count": 8,
+  "pct": -1.0192864994504,
+  "amount": 2260976144.0,
+  "leader": "0.540",
+  "leader_pct": 10.86
+ },
+ {
+  "code": "new_cbzz",
+  "name": "船舶制造",
+  "count": 8,
+  "pct": -1.3915243516762,
+  "amount": 4637495441.0,
+  "leader": "0.040",
+  "leader_pct": 3.55
+ },
+ {
+  "code": "new_ljhy",
+  "name": "酿酒行业",
+  "count": 33,
+  "pct": -1.8499428071117,
+  "amount": 16665782187.0,
+  "leader": "0.410",
+  "leader_pct": 10.46
+ }
+]

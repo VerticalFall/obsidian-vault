@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="780" viewBox="0 0 1200 780">
+<rect x="0" y="0" width="1200" height="780" rx="0" fill="#F7F4EC" stroke="#F7F4EC" opacity="1.0"/>
+<text x="60" y="52" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="30" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">万事达卡 MA · 巴菲特框架估值</text>
+<text x="60" y="82" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="14.5" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">好生意，支付网络 + VAS 双引擎，价格大致合理偏低｜观察，等更好的安全边际</text>
+<text x="1140" y="52" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#5B6770" font-weight="normal" text-anchor="end" opacity="1.0">价格日 2026-10-28</text>
+<text x="1140" y="76" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#5B6770" font-weight="normal" text-anchor="end" opacity="1.0">收盘 $610.31｜市值 539B</text>
+<line x1="50" y1="100" x2="1150" y2="100" stroke="#E8E2D5" stroke-width="1"/>
+<rect x="50" y="120" width="540" height="330" rx="10" fill="#FFFFFF" stroke="#E8E2D5" opacity="1.0"/>
+<text x="75" y="155" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="18" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">三情景每股价值 vs 现价</text>
+<text x="75" y="178" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">FCFF DCF；三情景</text>
+<text x="75" y="222" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="14" fill="#1F2933" font-weight="normal" text-anchor="start" opacity="1.0">悲观</text>
+<rect x="210" y="205" width="76.8" height="26" rx="5" fill="#8C6D5A" opacity="0.92"/>
+<text x="295.759930360878" y="223" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12.5" fill="#8C6D5A" font-weight="bold" text-anchor="start" opacity="1.0">$333</text>
+<text x="75" y="267" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="14" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">基准</text>
+<rect x="210" y="250" width="153.6" height="26" rx="5" fill="#2F6B4F" opacity="0.92"/>
+<text x="372.6157700517231" y="268" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12.5" fill="#2F6B4F" font-weight="bold" text-anchor="start" opacity="1.0">$666</text>
+<text x="75" y="312" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="14" fill="#1F2933" font-weight="normal" text-anchor="start" opacity="1.0">乐观</text>
+<rect x="210" y="295" width="211.9" height="26" rx="5" fill="#C9A227" opacity="0.92"/>
+<text x="430.864406779661" y="313" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12.5" fill="#C9A227" font-weight="bold" text-anchor="start" opacity="1.0">$919</text>
+<text x="75" y="357" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="14" fill="#1F2933" font-weight="normal" text-anchor="start" opacity="1.0">现价</text>
+<rect x="210" y="340" width="140.7" height="26" rx="5" fill="#B23A2E" opacity="0.92"/>
+<text x="359.7057475567316" y="358" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12.5" fill="#B23A2E" font-weight="bold" text-anchor="start" opacity="1.0">$610.31</text>
+<text x="75" y="398" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="13" fill="#B23A2E" font-weight="bold" text-anchor="start" opacity="1.0">现价较基准低 8.4%</text>
+<text x="75" y="422" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="11" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">悲观 $333；基准 $666；乐观 $919；概率加权见报告</text>
+<line x1="75" y1="433" x2="565" y2="433" stroke="#E8E2D5" stroke-width="1"/>
+<rect x="610" y="120" width="540" height="330" rx="10" fill="#FFFFFF" stroke="#E8E2D5" opacity="1.0"/>
+<text x="635" y="155" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="18" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">基准情景 FCFF：VAS 增速快于支付网络</text>
+<text x="635" y="178" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">十亿美元；Y1 18.0B，Y5 27.0B，Y10 36.5B</text>
+<line x1="700" y1="380.0" x2="1100" y2="380.0" stroke="#A8A095" stroke-width="1.2"/>
+<line x1="700" y1="380.0" x2="1100" y2="380.0" stroke="#E5DFD3" stroke-width="0.8" stroke-dasharray="2 4"/>
+<text x="692" y="384.0" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="9" fill="#5B6770" font-weight="normal" text-anchor="end" opacity="1.0">0.0</text>
+<line x1="700" y1="326.72130488224633" x2="1100" y2="326.72130488224633" stroke="#E5DFD3" stroke-width="0.8" stroke-dasharray="2 4"/>
+<text x="692" y="330.72130488224633" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="9" fill="#5B6770" font-weight="normal" text-anchor="end" opacity="1.0">12</text>
+<line x1="700" y1="273.44260976449266" x2="1100" y2="273.44260976449266" stroke="#E5DFD3" stroke-width="0.8" stroke-dasharray="2 4"/>
+<text x="692" y="277.44260976449266" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="9" fill="#5B6770" font-weight="normal" text-anchor="end" opacity="1.0">24</text>
+<line x1="700" y1="220.163914646739" x2="1100" y2="220.163914646739" stroke="#E5DFD3" stroke-width="0.8" stroke-dasharray="2 4"/>
+<text x="692" y="224.163914646739" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="9" fill="#5B6770" font-weight="normal" text-anchor="end" opacity="1.0">36</text>
+<rect x="708.0" y="299.9" width="24" height="80.1" rx="3" fill="#2F6B4F" opacity="0.85"/>
+<text x="720.0" y="293.92448041863605" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="9" fill="#2F6B4F" font-weight="bold" text-anchor="middle" opacity="1.0">18</text>
+<text x="720.0" y="398" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="8.5" fill="#5B6770" font-weight="normal" text-anchor="middle" opacity="1.0">Y1</text>
+<rect x="748.0" y="289.6" width="24" height="90.4" rx="3" fill="#2F6B4F" opacity="0.85"/>
+<rect x="788.0" y="279.7" width="24" height="100.3" rx="3" fill="#2F6B4F" opacity="0.85"/>
+<text x="800.0" y="273.6716543974593" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="9" fill="#2F6B4F" font-weight="bold" text-anchor="middle" opacity="1.0">23</text>
+<text x="800.0" y="398" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="8.5" fill="#5B6770" font-weight="normal" text-anchor="middle" opacity="1.0">Y3</text>
+<rect x="828.0" y="269.7" width="24" height="110.3" rx="3" fill="#2F6B4F" opacity="0.85"/>
+<rect x="868.0" y="260.3" width="24" height="119.7" rx="3" fill="#2F6B4F" opacity="0.85"/>
+<text x="880.0" y="254.3390105833306" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="9" fill="#2F6B4F" font-weight="bold" text-anchor="middle" opacity="1.0">27</text>
+<text x="880.0" y="398" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="8.5" fill="#5B6770" font-weight="normal" text-anchor="middle" opacity="1.0">Y5</text>
+<rect x="908.0" y="250.8" width="24" height="129.2" rx="3" fill="#2F6B4F" opacity="0.85"/>
+<rect x="948.0" y="242.2" width="24" height="137.8" rx="3" fill="#2F6B4F" opacity="0.85"/>
+<text x="960.0" y="236.2434978869332" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="9" fill="#2F6B4F" font-weight="bold" text-anchor="middle" opacity="1.0">31</text>
+<text x="960.0" y="398" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="8.5" fill="#5B6770" font-weight="normal" text-anchor="middle" opacity="1.0">Y7</text>
+<rect x="988.0" y="232.6" width="24" height="147.4" rx="3" fill="#2F6B4F" opacity="0.85"/>
+<rect x="1028.0" y="225.1" width="24" height="154.9" rx="3" fill="#2F6B4F" opacity="0.85"/>
+<text x="1040.0" y="398" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="8.5" fill="#5B6770" font-weight="normal" text-anchor="middle" opacity="1.0">Y9</text>
+<rect x="1068.0" y="218.0" width="24" height="162.0" rx="3" fill="#2F6B4F" opacity="0.85"/>
+<text x="1080.0" y="211.96296296296296" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="9" fill="#2F6B4F" font-weight="bold" text-anchor="middle" opacity="1.0">36</text>
+<text x="635" y="428" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">Y1 18.0B → Y5 27.0B → Y10 36.5B</text>
+<text x="635" y="444" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">VAS +20%，支付网络 +10%</text>
+<rect x="50" y="475" width="1100" height="250" rx="10" fill="#FFFFFF" stroke="#E8E2D5" opacity="1.0"/>
+<text x="75" y="507" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="18" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">估值交叉检查与关键事实</text>
+<text x="75" y="536" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="bold" text-anchor="start" opacity="1.0">指标</text>
+<text x="330" y="536" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="bold" text-anchor="start" opacity="1.0">MA</text>
+<text x="470" y="536" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="bold" text-anchor="start" opacity="1.0">参照</text>
+<text x="720" y="536" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="bold" text-anchor="start" opacity="1.0">读数</text>
+<line x1="75" y1="546" x2="700" y2="546" stroke="#E8E2D5" stroke-width="1"/>
+<text x="75" y="566" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">EV / TTM EBIT</text>
+<text x="330" y="566" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">27.0x</text>
+<text x="470" y="566" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">V 27.5x</text>
+<text x="720" y="566" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="11.5" fill="#2F6B4F" font-weight="bold" text-anchor="start" opacity="1.0">略低</text>
+<line x1="75" y1="577" x2="700" y2="577" stroke="#EEE8DC" stroke-width="0.8"/>
+<text x="75" y="595" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">P/E TTM</text>
+<text x="330" y="595" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">33.6x</text>
+<text x="470" y="595" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">V 32.5x</text>
+<text x="720" y="595" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="11.5" fill="#C9A227" font-weight="bold" text-anchor="start" opacity="1.0">略高</text>
+<line x1="75" y1="606" x2="700" y2="606" stroke="#EEE8DC" stroke-width="0.8"/>
+<text x="75" y="624" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#1F2933" font-weight="normal" text-anchor="start" opacity="1.0">FCF 收益率</text>
+<text x="330" y="624" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">3.08%</text>
+<text x="470" y="624" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">V 2.88%</text>
+<text x="720" y="624" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="11.5" fill="#2F6B4F" font-weight="bold" text-anchor="start" opacity="1.0">略高</text>
+<line x1="75" y1="635" x2="700" y2="635" stroke="#EEE8DC" stroke-width="0.8"/>
+<text x="75" y="653" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#1F2933" font-weight="normal" text-anchor="start" opacity="1.0">EV / TTM FCF</text>
+<text x="330" y="653" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">33.3x</text>
+<text x="470" y="653" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">V 35.0x</text>
+<text x="720" y="653" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="11.5" fill="#2F6B4F" font-weight="bold" text-anchor="start" opacity="1.0">略低</text>
+<line x1="75" y1="664" x2="700" y2="664" stroke="#EEE8DC" stroke-width="0.8"/>
+<text x="75" y="682" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#1F2933" font-weight="normal" text-anchor="start" opacity="1.0">反推收入 CAGR</text>
+<text x="330" y="682" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">7.6%</text>
+<text x="470" y="682" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">基准 8.4%</text>
+<text x="720" y="682" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="11.5" fill="#2F6B4F" font-weight="bold" text-anchor="start" opacity="1.0">略低</text>
+<line x1="790" y1="530" x2="790" y2="700" stroke="#E8E2D5" stroke-width="1"/>
+<text x="815" y="536" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="11" fill="#5B6770" font-weight="bold" text-anchor="start" opacity="1.0">多空关键</text>
+<text x="815" y="560" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">Q2 收入</text>
+<text x="900" y="560" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">9.28B；+14%</text>
+<text x="815" y="584" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">支付网络</text>
+<text x="900" y="584" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">5.45B；+10%</text>
+<text x="815" y="608" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">VAS</text>
+<text x="900" y="608" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">3.83B；+20%</text>
+<text x="815" y="632" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">GDV</text>
+<text x="900" y="632" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">+8%；跨境 +12%</text>
+<text x="815" y="656" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">non-GAAP EPS</text>
+<text x="900" y="656" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">21.00（2026E）</text>
+<text x="815" y="680" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">净负债</text>
+<text x="900" y="680" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">13.0B；FCF 16.6B</text>
+<text x="815" y="704" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#1F2933" font-weight="bold" text-anchor="start" opacity="1.0">风险</text>
+<text x="900" y="704" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="10.5" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">CCCA、返点率、监管</text>
+<text x="75" y="708" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="12" fill="#B23A2E" font-weight="bold" text-anchor="start" opacity="1.0">结论：双引擎质量高，现价略低于基准；观察，等更大折扣或 VAS 再加速。</text>
+<text x="75" y="750" font-family="Microsoft YaHei, PingFang SC, Noto Sans SC, sans-serif" font-size="9.3" fill="#5B6770" font-weight="normal" text-anchor="start" opacity="1.0">数据：SEC 10-Q/10-K/8-K、Mastercard 业绩发布、CNBC；数据边界为 Q2 2026。非投资建议。</text>
+</svg>

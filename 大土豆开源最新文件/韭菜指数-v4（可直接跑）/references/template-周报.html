@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>韭菜指数周报 · {{起始日期}}~{{结束日期}}</title>
+<!--
+  ══════════════════════════════════════════════════════════════
+  韭菜指数 v4.0 · 周报模板（可见中文字数预算：≤3500）
+  周报的独有价值（日报没有的）：
+  1. 温度计周均分 + 环比上周（整周口径）
+  2. ★ 本周验证命中率——本周每天上午版留的验证点，统计命中率，
+     被打脸的单独复盘（辩证性的周度闭环）
+  3. 板块周榜（一周讨论度 vs 单日热度）
+  4. 一周情绪轮回（关键转折点串联）
+  填写规则（三层信息法）：
+  · hero 标题 ≤28字 = 本周最大的反转/矛盾；lead ≤130字
+  · 温度计周均 = 5 个交易日分数的平均，t-desc 写周环比方向
+  · 命中率表：5行（每天1行：日期+命中数/总数+最打脸的一条）；总命中率必给数字
+  · 板块周榜：每卡 = 分数 + 环比箭头 + 断症≤45字
+  · 情绪轮回 ≤3条，每条≤70字（日→日的转折）
+  · 下周预判 3 情景 + 概率 + 触发条件≤60字
+  · 数据采集：调本周 5 期日报 + 联网搜集一周信息交叉验证，不得只靠日报自说自话
+  · 全文涨红跌绿，页脚免责必带
+  ══════════════════════════════════════════════════════════════
+-->
+<style>
+:root{--ink:#0d1117;--paper:#f7f4ec;--paper2:#efe9dc;--line:#d8cfbb;--soft:#6b6457;--up:#c0392b;--up-bg:#fbeae7;--dn:#0a8f5b;--dn-bg:#e6f4ec;--accent:#1f4e79;--hl:#ff7a00;--hl-bg:#fff0b3;--fun:#e74c3c}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--paper);color:var(--ink);line-height:1.8}
+.wrap{max-width:750px;margin:0 auto;padding:0 20px 60px}
+.hero{padding:36px 0 20px;border-bottom:2px solid var(--ink)}
+.kicker{font-size:12px;letter-spacing:3px;color:var(--accent);font-weight:700}
+.hero h1{font-size:22px;font-weight:800;line-height:1.55;margin:10px 0 8px}
+.hero h1 em{font-style:normal;color:var(--fun);border-bottom:3px solid var(--fun)}
+.meta{font-size:12px;color:var(--soft)}
+.badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.badge{font-size:12px;font-weight:600;padding:4px 12px;border-radius:999px;border:1px solid var(--line);background:#fff}
+.badge.up{color:var(--up);border-color:#eccac4;background:var(--up-bg)}
+.badge.dn{color:var(--dn);border-color:#bfe0cd;background:var(--dn-bg)}
+.badge.hl{color:var(--hl);border-color:var(--hl);background:var(--hl-bg)}
+.lead{font-size:14px;line-height:2;margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.lead b{color:var(--fun)}
+.lead .up-t{color:var(--up);font-weight:800}.lead .dn-t{color:var(--dn);font-weight:800}
+.eyebrow{display:flex;align-items:center;gap:10px;margin:30px 0 12px}
+.eyebrow .num{font-size:12px;font-weight:800;color:#fff;background:var(--ink);width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.eyebrow .label{font-size:13px;letter-spacing:1px;color:var(--accent);font-weight:700}
+.sec-title{font-size:19px;font-weight:800;margin-bottom:6px}
+.sec-desc{font-size:13px;color:var(--soft);margin-bottom:10px}
+/* 温度计（周均） */
+.thermo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 10px 14px}
+.thermo{text-align:center;display:flex;flex-direction:column;align-items:center}
+.thermo svg{width:56px;height:140px;display:block}
+.t-name{font-size:12px;font-weight:800;margin-top:4px}
+.t-val{font-size:20px;font-weight:800;line-height:1.1}
+.t-tag{font-size:10px;font-weight:800;margin-top:3px;padding:1px 7px;border-radius:4px;white-space:nowrap}
+.t-desc{font-size:10px;color:var(--soft);margin-top:3px;line-height:1.5;padding:0 2px}
+.thermo-note{font-size:12.5px;color:var(--soft);margin-top:10px;text-align:center;line-height:1.8}
+.thermo-note b{color:var(--fun)}
+/* 命中率表 */
+.hit-wrap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:8px 0}
+.hit-score{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}
+.hit-score .big{font-size:34px;font-weight:800}
+.hit-score .sub{font-size:12px;color:var(--soft)}
+.htable{width:100%;border-collapse:collapse;font-size:12.5px}
+.htable td{padding:8px 6px;border-top:1px dashed var(--line);vertical-align:top;line-height:1.7}
+.htd-day{font-weight:800;white-space:nowrap;color:var(--accent)}
+.htd-res{white-space:nowrap;font-weight:800}
+.r-hit{color:var(--up)}.r-miss{color:var(--dn)}.r-half{color:var(--hl)}
+.hit-why{font-size:11px;color:var(--soft)}
+.hit-why::before{content:"💥 ";font-size:10px}
+/* 板块周榜 */
+.wcard{display:grid;grid-template-columns:36px 1fr 90px;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 15px;margin:6px 0}
+.wcard.top1{border:2px solid var(--fun);box-shadow:3px 3px 0 var(--fun)}
+.wcard.top2{border:2px solid var(--hl);box-shadow:3px 3px 0 var(--hl)}
+.wnum{font-size:20px;font-weight:800;text-align:center}
+.wnum.r1{color:var(--fun)}.wnum.r2{color:var(--hl)}.wnum.r3{color:var(--accent)}
+.winfo .name{font-size:14px;font-weight:800;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.winfo .desc{font-size:12px;color:var(--soft);margin-top:2px;line-height:1.7}
+.wchg{text-align:right}
+.wscore{font-size:16px;font-weight:800}
+.wcmp{font-size:11px;font-weight:800}
+.cmp-up{color:var(--up)}.cmp-dn{color:var(--dn)}.cmp-flat{color:var(--soft)}
+.tag{font-size:10px;font-weight:700;padding:1px 7px;border-radius:4px;background:var(--paper2);border:1px solid var(--line);color:var(--ink)}
+/* 资金双栏 */
+.fund-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fund-col{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.fund-col h4{font-size:13px;font-weight:800;margin-bottom:8px}
+.fund-col.in h4{color:var(--up)}.fund-col.out h4{color:var(--dn)}
+.fund-row{display:flex;justify-content:space-between;font-size:12.5px;padding:5px 0;border-bottom:1px dashed rgba(0,0,0,.07)}
+.fund-row:last-child{border-bottom:none}
+.fund-col.in .fv{color:var(--up);font-weight:800}.fund-col.out .fv{color:var(--dn);font-weight:800}
+.fund-sum{font-size:12.5px;color:var(--soft);margin-top:10px;line-height:1.8}
+.fund-sum b{color:var(--fun)}
+/* 情绪轮回 */
+.turn-list{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:8px 0}
+.turn-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px dashed rgba(0,0,0,.08);font-size:13px;line-height:1.8}
+.turn-item:last-child{border-bottom:none}
+.turn-day{font-size:11px;font-weight:800;color:var(--hl);white-space:nowrap;flex-shrink:0;margin-top:3px}
+/* 情景预判 */
+.scn-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.scn-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 12px;text-align:center}
+.scn-card.a{border-top:3px solid var(--up)}.scn-card.b{border-top:3px solid var(--hl)}.scn-card.c{border-top:3px solid var(--dn)}
+.scn-name{font-size:13px;font-weight:800}
+.scn-prob{font-size:22px;font-weight:800;margin:4px 0}
+.scn-card.a .scn-prob{color:var(--up)}.scn-card.b .scn-prob{color:var(--hl)}.scn-card.c .scn-prob{color:var(--dn)}
+.scn-desc{font-size:11px;color:var(--soft);line-height:1.7}
+.footer{margin-top:34px;padding-top:14px;border-top:1px solid var(--line);font-size:11px;color:var(--soft);line-height:1.9}
+.footer b{color:var(--ink)}
+.up-t{color:var(--up);font-weight:700}.dn-t{color:var(--dn);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- ============ 头部（lead≤130字） ============ -->
+<div class="hero">
+  <div class="kicker">韭菜指数 · 周报 · {{起始日期}}~{{结束日期}}</div>
+  <h1>{{主标题·本周最大的反转/矛盾，≤28字}}</h1>
+  <div class="meta">整周口径 · 环比基准：上一期周报（{{上周区间}}） · 数据：本周5期日报 + 联网交叉验证</div>
+  <div class="badges">
+    <span class="badge up">{{badge·周涨幅}}</span>
+    <span class="badge dn">{{badge·周量能}}</span>
+    <span class="badge hl">{{badge·本周最显眼数字}}</span>
+    <span class="badge">{{badge·验证命中率}}</span>
+  </div>
+  <div class="lead">{{导语≤130字：本周一句话定性+最大的对比+验证命中率}}</div>
+</div>
+
+<!-- ============ ① 五温度计·周均（环比上周） ============ -->
+<div class="eyebrow"><div class="num">①</div><div class="label">五支温度计 · 周均</div></div>
+<div class="sec-title">这一周的市场体温</div>
+<div class="sec-desc">周均 = 5 个交易日分数平均 · 色阶同日报 · 环比上一期周报</div>
+<div class="thermo-grid">
+  <div class="thermo">
+    <svg viewBox="0 0 56 140"><rect x="24" y="8" width="8" height="104" rx="4" fill="#efe9dc" stroke="#d8cfbb"/><circle cx="28" cy="122" r="13" fill="#fff" stroke="#d8cfbb"/><rect x="26" y="{{柱y}}" width="4" height="{{柱高}}" rx="2" fill="{{色阶色}}"/><circle cx="28" cy="122" r="8" fill="{{色阶色}}"/></svg>
+    <div class="t-name">市场热度</div><div class="t-val" style="color:{{色阶色}}">{{周均分}}</div>
+    <div class="t-tag" style="color:{{色阶色}};background:{{色阶浅底}}">{{色阶标签}}</div>
+    <div class="t-desc">{{≤14字·周环比方向，如"↑6 vs 上周"}}</div>
+  </div>
+  <!-- 其余4支同结构 -->
+</div>
+<div class="thermo-note">💡 一句话点睛：<b>{{≤20字·本周情绪的定性}}</b>{{≤30字}}</div>
+
+<!-- ============ ② 本周验证命中率（周报独有·辩证性闭环） ============ -->
+<div class="eyebrow"><div class="num">②</div><div class="label">本周验证命中率</div></div>
+<div class="sec-title">这周留下的验证点，对答案</div>
+<div class="hit-wrap">
+  <div class="hit-score">
+    <span class="big" style="color:{{命中率≥60%用红/否则绿}}">{{命中数}}/{{总数}}</span>
+    <span class="sub">总命中率 {{百分比}}%{{·连续两期<50%须公开检讨打分体系}}</span>
+  </div>
+  <table class="htable">
+    <tr><td class="htd-day">{{周一日期}}</td><td>{{当日验证点摘要·≤25字}}</td><td class="htd-res r-hit">{{N/3 命中}}</td></tr>
+    <tr><td class="htd-day">{{周二日期}}</td><td>{{摘要}}</td><td class="htd-res">{{判定色}}</td></tr>
+    <tr><td class="htd-day">{{周三日期}}</td><td>{{摘要}}</td><td class="htd-res">{{判定色}}</td></tr>
+    <tr><td class="htd-day">{{周四日期}}</td><td>{{摘要}}</td><td class="htd-res">{{判定色}}</td></tr>
+    <tr><td class="htd-day">{{周五日期}}</td><td>{{摘要}}</td><td class="htd-res">{{判定色}}</td></tr>
+  </table>
+  <div class="hit-why">{{本周最打脸的一条：{{预判}}→{{实际}}→{{为什么错，≤40字}}}}</div>
+</div>
+
+<!-- ============ ③ 板块周榜 TOP10（断症≤45字） ============ -->
+<div class="eyebrow"><div class="num">③</div><div class="label">板块周榜 TOP10</div></div>
+<div class="sec-title">这一周韭菜在围观什么</div>
+<div class="sec-desc">整周讨论度排序 · 主流板块降热度不合并 · 找机会板块必须附理由</div>
+
+<div class="wcard top1">
+  <div class="wnum r1">1</div>
+  <div class="winfo">
+    <div class="name">{{emoji 板块名}} <span class="tag">{{周标签}}</span></div>
+    <div class="desc">{{断症≤45字：本周人群/情绪/钱的变化}}</div>
+  </div>
+  <div class="wchg"><div class="wscore" style="color:{{分档色}}">{{周分}}</div><div class="wcmp cmp-up">↑{{环比}} vs 上周</div></div>
+</div>
+<!-- 2-10名同结构；7-10可降为一行式 -->
+
+<!-- ============ ④ 一周资金主线（双栏） ============ -->
+<div class="eyebrow"><div class="num">④</div><div class="label">一周资金主线</div></div>
+<div class="sec-desc">主力 = 超大单 + 大单 · 板块口径 · 全周累计</div>
+<div class="fund-grid">
+  <div class="fund-col in">
+    <h4>🔴 全周净流入 TOP5</h4>
+    <div class="fund-row"><span>{{板块}}</span><span class="fv">+{{亿}}亿</span></div>
+    <!-- 5行 -->
+  </div>
+  <div class="fund-col out">
+    <h4>🟢 全周净流出 TOP5</h4>
+    <div class="fund-row"><span>{{板块}}</span><span class="fv">-{{亿}}亿</span></div>
+    <!-- 5行 -->
+  </div>
+</div>
+<div class="fund-sum">💰 一句话：{{≤40字·本周资金主线，如"科技从75%天花回落，红利松动"}}</div>
+
+<!-- ============ ⑤ 本周情绪轮回（≤3条转折·每条≤70字） ============ -->
+<div class="eyebrow"><div class="num">⑤</div><div class="label">本周情绪轮回</div></div>
+<div class="turn-list">
+  <div class="turn-item"><span class="turn-day">{{周X→周X}}</span><div>{{≤70字·转折：从什么状态到什么状态，触发因素}}</div></div>
+  <!-- 最多3条：如"缩量高低切→政策点火→利空出尽" -->
+</div>
+
+<!-- ============ ⑥ 下周预判（3情景+概率） ============ -->
+<div class="eyebrow"><div class="num">⑥</div><div class="label">下周预判</div></div>
+<div class="sec-desc">三个情景，各自带触发条件——下期周报对答案</div>
+<div class="scn-grid">
+  <div class="scn-card a"><div class="scn-name">情景 A · {{名}}</div><div class="scn-prob">{{概率}}%</div><div class="scn-desc">{{触发条件≤60字}}</div></div>
+  <div class="scn-card b"><div class="scn-name">情景 B · {{名}}</div><div class="scn-prob">{{概率}}%</div><div class="scn-desc">{{触发条件≤60字}}</div></div>
+  <div class="scn-card c"><div class="scn-name">情景 C · {{名}}</div><div class="scn-prob">{{概率}}%</div><div class="scn-desc">{{触发条件≤60字}}</div></div>
+</div>
+
+<!-- ============ 页脚 ============ -->
+<div class="footer">
+  <b>数据说明</b>：本周 5 期日报（通达信收盘快照）+ 联网搜集一周信息交叉验证；散户发言样本 {{N}} 条，来源：{{平台列表}}；打分按 scoring-v4 锚点复算。<br>
+  <b>颜色约定</b>：红涨绿跌（A 股口径）。<br>
+  ⚠️ 本报告为娱乐化的散户行为观察，不构成任何投资建议。投资有风险，吃瓜需理性。
+</div>
+
+</div>
+</body>
+</html>

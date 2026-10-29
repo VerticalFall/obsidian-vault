@@ -1,0 +1,8 @@
+interface:
+  display_name: "银行估值系统·2026年10月15日传播版"
+  short_description: "生成银行基准总榜、三类投资者榜及可直接发布的简版图表"
+  brand_color: "#17365D"
+  default_prompt: "使用 $bank-research-excel 按最新收盘数据制作银行估值传播版，保留公正的基准分，并给出三类投资者画像榜单。"
+
+policy:
+  allow_implicit_invocation: true
