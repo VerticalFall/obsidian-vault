@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1040" viewBox="0 0 1600 1040">
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#5B6B7C"/>
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#12263A" flood-opacity="0.08"/>
+    </filter>
+    <style>
+      .title { font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif; font-weight: 700; fill: #12263A; }
+      .h2 { font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif; font-weight: 700; fill: #12263A; }
+      .body { font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif; fill: #33475B; }
+      .muted { font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif; fill: #5B6B7C; }
+      .small { font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif; fill: #5B6B7C; }
+      .white { fill: #FFFFFF; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1040" fill="#F6F8FB"/>
+
+  <text x="60" y="52" class="title" font-size="30">大土豆开源最新文件 · 总架构</text>
+  <text x="60" y="82" class="muted" font-size="14">四条研究生产线 + 两个成品仓库 + 一个输出库 · v1.0.0 · 2026-10-30</text>
+
+  <!-- Data layer -->
+  <rect x="60" y="112" width="1480" height="88" rx="16" fill="#EAF1FB" stroke="#2F5D8A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="85" y="145" class="h2" font-size="20">数据与证据层</text>
+  <text x="85" y="173" class="body" font-size="14">point-in-time · 来源 · 日期 · 期间 · 单位 · 状态 · 硬数据 / 软数据 / 假设 / 待核分层</text>
+  <g>
+    <rect x="1030" y="132" width="90" height="28" rx="14" fill="#FFFFFF" stroke="#9DB6D3"/>
+    <text x="1075" y="151" class="small" font-size="12" text-anchor="middle">行情</text>
+    <rect x="1130" y="132" width="90" height="28" rx="14" fill="#FFFFFF" stroke="#9DB6D3"/>
+    <text x="1175" y="151" class="small" font-size="12" text-anchor="middle">财报</text>
+    <rect x="1230" y="132" width="90" height="28" rx="14" fill="#FFFFFF" stroke="#9DB6D3"/>
+    <text x="1275" y="151" class="small" font-size="12" text-anchor="middle">公告</text>
+    <rect x="1330" y="132" width="90" height="28" rx="14" fill="#FFFFFF" stroke="#9DB6D3"/>
+    <text x="1375" y="151" class="small" font-size="12" text-anchor="middle">一致预期</text>
+    <rect x="1430" y="132" width="90" height="28" rx="14" fill="#FFFFFF" stroke="#9DB6D3"/>
+    <text x="1475" y="151" class="small" font-size="12" text-anchor="middle">宏观/利率</text>
+  </g>
+
+  <!-- Protocol layer -->
+  <rect x="60" y="222" width="1480" height="88" rx="16" fill="#EAF4F1" stroke="#2E7D6E" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="85" y="255" class="h2" font-size="20">研究协议层</text>
+  <text x="85" y="283" class="body" font-size="14">巴菲特八问 · 证据账本 · 事实 / 计算 / 假设 / 判断四分离 · 多方法 · 三情景 · 安全边际 · 风险跟踪</text>
+
+  <!-- Arrows data -> protocol -->
+  <line x1="800" y1="200" x2="800" y2="222" stroke="#5B6B7C" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Four production boxes -->
+  <g>
+    <rect x="60" y="342" width="330" height="178" rx="14" fill="#FFFFFF" stroke="#2F5D8A" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="82" y="376" class="h2" font-size="19">巴菲特 skill</text>
+    <text x="82" y="399" class="muted" font-size="13">通用公司研究 OS</text>
+    <text x="82" y="428" class="body" font-size="13">· 八问 + 证据账本</text>
+    <text x="82" y="450" class="body" font-size="13">· 行业估值插件</text>
+    <text x="82" y="472" class="body" font-size="13">· 三情景 + 反推 DCF</text>
+    <text x="82" y="494" class="body" font-size="13">· MD / Excel / PDF / 仪表盘</text>
+  </g>
+  <g>
+    <rect x="420" y="342" width="330" height="178" rx="14" fill="#FFFFFF" stroke="#2E7D6E" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="442" y="376" class="h2" font-size="19">银行 skill</text>
+    <text x="442" y="399" class="muted" font-size="13">银行垂直系统</text>
+    <text x="442" y="428" class="body" font-size="13">· 五问 + 六种估值</text>
+    <text x="442" y="450" class="body" font-size="13">· 四维评分 + 投资者画像</text>
+    <text x="442" y="472" class="body" font-size="13">· 11 表规范</text>
+    <text x="442" y="494" class="body" font-size="13">· 只适用于银行</text>
+  </g>
+  <g>
+    <rect x="780" y="342" width="330" height="178" rx="14" fill="#FFFFFF" stroke="#C77C1A" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="802" y="376" class="h2" font-size="19">煤炭 FCF 模型</text>
+    <text x="802" y="399" class="muted" font-size="13">快速比较器</text>
+    <text x="802" y="428" class="body" font-size="13">· FY2025 FCF 锁死</text>
+    <text x="802" y="450" class="body" font-size="13">· FCF/EV vs 3.3%</text>
+    <text x="802" y="472" class="body" font-size="13">· 批量 ΣFCF/ΣEV</text>
+    <text x="802" y="494" class="body" font-size="13">· 只做快筛，不做完整估值</text>
+  </g>
+  <g>
+    <rect x="1140" y="342" width="340" height="178" rx="14" fill="#FFFFFF" stroke="#6B46C1" stroke-width="1.5" filter="url(#shadow)"/>
+    <text x="1162" y="376" class="h2" font-size="19">韭菜指数 v4</text>
+    <text x="1162" y="399" class="muted" font-size="13">市场情绪产品</text>
+    <text x="1162" y="428" class="body" font-size="13">· 五个温度计</text>
+    <text x="1162" y="450" class="body" font-size="13">· L1 / L2 / L3 分层</text>
+    <text x="1162" y="472" class="body" font-size="13">· 早盘 / 全天 / 周报</text>
+    <text x="1162" y="494" class="body" font-size="13">· 不用于公司估值</text>
+  </g>
+
+  <!-- Arrows protocol -> four boxes -->
+  <line x1="225" y1="310" x2="225" y2="342" stroke="#5B6B7C" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="585" y1="310" x2="585" y2="342" stroke="#5B6B7C" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="945" y1="310" x2="945" y2="342" stroke="#5B6B7C" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1310" y1="310" x2="1310" y2="342" stroke="#5B6B7C" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Dividend zone -->
+  <rect x="60" y="552" width="920" height="205" rx="16" fill="#FFF6E8" stroke="#C77C1A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="84" y="586" class="h2" font-size="20">红利专区 · 主题研究 + 组合层</text>
+  <text x="84" y="611" class="muted" font-size="13">把红利从标签变成可评分、可比较、可组合的研究对象</text>
+
+  <g>
+    <rect x="80" y="628" width="280" height="108" rx="12" fill="#FFFFFF" stroke="#E3B778"/>
+    <text x="96" y="654" class="h2" font-size="15">中证红利横截面</text>
+    <text x="96" y="678" class="body" font-size="12">· 100 只成分 / 14 个分组</text>
+    <text x="96" y="698" class="body" font-size="12">· 位置分 + 基本面分</text>
+    <text x="96" y="718" class="body" font-size="12">· 55% / 45% 综合性价比</text>
+  </g>
+  <g>
+    <rect x="375" y="628" width="280" height="108" rx="12" fill="#FFFFFF" stroke="#E3B778"/>
+    <text x="391" y="654" class="h2" font-size="15">煤油周期模型</text>
+    <text x="391" y="678" class="body" font-size="12">· 前瞻盈利 + 所有者收益</text>
+    <text x="391" y="698" class="body" font-size="12">· 四法加权 35/30/20/15</text>
+    <text x="391" y="718" class="body" font-size="12">· 25% / 50% / 25% 情景</text>
+  </g>
+  <g>
+    <rect x="670" y="628" width="290" height="108" rx="12" fill="#FFFFFF" stroke="#C77C1A" stroke-width="2"/>
+    <text x="686" y="654" class="h2" font-size="15">红利可持续性评分</text>
+    <text x="686" y="678" class="body" font-size="12">· 六维质量分 + 硬约束</text>
+    <text x="686" y="698" class="body" font-size="12">· 总回报 vs 本地 10Y</text>
+    <text x="686" y="718" class="body" font-size="12">· 组合监控 / 触发条件</text>
+    <text x="686" y="731" class="small" font-size="10">本版新增</text>
+  </g>
+
+  <!-- Portfolio layer -->
+  <rect x="1010" y="552" width="530" height="205" rx="16" fill="#F5EDFF" stroke="#6B46C1" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="1034" y="586" class="h2" font-size="20">组合与监控层</text>
+  <text x="1034" y="611" class="muted" font-size="13">单票研究之后的配置与复核</text>
+  <g>
+    <rect x="1034" y="630" width="230" height="32" rx="8" fill="#FFFFFF" stroke="#C4B5FD"/>
+    <text x="1149" y="651" class="body" font-size="13" text-anchor="middle">质量分 / 估值分</text>
+    <rect x="1284" y="630" width="232" height="32" rx="8" fill="#FFFFFF" stroke="#C4B5FD"/>
+    <text x="1400" y="651" class="body" font-size="13" text-anchor="middle">总回报 vs 10Y</text>
+    <rect x="1034" y="676" width="230" height="32" rx="8" fill="#FFFFFF" stroke="#C4B5FD"/>
+    <text x="1149" y="697" class="body" font-size="13" text-anchor="middle">仓位 / 行业上限</text>
+    <rect x="1284" y="676" width="232" height="32" rx="8" fill="#FFFFFF" stroke="#C4B5FD"/>
+    <text x="1400" y="697" class="body" font-size="13" text-anchor="middle">相关性 / 利率敏感度</text>
+    <rect x="1034" y="722" width="482" height="24" rx="8" fill="#FFFFFF" stroke="#C4B5FD"/>
+    <text x="1275" y="739" class="body" font-size="12" text-anchor="middle">触发条件：砍息 / FCF 派息率 &gt;100% / 净负债 &gt;4x / 逻辑破坏</text>
+  </g>
+
+  <!-- Arrows into dividend zone -->
+  <path d="M225,520 L225,536 L330,536 L330,552" fill="none" stroke="#5B6B7C" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M945,520 L945,536 L850,536 L850,552" fill="none" stroke="#5B6B7C" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Dividend -> portfolio -->
+  <line x1="980" y1="654" x2="1010" y2="654" stroke="#5B6B7C" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Leek arrow around portfolio to output -->
+  <path d="M1310,520 L1310,536 L1570,536 L1570,780 L1500,780 L1500,795" fill="none" stroke="#5B6B7C" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrow)"/>
+
+  <!-- Output layer -->
+  <rect x="60" y="795" width="1480" height="88" rx="16" fill="#EAF1FB" stroke="#2F5D8A" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="85" y="828" class="h2" font-size="20">输出层</text>
+  <text x="85" y="856" class="body" font-size="14">MD 研究 · Excel 模型 · PDF · 仪表盘 PNG / SVG / HTML · 总索引 · 观察清单</text>
+  <text x="930" y="856" class="small" font-size="12">成品仓库：个股研究专区 / 红利专区；历史输出仅案例</text>
+
+  <!-- Dividend and portfolio -> output -->
+  <line x1="520" y1="757" x2="520" y2="795" stroke="#5B6B7C" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1275" y1="757" x2="1275" y2="795" stroke="#5B6B7C" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- QA layer -->
+  <rect x="60" y="908" width="1480" height="70" rx="16" fill="#FDECEC" stroke="#B42318" stroke-width="1.5" filter="url(#shadow)"/>
+  <text x="85" y="940" class="h2" font-size="18">QA / 版本层</text>
+  <text x="85" y="963" class="body" font-size="13">链接检查 · 公式检查 · 数字一致性 · 日期新鲜度 · 评级一致性 · Manifest · Changelog</text>
+
+  <line x1="800" y1="883" x2="800" y2="908" stroke="#5B6B7C" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <text x="60" y="998" class="small" font-size="12">颜色：蓝 = 数据/输出；绿 = 研究协议；橙 = 红利；紫 = 组合；红 = QA。</text>
+  <text x="60" y="1020" class="small" font-size="12">权威顺序：方法论 skill &gt; 专项框架 &gt; 单份报告 &gt; 历史成品；冲突时以 00-总架构.md 第 3 节为准。</text>
+</svg>
