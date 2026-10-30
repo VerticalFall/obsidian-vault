@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>韭菜指数 · 2026.10.29 全天 · 昨天KTV，今天ICU</title>
+<style>
+:root{--ink:#0d1117;--paper:#f7f4ec;--paper2:#efe9dc;--line:#d8cfbb;--soft:#6b6457;--bull:#c0392b;--bull-bg:#fbeae7;--bear:#0a8f5b;--bear-bg:#e6f4ec;--warn:#b8860b;--accent:#1f4e79;--hl:#ff7a00;--hl-bg:#fff0b3;--fun:#e74c3c;--fun-bg:#fdecea;--ice:#4a90d9}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--paper);color:var(--ink);line-height:1.75}
+.wrap{max-width:1160px;margin:0 auto;padding:0 26px 60px}
+.hero{padding:42px 0 22px;border-bottom:2px solid var(--ink)}
+.kicker{font-size:13px;letter-spacing:4px;color:var(--accent);font-weight:700}
+.hero h1{font-size:24px;font-weight:800;line-height:1.5;margin:12px 0 8px}
+.hero h1 em{font-style:normal;color:var(--fun);border-bottom:3px solid var(--fun)}
+.hero .meta{font-size:12.5px;color:var(--soft);line-height:1.7}
+.type-tag{display:inline-block;font-size:12px;font-weight:700;padding:3px 8px;border-radius:4px;background:var(--accent);color:#fff;margin-right:8px}
+.badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.badge{font-size:12px;font-weight:600;padding:5px 12px;border-radius:999px;border:1px solid var(--line);background:#fff}
+.badge.w{color:var(--bull);border-color:#eccac4}.badge.g{color:var(--bear);border-color:#bfe0cd}
+.badge.hl-badge{color:var(--hl);border-color:var(--hl);background:var(--hl-bg)}
+.badge.fun-badge{color:var(--fun);border-color:#e74c3c;background:var(--fun-bg)}
+.lead{font-size:14.5px;line-height:1.95;margin-top:14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.lead b{color:var(--fun)}
+.eyebrow{display:flex;align-items:center;gap:10px;margin:30px 0 12px}
+.eyebrow .num{font-size:13px;font-weight:800;color:#fff;background:var(--ink);width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.eyebrow .label{font-size:13px;letter-spacing:1px;color:var(--accent);font-weight:700}
+.sec-title{font-size:21px;font-weight:800;margin-bottom:12px}
+.sec-desc{font-size:12.5px;color:var(--soft);margin-bottom:10px}
+.thermo-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px 16px 18px}
+.thermo{text-align:center;display:flex;flex-direction:column;align-items:center}
+.thermo svg{width:74px;height:180px;display:block}
+.thermo .t-name{font-size:13px;font-weight:800;margin-top:6px}
+.thermo .t-val{font-size:22px;font-weight:800;line-height:1.1;margin-top:2px}
+.thermo .t-cmp{font-size:10.5px;font-weight:800;margin-top:3px;padding:1px 8px;border-radius:4px;background:var(--bull-bg);color:var(--bull);border:1px solid #eccac4;white-space:nowrap}
+.thermo .t-cmp.dn{background:var(--bear-bg);color:var(--bear);border-color:#bfe0cd}
+.thermo .t-cmp .prev{color:var(--soft);font-weight:600}
+.thermo .t-desc{font-size:11px;color:var(--soft);margin-top:4px;line-height:1.5;padding:0 4px}
+.thermo-note{font-size:12.5px;color:var(--soft);margin-top:12px;text-align:center;line-height:1.8}
+.rank-card{display:grid;grid-template-columns:44px 1fr 96px;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 18px;margin:6px 0}
+.rank-card.top1{border:2px solid var(--fun);box-shadow:3px 3px 0 var(--fun)}
+.rank-card.top2{border:2px solid var(--hl);box-shadow:3px 3px 0 var(--hl)}
+.rank-card.top3{border:2px solid var(--accent);box-shadow:3px 3px 0 var(--accent)}
+.rank-num{font-size:24px;font-weight:800;text-align:center}
+.rank-num.r1{color:var(--fun)}.rank-num.r2{color:var(--hl)}.rank-num.r3{color:var(--accent)}
+.rank-info .name{font-size:14px;font-weight:800;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.rank-info .desc{font-size:12px;color:var(--soft);margin-top:2px;line-height:1.65}
+.rank-score{text-align:center}
+.rank-score .big{font-size:25px;font-weight:800;line-height:1}
+.rank-score .unit{font-size:10px;color:var(--soft);font-weight:600}
+.chg{font-size:11px;font-weight:700;padding:2px 6px;border-radius:3px}
+.chg-up{color:var(--bull);background:var(--bull-bg)}.chg-dn{color:var(--bear);background:var(--bear-bg)}
+.tag{font-size:10px;font-weight:700;padding:1px 7px;border-radius:4px;background:var(--paper2);border:1px solid var(--line);color:var(--ink)}
+.deep-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+.deep-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:15px 18px;position:relative;overflow:hidden}
+.deep-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px}
+.deep-card.c1::before{background:#e74c3c}.deep-card.c2::before{background:#0a8f5b}
+.deep-card.c3::before{background:#ff7a00}.deep-card.c4::before{background:#d9a500}
+.deep-card.c5::before{background:#1f4e79}.deep-card.c6::before{background:#7a3fa0}
+.dc-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;gap:6px}
+.dc-name{font-size:15px;font-weight:800;display:flex;align-items:center;gap:5px}
+.dc-tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:4px;background:var(--paper2);color:var(--ink);border:1px solid var(--line);white-space:nowrap}
+.dc-bignum{font-size:30px;font-weight:800;line-height:1.15;margin:3px 0}
+.dc-bignum .unit{font-size:13px;color:var(--soft);font-weight:600;margin-left:2px}
+.dc-data{font-size:12.5px;line-height:1.8;margin:5px 0}
+.dc-data .row{margin:1px 0}
+.dc-data .row b{font-weight:800;margin-right:3px}
+.dc-l1strip{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:7px 0 5px}
+.dc-l1{display:flex;flex-direction:column;align-items:center;padding:5px 2px;border-radius:5px;border:1.5px solid;font-size:10px;line-height:1.3}
+.dc-l1 .pct{font-size:13px;font-weight:800;display:block;margin-bottom:1px}
+.dc-l1.l1{background:#fdecea;border-color:#e74c3c;color:#c0392b}
+.dc-l1.l2{background:#fff0b3;border-color:#ff7a00;color:#b85c00}
+.dc-l1.l3{background:#e8f0fa;border-color:#4a90d9;color:#1f4e79}
+.dc-l1.l4{background:#e6f4ec;border-color:#0a8f5b;color:#0a6e44}
+.dc-l1.l5{background:#f0ebe0;border-color:#8a8272;color:#5a5246}
+.dc-ding{font-size:12px;color:var(--accent);font-weight:600;margin-top:5px;line-height:1.7;padding:6px 9px;background:var(--paper2);border-radius:5px}
+.det-box{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:22px 24px;margin:12px 0;box-shadow:4px 4px 0 var(--ink)}
+.det-box .det-head{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.det-box .det-head .dn{font-size:15px;font-weight:800}
+.det-box .det-head .dt{font-size:11px;font-weight:800;padding:3px 10px;border-radius:4px;background:var(--ink);color:var(--paper)}
+.det-kicker{font-size:13px;color:var(--soft);margin-bottom:12px;line-height:1.8}
+.det-verdict{font-size:14px;font-weight:700;line-height:1.9;background:var(--hl-bg);border:1px dashed var(--hl);border-radius:8px;padding:10px 14px;margin-top:12px}
+.det-verdict b{color:var(--fun)}
+.fund-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:12px 0}
+.fund-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:6px}
+.fund-col{border-radius:10px;padding:12px 16px}
+.fund-col.in{background:var(--bear-bg);border:1px solid #bfe0cd}
+.fund-col.out{background:var(--bull-bg);border:1px solid #eccac4}
+.fund-col .fh{font-size:13px;font-weight:800;margin-bottom:6px}
+.fund-col.in .fh{color:var(--bear)}.fund-col.out .fh{color:var(--bull)}
+.fund-row{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;padding:4px 0;border-bottom:1px dashed rgba(0,0,0,.08)}
+.fund-row:last-child{border-bottom:none}
+.fund-row .fn{font-weight:600}.fund-row .fv{font-weight:800;white-space:nowrap}
+.fund-col.in .fv{color:var(--bear)}.fund-col.out .fv{color:var(--bull)}
+.fund-note{font-size:12.5px;color:var(--soft);margin-top:10px;line-height:1.85}
+.fund-note b{color:var(--fun)}
+.pre-wrap{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin:12px 0}
+.pre-item{padding:9px 14px;margin:6px 0;border-left:4px solid var(--accent);background:var(--paper);border-radius:0 8px 8px 0;font-size:13px;line-height:1.75}
+.pre-item b{color:var(--fun)}
+.conf-item{padding:9px 14px;margin:6px 0;border-left:4px solid var(--fun);background:#fff;border:1px solid var(--line);border-radius:0 8px 8px 0;font-size:13px;line-height:1.75}
+.conf-item b{color:var(--fun)}
+.etf-verdict{display:flex;gap:16px;align-items:center;background:#fff;border:2px solid var(--hl);border-radius:12px;padding:16px 20px;margin:12px 0}
+.etf-verdict .stamp{flex-shrink:0;text-align:center;background:var(--hl-bg);border:2px solid var(--hl);border-radius:10px;padding:10px 16px}
+.etf-verdict .stamp .big{font-size:20px;font-weight:800;color:var(--hl);line-height:1.3}
+.etf-verdict .stamp .sub{font-size:11px;color:var(--soft);font-weight:600}
+.etf-verdict .why{font-size:12.5px;line-height:1.85}
+.etf-verdict .why b{color:var(--fun)}
+.timeline-table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:12px;font-size:12.5px}
+.timeline-table th{background:#efe9dc;color:var(--accent);font-size:11.5px;font-weight:800;padding:9px 8px;text-align:center;border-bottom:1px solid var(--line);white-space:nowrap}
+.timeline-table td{padding:9px 8px;text-align:center;border-bottom:1px dashed rgba(0,0,0,.07);line-height:1.6}
+.timeline-table tr:last-child td{border-bottom:none}
+.timeline-table td:first-child{text-align:left;padding-left:14px;font-weight:800;white-space:nowrap}
+.disc{font-size:11.5px;color:var(--soft);margin-top:22px;padding:12px;background:#fff;border:1px dashed var(--line);border-radius:10px;line-height:1.75}
+.footer{margin-top:28px;padding-top:16px;border-top:2px solid var(--ink);font-size:12px;color:var(--soft);text-align:center;line-height:1.9}
+.up-t{color:var(--bull);font-weight:700}.dn-t{color:var(--bear);font-weight:700}
+@media(max-width:760px){
+  .wrap{padding:0 15px 46px}.hero h1{font-size:20px}
+  .thermo-grid{grid-template-columns:repeat(2,1fr);gap:10px 6px}
+  .fund-cols{grid-template-columns:1fr}
+  .deep-grid{grid-template-columns:1fr}
+  .rank-card{grid-template-columns:34px 1fr 72px;gap:8px;padding:10px 12px}
+  .two-col{grid-template-columns:1fr}
+}
+
+body{font-family:-apple-system,"PingFang SC","Microsoft YaHei","Segoe UI Emoji","Apple Color Emoji",sans-serif}
+.fund-col.in{background:var(--bull-bg);border-color:#eccac4}
+.fund-col.in .fh,.fund-col.in .fv{color:var(--bull)}
+.fund-col.out{background:var(--bear-bg);border-color:#bfe0cd}
+.fund-col.out .fh,.fund-col.out .fv{color:var(--bear)}
+.verify-t{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:10px 0;font-size:12.5px}
+.verify-t th{background:var(--paper2);color:var(--accent);font-size:11.5px;font-weight:800;padding:7px 8px;border-bottom:1px solid var(--line);text-align:center}
+.verify-t td{padding:7px 8px;border-bottom:1px dashed rgba(0,0,0,.07);text-align:center;line-height:1.55}
+.verify-t td:first-child{text-align:left;font-weight:700}
+.verify-t tr:last-child td{border-bottom:none}
+.l5-t{width:100%;border-collapse:collapse;font-size:12.5px;min-width:660px;margin:10px 0 2px}
+.l5-t th{padding:7px 6px;text-align:center;font-weight:700;font-size:11.5px;border-bottom:2px solid var(--ink);white-space:nowrap}
+.l5-t th:first-child{text-align:left}
+.l5-t td{padding:7px 6px;text-align:center;font-weight:700;font-size:13px;border-top:1px solid var(--line);white-space:nowrap}
+.l5-t td.name{text-align:left;font-size:12.5px;font-weight:700;white-space:nowrap}
+.l5-t td.c-l1{color:#c0392b}.l5-t td.c-l2{color:#b85c00}.l5-t td.c-l3{color:#1f4e79}.l5-t td.c-l4{color:#0a6e44}.l5-t td.c-l5{color:#5a5246}
+.l5-bar{height:10px;border-radius:5px;overflow:hidden;display:flex;min-width:180px}
+.l5-bar i{display:block;height:100%}
+.l5-bar .b1{background:#e74c3c}.l5-bar .b2{background:#ff7a00}.l5-bar .b3{background:#4a90d9}.l5-bar .b4{background:#0a8f5b}.l5-bar .b5{background:#8a8272}
+.l5-legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:10px;font-size:11.5px;color:var(--soft);line-height:1.6}
+.l5-legend span b{font-weight:800}
+.l5-legend .d1{color:#c0392b}.l5-legend .d2{color:#b85c00}.l5-legend .d3{color:#1f4e79}.l5-legend .d4{color:#0a6e44}.l5-legend .d5{color:#5a5246}
+</style>
+</head>
+<body>
+<!--
+  ══════════════════════════════════════════════════════════════
+  韭菜指数 v4.0 · 全天版模板（原版格式精简版，1160px 宽屏双列版式）
+  本模板 = 2026.10.16 精简版原样（6017字→4806字），每期保留全部结构、只替换数据。
+  
+  ⛔ 结构不可砍清单（砍字只砍论述，永远不砍结构）：
+  1. TOP10 十张完整卡片
+  2. 深吃瓜六张双列彩条卡 + L1~L5 五级分布条（五色块各带pct）
+  3. 韭菜浓度普查表（含分布条形图+图例+侦探结论）
+  4. 国家队资金动向：etf-verdict 四条证据 + 16只ETF对账表 + SVG条形图 + 四维验证表
+  5. 尾盘时间轴 + 资金双栏 + 核心矛盾 + 三情景预判 + 免责
+  
+  ✂️ 砍字优先级（超4500字时）：
+  ① disc口径段（只留4段：口径/ETF口径/L1-L5/免责）
+  ② TOP10 desc ≤80字（砍罗列，保金句）
+  ③ 深吃瓜 dc-data 每行 ≤40字；断症保留灵魂（≤100字，带情绪带金句）
+  ④ det-verdict ≤130字
+  ⑤ 数据结构、数字、L1-L5、环比标签永远不砍
+  
+  📐 关键换算：
+  · 温度计水银柱：viewBox 70×200，管底y=150，柱高=分数×1.22，柱y=150-柱高
+    · 例：45分→高55,y95（四舍五入即可） 78分→高95,y55
+    · 色阶：红(85+){fun红} / 橙(70-84)#ff7a00 / 黄(45-69)#e8c34a / 青绿(30-44)#3aa88f / 绿(<30)#0a8f5b
+  · ETF SVG条形图：每1x=60px宽，条形起x=150，2x线=270，5x线=450
+  · 分数打分按 references/scoring-v4.md 锚点复算
+  
+  🔄 每期流程：复制本模板 → 通达信采集 → 替换全部数据 → 自检字数(≤4500) → 出PNG
+  ══════════════════════════════════════════════════════════════
+-->
+
+<div class="wrap">
+
+<header class="hero">
+  <div class="kicker"><span class="type-tag">韭菜指数</span> 散户吃瓜指数 · Retail Watcher · 2026.10.29 全天收盘（周四）</div>
+  <h1>昨天KTV，今天ICU：<em>创业板-4.45%</em>创14个月新低，<br>银行+1.98%四大行市值破10万亿——AI硬件杀估值，钱躲进红利</h1>
+  <div class="meta">
+    版本：韭菜指数 TOP10 · 全天收盘 15:00 · 环比参考：10/28 全天（上一期）；温度计环比基准：10/28 全天读数<br>
+    数据来源：东方财富日K/涨停池收盘口径（16只ETF逐一对账） + 腾讯行情 + 财联社/21财经 + 公开讨论（v4.0 精简版）
+  </div>
+  <div class="badge-row">
+    <span class="badge w">📉 沪指 -0.82% 报 3651.43 · 深成 -2.92% · 创业板 -4.45% · 科创50 -4.27%</span>
+    <span class="badge w">📊 量能 1.56 万亿 · 较昨缩 720 亿 · 为20日均量的 97.7%</span>
+    <span class="badge w">🌱 756 涨 / 4400 跌（14.5%）· 涨停 39 · 炸板 25 · 跌停 41 · 封板率 60.9% · 最高4板</span>
+    <span class="badge hl-badge">💾 AI硬件：CPO -6.78% · PCB -5.55% · 半导体 -5.55% · 通信设备 -5.53%</span>
+    <span class="badge fun-badge">🏦 防御：银行 +1.98% · 保险 +1.61% · 煤炭 +0.57% · 白酒 -1.45%</span>
+    <span class="badge g">🏛 国家队：300ETF四只合计1.03x · 50ETF 0.76x · 16只合计591亿</span>
+  </div>
+  <div class="lead">
+    <b>一句话看懂：</b>昨天还是KTV，今天直接ICU——<b>但钱没消失，是换岗了</b>。天孚通信业绩不及预期-19.77%，叠加Alphabet盘后-10%、三星Q3 miss，AI硬件链被集体杀估值；银行/保险/煤炭/食品接走避险资金，四大行总市值破10万亿。<b>指数被权重护住，成长被抽干</b>：沪指仅-0.82%，创业板-4.45%。
+  </div>
+</header>
+
+<!-- ① 温度计 -->
+<div class="eyebrow"><span class="num">🌡</span><span class="label">市场体温计 · 2026.10.29 全天收盘 · 环比 10/28 全天</span></div>
+
+<div class="thermo-grid">
+  <div class="thermo">
+    <svg viewBox="0 0 70 200" aria-label="市场热度42度">
+      <line x1="46" y1="26" x2="52" y2="26" stroke="#b5ab96" stroke-width="1.5"/>
+      <line x1="46" y1="89" x2="52" y2="89" stroke="#b5ab96" stroke-width="1.5"/>
+      <line x1="46" y1="152" x2="52" y2="152" stroke="#b5ab96" stroke-width="1.5"/>
+      <text x="56" y="30" font-size="9" fill="#8a8272">100</text>
+      <text x="56" y="93" font-size="9" fill="#8a8272">50</text>
+      <text x="56" y="156" font-size="9" fill="#8a8272">0</text>
+      <rect x="26" y="22" width="14" height="128" rx="7" fill="#f5f0e6" stroke="#9a9180" stroke-width="2"/>
+      <rect x="28" y="96" width="10" height="54" rx="5" fill="#4a90d9"/>
+      <circle cx="33" cy="96" r="5" fill="#4a90d9"/>
+    </svg>
+    <div class="t-name">市场热度</div>
+    <div class="t-val" style="color:#4a90d9">42°</div>
+    <div class="t-cmp dn">↓31 <span class="prev">昨全天73°</span></div>
+    <div class="t-desc">量能97.7%·仅14.5%上涨</div>
+  </div>
+  <div class="thermo">
+    <svg viewBox="0 0 70 200" aria-label="赚钱效应30度">
+      <line x1="46" y1="26" x2="52" y2="26" stroke="#b5ab96" stroke-width="1.5"/>
+      <line x1="46" y1="89" x2="52" y2="89" stroke="#b5ab96" stroke-width="1.5"/>
+      <line x1="46" y1="152" x2="52" y2="152" stroke="#b5ab96" stroke-width="1.5"/>
+      <text x="56" y="30" font-size="9" fill="#8a8272">100</text>
+      <text x="56" y="93" font-size="9" fill="#8a8272">50</text>
+      <text x="56" y="156" font-size="9" fill="#8a8272">0</text>
+      <rect x="26" y="22" width="14" height="128" rx="7" fill="#f5f0e6" stroke="#9a9180" stroke-width="2"/>
+      <rect x="28" y="112" width="10" height="38" rx="5" fill="#4a90d9"/>
+      <circle cx="33" cy="112" r="5" fill="#4a90d9"/>
+    </svg>
+    <div class="t-name">赚钱效应</div>
+    <div class="t-val" style="color:#4a90d9">30°</div>
+    <div class="t-cmp dn">↓53 <span class="prev">昨全天83°</span></div>
+    <div class="t-desc">39涨停·4板·普跌</div>
+  </div>
+  <div class="thermo">
+    <svg viewBox="0 0 70 200" aria-label="讨论热度52度">
+      <line x1="46" y1="26" x2="52" y2="26" stroke="#b5ab96" stroke-width="1.5"/>
+      <line x1="46" y1="89" x2="52" y2="89" stroke="#b5ab96" stroke-width="1.5"/>
+      <line x1="46" y1="152" x2="52" y2="152" stroke="#b5ab96" stroke-width="1.5"/>
+      <text x="56" y="30" font-size="9" fill="#8a8272">100</text>
+      <text x="56" y="93" font-size="9" fill="#8a8272">50</text>
+      <text x="56" y="156" font-size="9" fill="#8a8272">0</text>
+      <rect x="26" y="22" width="14" height="128" rx="7" fill="#f5f0e6" stroke="#9a9180" stroke-width="2"/>
+      <rect x="28" y="83" width="10" height="67" rx="5" fill="#ff7a00"/>
+      <circle cx="33" cy="83" r="5" fill="#ff7a00"/>
+    </svg>
+    <div class="t-name">讨论热度</div>
+    <div class="t-val" style="color:#ff7a00">52°</div>
+    <div class="t-cmp dn">↓19 <span class="prev">昨全天71°</span></div>
+    <div class="t-desc">成交额环比-4.4%</div>
+  </div>
+  <div class="thermo">
+    <svg viewBox="0 0 70 200" aria-label="恐贪情绪66度">
+      <line x1="46" y1="26" x2="52" y2="26" stroke="#b5ab96" stroke-width="1.5"/>
+      <line x1="46" y1="89" x2="52" y2="89" stroke="#b5ab96" stroke-width="1.5"/>
+      <line x1="46" y1="152" x2="52" y2="152" stroke="#b5ab96" stroke-width="1.5"/>
+      <text x="56" y="30" font-size="9" fill="#8a8272">100</text>
+      <text x="56" y="93" font-size="9" fill="#8a8272">50</text>
+      <text x="56" y="156" font-size="9" fill="#8a8272">0</text>
+      <rect x="26" y="22" width="14" height="128" rx="7" fill="#f5f0e6" stroke="#9a9180" stroke-width="2"/>
+      <rect x="28" y="66" width="10" height="84" rx="5" fill="#c8a415"/>
+      <circle cx="33" cy="66" r="5" fill="#c8a415"/>
+    </svg>
+    <div class="t-name">恐贪情绪</div>
+    <div class="t-val" style="color:#c8a415">66°</div>
+    <div class="t-cmp">↑2 <span class="prev">昨全天64°</span></div>
+    <div class="t-desc">封板率60.9%·炸板25家</div>
+  </div>
+  <div class="thermo">
+    <svg viewBox="0 0 70 200" aria-label="风险偏好14度">
+      <line x1="46" y1="26" x2="52" y2="26" stroke="#b5ab96" stroke-width="1.5"/>
+      <line x1="46" y1="89" x2="52" y2="89" stroke="#b5ab96" stroke-width="1.5"/>
+      <line x1="46" y1="152" x2="52" y2="152" stroke="#b5ab96" stroke-width="1.5"/>
+      <text x="56" y="30" font-size="9" fill="#8a8272">100</text>
+      <text x="56" y="93" font-size="9" fill="#8a8272">50</text>
+      <text x="56" y="156" font-size="9" fill="#8a8272">0</text>
+      <rect x="26" y="22" width="14" height="128" rx="7" fill="#f5f0e6" stroke="#9a9180" stroke-width="2"/>
+      <rect x="28" y="132" width="10" height="18" rx="5" fill="#0a8f5b"/>
+      <circle cx="33" cy="132" r="5" fill="#0a8f5b"/>
+    </svg>
+    <div class="t-name">风险偏好</div>
+    <div class="t-val" style="color:#0a8f5b">14°</div>
+    <div class="t-cmp dn">↓76 <span class="prev">昨全天90°</span></div>
+    <div class="t-desc">进攻-2.3% vs 防御-0.4%</div>
+  </div>
+</div>
+<div class="thermo-note">四降一升：指数、赚钱、讨论、风险偏好全部降温，唯独恐贪从64°升到66°——涨停从72家缩到39家，封板率却从51%升到61%，留下来的都是硬板。<br>分数按 scoring-v4 锚点复算；涨停均值用近14日替代（9/23-10/8池数据缺失，已标注）。</div>
+
+<!-- 验证点对答案 -->
+<div class="eyebrow"><span class="num">✓</span><span class="label">昨日三问 · 对答案（10/28 收盘复盘）</span></div>
+<table class="verify-t">
+  <thead><tr><th style="text-align:left">昨日预判</th><th>今日实际</th><th style="width:60px">判定</th></tr></thead>
+  <tbody>
+    <tr><td>A｜延续反弹（35%）</td><td>创业板未站稳2630，收2517.59，-4.45%</td><td style="color:#0a8f5b;font-weight:800">✗</td></tr>
+    <tr><td>B｜冲高回落（45%）</td><td>开盘即最高，全天单边下行；沪指回踩3650兑现</td><td style="color:#b8860b;font-weight:800">半对</td></tr>
+    <tr><td>C｜防御反扑（20%）</td><td>银行+1.98%、四大行市值破10万亿；但沪指失守3680</td><td style="color:#c0392b;font-weight:800">方向✓</td></tr>
+  </tbody>
+</table>
+<div class="thermo-note">最大误判：只给防御反扑20%——低估了“业绩雷+海外科技杀跌”的共振，也高估了超跌反弹的持续性。</div>
+
+<!-- ② TOP10 -->
+<div class="eyebrow"><span class="num">🔥</span><span class="label">散户围观榜 TOP10 · 今天大家在聊什么</span></div>
+<h2 class="sec-title">十张卡看懂：从AI硬件预期差，到银行红利走强</h2>
+<div class="sec-desc">按讨论热度排序：业绩雷、杀估值、避险搬家三条线，构成今天的全部叙事。</div>
+
+<div class="rank-card top1">
+  <div class="rank-num r1">1</div>
+  <div class="rank-info">
+    <div class="name">💥 创业板-4.45%·14个月新低 <span class="tag">开盘即最高</span></div>
+    <div class="desc">创业板-4.45%创14个月新低，科创50-4.27%；开盘即最高，收盘接近最低。</div>
+  </div>
+  <div class="rank-score"><div class="big" style="color:#e74c3c">99</div><div class="unit">讨论度</div></div>
+</div>
+<div class="rank-card top2">
+  <div class="rank-num r2">2</div>
+  <div class="rank-info">
+    <div class="name">💾 CPO/光模块·预期差 <span class="tag">天孚-19.77%</span></div>
+    <div class="desc">CPO-6.78%、主力净流出205.6亿；天孚-19.77%、新易盛-11%、中际-8.53%。</div>
+  </div>
+  <div class="rank-score"><div class="big" style="color:#e74c3c">97</div><div class="unit">讨论度</div></div>
+</div>
+<div class="rank-card top3">
+  <div class="rank-num r3">3</div>
+  <div class="rank-info">
+    <div class="name">🏦 银行·市值破10万亿 <span class="tag">避险主战场</span></div>
+    <div class="desc">银行+1.98%、保险+1.61%，工行+2.57%、建行+2.29%，四大行总市值破10万亿。</div>
+  </div>
+  <div class="rank-score"><div class="big" style="color:#c0392b">95</div><div class="unit">讨论度</div></div>
+</div>
+<div class="rank-card">
+  <div class="rank-num">4</div>
+  <div class="rank-info">
+    <div class="name">🚀 商业航天·逆势涨停 <span class="tag">上海卫星方案</span></div>
+    <div class="desc">上海卫星互联网行动方案催化，中国卫星、航天晨光涨停；中国卫星盘中炸板8次。</div>
+  </div>
+  <div class="rank-score"><div class="big" style="color:#ff7a00">92</div><div class="unit">讨论度</div></div>
+</div>
+<div class="rank-card">
+  <div class="rank-num">5</div>
+  <div class="rank-info">
+    <div class="name">🔬 半导体·存储补跌 <span class="tag">佰维-15.79%</span></div>
+    <div class="desc">半导体-5.55%、存储大跌，佰维-15.79%；主力净流出136.4亿。</div>
+  </div>
+  <div class="rank-score"><div class="big" style="color:#0a8f5b">89</div><div class="unit">讨论度</div></div>
+</div>
+<div class="rank-card">
+  <div class="rank-num">6</div>
+  <div class="rank-info">
+    <div class="name">📉 情绪冰点·涨停缩半 <span class="tag">39 vs 72</span></div>
+    <div class="desc">涨停39家（昨72）、炸板25家、跌停41家；124只跌超9.8%，封板率60.9%。</div>
+  </div>
+  <div class="rank-score"><div class="big" style="color:#4a90d9">86</div><div class="unit">讨论度</div></div>
+</div>
+<div class="rank-card">
+  <div class="rank-num">7</div>
+  <div class="rank-info">
+    <div class="name">🌍 海外科技·隔夜共振 <span class="tag">Alphabet-10%</span></div>
+    <div class="desc">Alphabet盘后-10%、三星Q3 miss；美10年期国债5.028%，全球科技杀估值。</div>
+  </div>
+  <div class="rank-score"><div class="big" style="color:#8a8272">83</div><div class="unit">讨论度</div></div>
+</div>
+<div class="rank-card">
+  <div class="rank-num">8</div>
+  <div class="rank-info">
+    <div class="name">🍔 食品消费·低位涨停 <span class="tag">青岛食品4板</span></div>
+    <div class="desc">巴比食品、惠发食品、一鸣食品涨停，青岛食品4板；低位消费成避风港。</div>
+  </div>
+  <div class="rank-score"><div class="big" style="color:#c0392b">80</div><div class="unit">讨论度</div></div>
+</div>
+<div class="rank-card">
+  <div class="rank-num">9</div>
+  <div class="rank-info">
+    <div class="name">🤖 机器人·退潮 <span class="tag">襄阳炸板20次</span></div>
+    <div class="desc">机器人-5.51%、汽零-3.64%；襄阳轴承炸板20次仍收+6.47%，光洋4板。</div>
+  </div>
+  <div class="rank-score"><div class="big" style="color:#0a8f5b">77</div><div class="unit">讨论度</div></div>
+</div>
+<div class="rank-card">
+  <div class="rank-num">10</div>
+  <div class="rank-info">
+    <div class="name">🛢 煤炭/红利·内部分化 <span class="tag">开滦涨停</span></div>
+    <div class="desc">煤炭+0.57%、开滦股份涨停；有色-2.60%、黄金ETF仅0.79x，资源内部分化。</div>
+  </div>
+  <div class="rank-score"><div class="big" style="color:#ff7a00">73</div><div class="unit">讨论度</div></div>
+</div>
+
+<!-- ③ 深吃瓜 -->
+<div class="eyebrow"><span class="num">2</span><span class="label">前六大板块深吃瓜（含 L1~L5 散户分级）</span></div>
+<h2 class="sec-title">每张卡片：核心数据 + 散户五级 + 一句话断症</h2>
+
+<div class="deep-grid">
+  <div class="deep-card c1">
+    <div class="dc-top"><span class="dc-name">💾 CPO/光模块</span><span class="dc-tag">💾 预期差·机构夺门</span></div>
+    <div class="dc-bignum" style="color:#0a8f5b">-6.78%<span class="unit">CPO板块·L1+L2 39%</span></div>
+    <div class="dc-data">
+      <div class="row"><b>盘面：</b>CPO-6.78%、通信设备-5.53%，主力净流出205.6亿</div>
+      <div class="row"><b>个股：</b>天孚-19.77%、新易盛-11.06%、中际旭创-8.53%</div>
+    </div>
+    <div class="dc-l1strip">
+      <div class="dc-l1 l1"><span class="pct">15%</span>L1 🥬</div>
+      <div class="dc-l1 l2"><span class="pct">24%</span>L2 🐣</div>
+      <div class="dc-l1 l3"><span class="pct">32%</span>L3 🧭</div>
+      <div class="dc-l1 l4"><span class="pct">22%</span>L4 📈</div>
+      <div class="dc-l1 l5"><span class="pct">7%</span>L5 🏛</div>
+    </div>
+    <div class="dc-ding">断症：天孚Q3净利8.79亿、同比+55.3%仍低于预期，把“光模块永动机”砸出裂缝——L1+L2 39%不高，但L4+L5 29%的机构也在跑。这是杀估值，不是杀情绪。</div>
+  </div>
+  <div class="deep-card c2">
+    <div class="dc-top"><span class="dc-name">🏦 银行/红利</span><span class="dc-tag">🏦 市值破10万亿·避险</span></div>
+    <div class="dc-bignum" style="color:#c0392b">+1.98%<span class="unit">银行板块·L1+L2 16%</span></div>
+    <div class="dc-data">
+      <div class="row"><b>盘面：</b>银行+1.98%、保险+1.61%，主力净流入1.11亿</div>
+      <div class="row"><b>个股：</b>工行+2.57%、建行+2.29%、农行+1.75%、中行+1.99%</div>
+    </div>
+    <div class="dc-l1strip">
+      <div class="dc-l1 l1"><span class="pct">6%</span>L1 🥬</div>
+      <div class="dc-l1 l2"><span class="pct">10%</span>L2 🐣</div>
+      <div class="dc-l1 l3"><span class="pct">24%</span>L3 🧭</div>
+      <div class="dc-l1 l4"><span class="pct">38%</span>L4 📈</div>
+      <div class="dc-l1 l5"><span class="pct">22%</span>L5 🏛</div>
+    </div>
+    <div class="dc-ding">断症：四大行总市值破10万亿、工行建行股价新高，L1+L2只有16%、L4+L5 60%——这是机构与红利的阵地战，不是散户的狂欢。避险资金用脚投票：不要故事，要股息。</div>
+  </div>
+  <div class="deep-card c3">
+    <div class="dc-top"><span class="dc-name">🚀 商业航天/卫星</span><span class="dc-tag">🚀 新故事·逆势涨停</span></div>
+    <div class="dc-bignum" style="color:#ff7a00">+10.00%<span class="unit">中国卫星·L1+L2 60%</span></div>
+    <div class="dc-data">
+      <div class="row"><b>催化：</b>上海发布卫星互联网行动方案，商业航天约10股涨停</div>
+      <div class="row"><b>盘面：</b>中国卫星、航天晨光涨停；板块仍-1.81%，中国卫星炸板8次</div>
+    </div>
+    <div class="dc-l1strip">
+      <div class="dc-l1 l1"><span class="pct">30%</span>L1 🥬</div>
+      <div class="dc-l1 l2"><span class="pct">30%</span>L2 🐣</div>
+      <div class="dc-l1 l3"><span class="pct">24%</span>L3 🧭</div>
+      <div class="dc-l1 l4"><span class="pct">12%</span>L4 📈</div>
+      <div class="dc-l1 l5"><span class="pct">4%</span>L5 🏛</div>
+    </div>
+    <div class="dc-ding">断症：中国卫星10:24封板、盘中炸8次，L1+L2 60%全场最高——新故事、大空间、人人懂。但板块-1.81%，说明只有龙头在飞，跟风股没人接。</div>
+  </div>
+  <div class="deep-card c4">
+    <div class="dc-top"><span class="dc-name">🍔 食品/大消费</span><span class="dc-tag">🍔 低位补涨·避风港</span></div>
+    <div class="dc-bignum" style="color:#c0392b">4板<span class="unit">青岛食品·L1+L2 56%</span></div>
+    <div class="dc-data">
+      <div class="row"><b>盘面：</b>食品饮料-0.47%，白酒-1.45%；茅台逆势+1.75%</div>
+      <div class="row"><b>个股：</b>巴比食品、惠发食品、一鸣食品涨停，青岛食品4板</div>
+    </div>
+    <div class="dc-l1strip">
+      <div class="dc-l1 l1"><span class="pct">28%</span>L1 🥬</div>
+      <div class="dc-l1 l2"><span class="pct">28%</span>L2 🐣</div>
+      <div class="dc-l1 l3"><span class="pct">26%</span>L3 🧭</div>
+      <div class="dc-l1 l4"><span class="pct">14%</span>L4 📈</div>
+      <div class="dc-l1 l5"><span class="pct">4%</span>L5 🏛</div>
+    </div>
+    <div class="dc-ding">断症：高位AI崩了，低位食品被翻出来：L1+L2 56%，故事朴素到不用研报。青岛食品4板、三家食品首板——这是避险，也是高切低。</div>
+  </div>
+  <div class="deep-card c5">
+    <div class="dc-top"><span class="dc-name">🔬 半导体/存储</span><span class="dc-tag">🔬 补跌·筹码最散</span></div>
+    <div class="dc-bignum" style="color:#0a8f5b">-5.55%<span class="unit">半导体·L1+L2 44%</span></div>
+    <div class="dc-data">
+      <div class="row"><b>盘面：</b>半导体-5.55%、消费电子-5.05%，主力净流出136.4亿</div>
+      <div class="row"><b>个股：</b>佰维存储-15.79%，存储/先进封装全线补跌</div>
+    </div>
+    <div class="dc-l1strip">
+      <div class="dc-l1 l1"><span class="pct">18%</span>L1 🥬</div>
+      <div class="dc-l1 l2"><span class="pct">26%</span>L2 🐣</div>
+      <div class="dc-l1 l3"><span class="pct">32%</span>L3 🧭</div>
+      <div class="dc-l1 l4"><span class="pct">18%</span>L4 📈</div>
+      <div class="dc-l1 l5"><span class="pct">6%</span>L5 🏛</div>
+    </div>
+    <div class="dc-ding">断症：佰维-15.79%把存储故事打回原形；L1+L2 44%，L3 32%——半懂不懂的人最多。AI叙事还在，但筹码先撤了。</div>
+  </div>
+  <div class="deep-card c6">
+    <div class="dc-top"><span class="dc-name">🤖 机器人/汽零</span><span class="dc-tag">🤖 退潮·封不住</span></div>
+    <div class="dc-bignum" style="color:#0a8f5b">-5.51%<span class="unit">机器人·L1+L2 50%</span></div>
+    <div class="dc-data">
+      <div class="row"><b>盘面：</b>机器人-5.51%、汽车零部件-3.64%，主力净流出7.05亿</div>
+      <div class="row"><b>个股：</b>襄阳轴承炸板20次收+6.47%，光洋股份4板但炸17次</div>
+    </div>
+    <div class="dc-l1strip">
+      <div class="dc-l1 l1"><span class="pct">22%</span>L1 🥬</div>
+      <div class="dc-l1 l2"><span class="pct">28%</span>L2 🐣</div>
+      <div class="dc-l1 l3"><span class="pct">30%</span>L3 🧭</div>
+      <div class="dc-l1 l4"><span class="pct">15%</span>L4 📈</div>
+      <div class="dc-l1 l5"><span class="pct">5%</span>L5 🏛</div>
+    </div>
+    <div class="dc-ding">断症：昨天涨停潮，今天退潮：L1+L2 50%，L3 30%，全是短线客。光洋4板炸17次、襄阳炸20次——封不住的不是股价，是信心。</div>
+  </div>
+</div>
+
+<!-- 韭菜浓度普查 -->
+<div class="eyebrow"><span class="num">🔍</span><span class="label">韭菜浓度普查 · 谁最菜？</span></div>
+<h2 class="sec-title">故事浓度最高、避险盘浓度最低——杀估值日的人群分布图</h2>
+
+<div class="det-box">
+  <div class="det-head"><span class="dt">大V解剖</span><span class="dn">韭菜浓度普查：<b>商业航天60%最高、银行红利16%最低</b></span></div>
+  <div class="det-kicker">核心发现：<b>商业航天 L1+L2 60% 全场最高，银行/红利 16% 最低、L4+L5 60%</b>。故事越新韭菜越浓，但“机构多”不等于“会涨”——今天银行涨，是因为避险，不是因为人多。</div>
+  <div style="overflow-x:auto">
+  <table class="l5-t">
+    <thead>
+      <tr><th style="text-align:left">板块</th><th>L1 纯韭菜</th><th>L2 嫩韭菜</th><th>L3 路人</th><th>L4 老手</th><th>L5 机构</th><th>L1+L2 韭菜占比</th><th>韭菜构成条</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="name">🚀 商业航天</td>
+        <td class="c-l1">30%</td><td class="c-l2">30%</td><td class="c-l3">24%</td><td class="c-l4">12%</td><td class="c-l5">4%</td>
+        <td style="color:#c0392b;font-size:14px">60%</td>
+        <td><div class="l5-bar"><i class="b1" style="width:30%"></i><i class="b2" style="width:30%"></i><i class="b3" style="width:24%"></i><i class="b4" style="width:12%"></i><i class="b5" style="width:4%"></i></div></td>
+      </tr>
+      <tr>
+        <td class="name">🍔 食品/消费</td>
+        <td class="c-l1">28%</td><td class="c-l2">28%</td><td class="c-l3">26%</td><td class="c-l4">14%</td><td class="c-l5">4%</td>
+        <td style="color:#c0392b;font-size:14px">56%</td>
+        <td><div class="l5-bar"><i class="b1" style="width:28%"></i><i class="b2" style="width:28%"></i><i class="b3" style="width:26%"></i><i class="b4" style="width:14%"></i><i class="b5" style="width:4%"></i></div></td>
+      </tr>
+      <tr>
+        <td class="name">🤖 机器人/汽零</td>
+        <td class="c-l1">22%</td><td class="c-l2">28%</td><td class="c-l3">30%</td><td class="c-l4">15%</td><td class="c-l5">5%</td>
+        <td style="color:#c0392b;font-size:14px">50%</td>
+        <td><div class="l5-bar"><i class="b1" style="width:22%"></i><i class="b2" style="width:28%"></i><i class="b3" style="width:30%"></i><i class="b4" style="width:15%"></i><i class="b5" style="width:5%"></i></div></td>
+      </tr>
+      <tr>
+        <td class="name">🔬 半导体</td>
+        <td class="c-l1">18%</td><td class="c-l2">26%</td><td class="c-l3">32%</td><td class="c-l4">18%</td><td class="c-l5">6%</td>
+        <td style="color:#1f4e79;font-size:14px">44%</td>
+        <td><div class="l5-bar"><i class="b1" style="width:18%"></i><i class="b2" style="width:26%"></i><i class="b3" style="width:32%"></i><i class="b4" style="width:18%"></i><i class="b5" style="width:6%"></i></div></td>
+      </tr>
+      <tr>
+        <td class="name">💾 CPO/光模块</td>
+        <td class="c-l1">15%</td><td class="c-l2">24%</td><td class="c-l3">32%</td><td class="c-l4">22%</td><td class="c-l5">7%</td>
+        <td style="color:#1f4e79;font-size:14px">39%</td>
+        <td><div class="l5-bar"><i class="b1" style="width:15%"></i><i class="b2" style="width:24%"></i><i class="b3" style="width:32%"></i><i class="b4" style="width:22%"></i><i class="b5" style="width:7%"></i></div></td>
+      </tr>
+      <tr>
+        <td class="name">🏦 银行/红利</td>
+        <td class="c-l1">6%</td><td class="c-l2">10%</td><td class="c-l3">24%</td><td class="c-l4">38%</td><td class="c-l5">22%</td>
+        <td style="color:#0a6e44;font-size:14px">16%</td>
+        <td><div class="l5-bar"><i class="b1" style="width:6%"></i><i class="b2" style="width:10%"></i><i class="b3" style="width:24%"></i><i class="b4" style="width:38%"></i><i class="b5" style="width:22%"></i></div></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="l5-legend">
+    <span class="d1"><b>L1 纯韭菜</b> 刚开户/追涨杀跌</span>
+    <span class="d2"><b>L2 嫩韭菜</b> 懂概念/不会卖</span>
+    <span class="d3"><b>L3 路人</b> 看热闹/轻仓</span>
+    <span class="d4"><b>L4 老手</b> 有体系/会止损</span>
+    <span class="d5"><b>L5 机构</b> 专业/大资金</span>
+  </div>
+  <div class="det-verdict">侦探结论：商业航天60%最高、银行16%最低——一个靠新故事，一个靠旧股息。但浓度只描述人群，不预测涨跌：今天韭菜最浓的商业航天有涨停，机构最浓的银行也涨；真正危险的是CPO——韭菜不多，机构却在夺门而出。</div>
+</div>
+
+<!-- ④ 国家队 -->
+<div class="eyebrow"><span class="num">4</span><span class="label">国家队资金动向 · ETF大搜查 · 16只全网格对账：今天到底来没来？</span></div>
+<h2 class="sec-title">答案：托而不举——300ETF内部裂开，50ETF缩量，成长ETF在接飞刀</h2>
+
+<div class="etf-verdict">
+  <div class="stamp"><div class="big">托而不举</div><div class="sub">护指数，不救成长</div></div>
+  <div class="why">
+    <b>① 300ETF内部裂开：</b>四只合计154亿、仅1.03x均量；159919 2.11x，但510310 0.52x、510330 0.19x。<br>
+    <b>② 50ETF缩量：</b>510050仅0.76x，权重端没有连续托底痕迹。<br>
+    <b>③ 成长ETF放量下跌：</b>159915 1.26x、588000 1.16x，价格却-4.30%/-4.51%——更像接飞刀。<br>
+    <b>④ 量级不够：</b>16只合计591亿，占两市成交3.8%；最大2.11x，离5x救市门槛差得远。
+  </div>
+</div>
+
+<div class="det-box">
+  <div class="det-head"><span class="dt">资金侦探</span><span class="dn">16只ETF放量倍数对账：<b>宽基10只+行业6只</b></span></div>
+  <div class="det-kicker">今日成交 ÷ 昨日成交、今日成交 ÷ 近14个交易日（10/9~10/28）日均成交（东财日K收盘口径，单位亿元）。</div>
+  <table style="width:100%;border-collapse:collapse;font-size:13px;margin:6px 0 4px;background:#fff">
+    <thead><tr style="background:var(--ink);color:var(--paper)">
+      <th style="padding:6px 9px;text-align:left;border:1px solid var(--ink)">ETF（按今日成交排序）</th>
+      <th style="padding:6px 9px;text-align:right;border:1px solid var(--ink)">今日</th>
+      <th style="padding:6px 9px;text-align:right;border:1px solid var(--ink)">昨日</th>
+      <th style="padding:6px 9px;text-align:right;border:1px solid var(--ink)">14日均</th>
+      <th style="padding:6px 9px;text-align:right;border:1px solid var(--ink)">倍数</th>
+      <th style="padding:6px 9px;text-align:left;border:1px solid var(--ink)">判读</th>
+    </tr></thead>
+    <tbody>
+      <tr style="background:#fdf3f1"><td style="padding:5px 9px;border:1px solid var(--line)">159915 创业板ETF易方达</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">127.5亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">116.1亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">101.2亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">1.26x</td><td style="padding:5px 9px;border:1px solid var(--line)">放量杀跌·接飞刀</td></tr>
+      <tr style="background:#fdf3f1"><td style="padding:5px 9px;border:1px solid var(--line)">588000 科创50ETF华夏</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">115.2亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">93.0亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">98.9亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">1.16x</td><td style="padding:5px 9px;border:1px solid var(--line)">科创50逆势承接</td></tr>
+      <tr style="background:#fdf3f1"><td style="padding:5px 9px;border:1px solid var(--line)">510300 沪深300ETF华泰</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">89.1亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">45.6亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">74.8亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">1.19x</td><td style="padding:5px 9px;border:1px solid var(--line)">300放量·未爆量</td></tr>
+      <tr><td style="padding:5px 9px;border:1px solid var(--line)">510500 中证500ETF南方</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">47.2亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">40.4亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">42.3亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">1.11x</td><td style="padding:5px 9px;border:1px solid var(--line)">中盘温和</td></tr>
+      <tr style="background:#fdf3f1"><td style="padding:5px 9px;border:1px solid var(--line)">159919 沪深300ETF嘉实</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">42.6亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">11.2亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">20.2亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">2.11x</td><td style="padding:5px 9px;border:1px solid var(--line)">低基数反弹</td></tr>
+      <tr><td style="padding:5px 9px;border:1px solid var(--line)">512100 中证1000ETF南方</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">40.2亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">48.2亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">41.6亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">0.97x</td><td style="padding:5px 9px;border:1px solid var(--line)">小盘缩量</td></tr>
+      <tr><td style="padding:5px 9px;border:1px solid var(--line)">518880 黄金ETF华安</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">24.6亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">22.1亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">31.0亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">0.79x</td><td style="padding:5px 9px;border:1px solid var(--line)">黄金降温</td></tr>
+      <tr><td style="padding:5px 9px;border:1px solid var(--line)">510050 上证50ETF华夏</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">23.6亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">24.8亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">31.2亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">0.76x</td><td style="padding:5px 9px;border:1px solid var(--line)">50缩量·未见托底</td></tr>
+      <tr><td style="padding:5px 9px;border:1px solid var(--line)">588080 科创板50ETF易方达</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">20.6亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">20.5亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">19.9亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">1.03x</td><td style="padding:5px 9px;border:1px solid var(--line)">科创50持平</td></tr>
+      <tr><td style="padding:5px 9px;border:1px solid var(--line)">510310 沪深300ETF易方达</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">18.6亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">8.2亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">35.6亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">0.52x</td><td style="padding:5px 9px;border:1px solid var(--line)">300内部隐身</td></tr>
+      <tr><td style="padding:5px 9px;border:1px solid var(--line)">512880 证券ETF国泰</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">14.2亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">11.8亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">14.9亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">0.95x</td><td style="padding:5px 9px;border:1px solid var(--line)">券商缩量</td></tr>
+      <tr><td style="padding:5px 9px;border:1px solid var(--line)">512480 半导体ETF国联安</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">10.5亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">12.3亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">11.6亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">0.90x</td><td style="padding:5px 9px;border:1px solid var(--line)">半导体缩量跌</td></tr>
+      <tr><td style="padding:5px 9px;border:1px solid var(--line)">512890 红利低波ETF华泰</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">8.6亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">5.8亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">8.7亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">0.98x</td><td style="padding:5px 9px;border:1px solid var(--line)">红利持平</td></tr>
+      <tr><td style="padding:5px 9px;border:1px solid var(--line)">512690 酒ETF鹏华</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">4.0亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">4.6亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">4.2亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">0.95x</td><td style="padding:5px 9px;border:1px solid var(--line)">酒ETF分歧</td></tr>
+      <tr><td style="padding:5px 9px;border:1px solid var(--line)">510330 沪深300ETF华夏</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">3.7亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">7.9亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">19.3亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">0.19x</td><td style="padding:5px 9px;border:1px solid var(--line)">几乎停摆</td></tr>
+      <tr><td style="padding:5px 9px;border:1px solid var(--line)">512200 房地产ETF南方</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:700">1.0亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right">0.9亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;color:var(--soft)">1.6亿</td><td style="padding:5px 9px;border:1px solid var(--line);text-align:right;font-weight:800">0.65x</td><td style="padding:5px 9px;border:1px solid var(--line)">地产躺平</td></tr>
+    </tbody>
+  </table>
+
+  <h2 class="sec-title" style="font-size:17px;margin-top:18px">ETF放量全景 · 1.0x均量线，谁在裸泳</h2>
+  <svg viewBox="0 0 1080 500" style="width:100%;height:auto;background:#fff;border:1px solid var(--line);border-radius:8px">
+    <text x="230" y="22" font-size="12" font-weight="800" fill="#1f4e79">14日日均成交倍数（1.0x=均量线，1.5x=明显放量）</text>
+    <line x1="480" y1="32" x2="480" y2="472" stroke="#6b6457" stroke-width="1.2" stroke-dasharray="5,4"/>
+    <text x="480" y="492" font-size="10.5" fill="#6b6457" text-anchor="middle">1.0x</text>
+    <line x1="605" y1="32" x2="605" y2="472" stroke="#c0392b" stroke-width="1.2" stroke-dasharray="5,4"/>
+    <text x="605" y="492" font-size="10.5" fill="#c0392b" text-anchor="middle">1.5x</text>
+    <text x="1040" y="22" font-size="10.5" fill="#8a8272" text-anchor="end">5x救市门槛在画外 →</text>
+  <text x="218" y="62" font-size="11.5" text-anchor="end" fill="#0d1117">159919 300ETF嘉实</text>
+  <rect x="230" y="51" width="528" height="14" rx="3" fill="#c0392b"/>
+  <text x="765" y="62" font-size="11.5" font-weight="800" fill="#c0392b">2.11x</text>
+  <text x="218" y="88" font-size="11.5" text-anchor="end" fill="#0d1117">159915 创业板ETF</text>
+  <rect x="230" y="77" width="315" height="14" rx="3" fill="#ff7a00"/>
+  <text x="552" y="88" font-size="11.5" font-weight="800" fill="#ff7a00">1.26x</text>
+  <text x="218" y="114" font-size="11.5" text-anchor="end" fill="#0d1117">510300 300ETF华泰</text>
+  <rect x="230" y="103" width="298" height="14" rx="3" fill="#ff7a00"/>
+  <text x="535" y="114" font-size="11.5" font-weight="800" fill="#ff7a00">1.19x</text>
+  <text x="218" y="140" font-size="11.5" text-anchor="end" fill="#0d1117">588000 科创50ETF</text>
+  <rect x="230" y="129" width="290" height="14" rx="3" fill="#ff7a00"/>
+  <text x="527" y="140" font-size="11.5" font-weight="800" fill="#ff7a00">1.16x</text>
+  <text x="218" y="166" font-size="11.5" text-anchor="end" fill="#0d1117">510500 中证500ETF</text>
+  <rect x="230" y="155" width="278" height="14" rx="3" fill="#ff7a00"/>
+  <text x="515" y="166" font-size="11.5" font-weight="800" fill="#ff7a00">1.11x</text>
+  <text x="218" y="192" font-size="11.5" text-anchor="end" fill="#0d1117">588080 科创50ETF易</text>
+  <rect x="230" y="181" width="258" height="14" rx="3" fill="#ff7a00"/>
+  <text x="495" y="192" font-size="11.5" font-weight="800" fill="#ff7a00">1.03x</text>
+  <text x="218" y="218" font-size="11.5" text-anchor="end" fill="#0d1117">512890 红利低波ETF</text>
+  <rect x="230" y="207" width="245" height="14" rx="3" fill="#8a8272"/>
+  <text x="482" y="218" font-size="11.5" font-weight="800" fill="#8a8272">0.98x</text>
+  <text x="218" y="244" font-size="11.5" text-anchor="end" fill="#0d1117">512100 中证1000ETF</text>
+  <rect x="230" y="233" width="242" height="14" rx="3" fill="#8a8272"/>
+  <text x="479" y="244" font-size="11.5" font-weight="800" fill="#8a8272">0.97x</text>
+  <text x="218" y="270" font-size="11.5" text-anchor="end" fill="#0d1117">512880 证券ETF</text>
+  <rect x="230" y="259" width="238" height="14" rx="3" fill="#8a8272"/>
+  <text x="475" y="270" font-size="11.5" font-weight="800" fill="#8a8272">0.95x</text>
+  <text x="218" y="296" font-size="11.5" text-anchor="end" fill="#0d1117">512690 酒ETF</text>
+  <rect x="230" y="285" width="238" height="14" rx="3" fill="#8a8272"/>
+  <text x="475" y="296" font-size="11.5" font-weight="800" fill="#8a8272">0.95x</text>
+  <text x="218" y="322" font-size="11.5" text-anchor="end" fill="#0d1117">512480 半导体ETF</text>
+  <rect x="230" y="311" width="225" height="14" rx="3" fill="#8a8272"/>
+  <text x="462" y="322" font-size="11.5" font-weight="800" fill="#8a8272">0.90x</text>
+  <text x="218" y="348" font-size="11.5" text-anchor="end" fill="#0d1117">518880 黄金ETF</text>
+  <rect x="230" y="337" width="198" height="14" rx="3" fill="#8a8272"/>
+  <text x="435" y="348" font-size="11.5" font-weight="800" fill="#8a8272">0.79x</text>
+  <text x="218" y="374" font-size="11.5" text-anchor="end" fill="#0d1117">510050 上证50ETF</text>
+  <rect x="230" y="363" width="190" height="14" rx="3" fill="#8a8272"/>
+  <text x="427" y="374" font-size="11.5" font-weight="800" fill="#8a8272">0.76x</text>
+  <text x="218" y="400" font-size="11.5" text-anchor="end" fill="#0d1117">512200 房地产ETF</text>
+  <rect x="230" y="389" width="162" height="14" rx="3" fill="#0a8f5b"/>
+  <text x="399" y="400" font-size="11.5" font-weight="800" fill="#0a8f5b">0.65x</text>
+  <text x="218" y="426" font-size="11.5" text-anchor="end" fill="#0d1117">510310 300ETF易方达</text>
+  <rect x="230" y="415" width="130" height="14" rx="3" fill="#0a8f5b"/>
+  <text x="367" y="426" font-size="11.5" font-weight="800" fill="#0a8f5b">0.52x</text>
+  <text x="218" y="452" font-size="11.5" text-anchor="end" fill="#0d1117">510330 300ETF华夏</text>
+  <rect x="230" y="441" width="48" height="14" rx="3" fill="#0a8f5b"/>
+  <text x="285" y="452" font-size="11.5" font-weight="800" fill="#0a8f5b">0.19x</text>
+  </svg>
+
+  <h2 class="sec-title" style="font-size:17px;margin-top:20px">四维验证：今天为什么不是“国家队行情”</h2>
+  <table class="verify-t">
+    <thead><tr><th style="text-align:left">维度</th><th>救市样本特征</th><th>10/29 实际</th><th style="width:88px">判定</th></tr></thead>
+    <tbody>
+      <tr><td>① 载体</td><td>300/50等权重宽基爆量</td><td>300四只合计1.03x、50仅0.76x</td><td style="color:#0a8f5b;font-weight:800">❌ 反向</td></tr>
+      <tr><td>② 结构</td><td>只买权重，中小盘躺平</td><td>创业板/科创50ETF逆势放量，权重缩量</td><td style="color:#0a8f5b;font-weight:800">❌ 非护盘</td></tr>
+      <tr><td>③ 时点</td><td>尾盘定点脉冲</td><td>尾盘宽基ETF有集体放量，但无单只爆量</td><td style="color:#b8860b;font-weight:800">⚠️ 存疑</td></tr>
+      <tr><td>④ 量级</td><td>单日5x起步</td><td>最大2.11x（低基数），16只合计591亿</td><td style="color:#0a8f5b;font-weight:800">❌ 未达门槛</td></tr>
+    </tbody>
+  </table>
+
+  <div class="det-verdict">侦探结论：四条里三条否——载体反、结构偏、量级不够，只有尾盘有放量迹象。今天不是国家队大举进场，更像300ETF内部做低成本托底；成长ETF的放量，是散户和游资在接飞刀。明天验证：①300ETF四只是否同向放量 ②50ETF能否回到1.0x ③创业板ETF是否连续第三天放量。</div>
+</div>
+
+<!-- 尾盘节奏 -->
+<h2 class="sec-title" style="font-size:17px;margin-top:20px">尾盘节奏还原 · 从低开到单边下杀</h2>
+<table class="timeline-table">
+  <thead><tr><th>时间窗</th><th>盘面动作</th><th>ETF端动作</th><th>性质判读</th></tr></thead>
+  <tbody>
+    <tr><td>9:30-10:00</td><td>创业板低开-1.46%报2596，反抽2597即全天最高；AI硬件领跌，银行红盘</td><td>300ETF开盘温和放量</td><td style="font-size:11.5px">开盘即定调：防守</td></tr>
+    <tr><td>10:00-11:30</td><td>沪指围绕3660，创业板跌破2550；中国卫星10:24、航天晨光10:25封板</td><td>159915/588000持续放量</td><td style="font-size:11.5px">主题独舞，权重护盘</td></tr>
+    <tr><td>13:00-14:00</td><td>创业板续跌，最低2516.78；CPO/PCB/半导体跌幅扩大</td><td>宽基ETF午后量能抬升</td><td style="font-size:11.5px">单边下杀，无抵抗</td></tr>
+    <tr><td>14:00-14:40</td><td>天孚-19.77%，东山精密/沪电跌停；跌停家数升至41</td><td>尾盘宽基ETF集体放量（新闻口径）</td><td style="font-size:11.5px">恐慌盘与接飞刀对撞</td></tr>
+    <tr><td>14:40-15:00</td><td>创业板收2517.59近最低，沪指3651.43；银行/保险守高位</td><td>30分钟占比缺失，仅确认真实放量</td><td style="font-size:11.5px">收盘无反弹，情绪冰点</td></tr>
+  </tbody>
+</table>
+
+<!-- ⑤ 资金 -->
+<div class="eyebrow"><span class="num">5</span><span class="label">主力资金 · 板块口径（不看个股）</span></div>
+<div class="fund-box">
+  <div class="fund-cols">
+    <div class="fund-col in">
+      <div class="fh">🔴 资金流入方向（避险端）</div>
+      <div class="fund-row"><span class="fn">🏦 银行</span><span class="fv">+1.98% · 主力+1.11亿</span></div>
+      <div class="fund-row"><span class="fn">🍶 白酒</span><span class="fv">主力+3.31亿 · 茅台+1.75%</span></div>
+      <div class="fund-row"><span class="fn">🛢 煤炭</span><span class="fv">+0.57% · 开滦股份涨停</span></div>
+      <div class="fund-row"><span class="fn">🛡 保险</span><span class="fv">+1.61% · 防御板块跟涨</span></div>
+      <div class="fund-row"><span class="fn">🍔 食品加工</span><span class="fv">巴比/惠发/一鸣涨停</span></div>
+    </div>
+    <div class="fund-col out">
+      <div class="fh">🟢 资金流出方向（AI硬件端）</div>
+      <div class="fund-row"><span class="fn">💾 CPO</span><span class="fv">-6.78% · 主力-205.59亿</span></div>
+      <div class="fund-row"><span class="fn">🔌 PCB</span><span class="fv">-5.55% · 主力-147.75亿</span></div>
+      <div class="fund-row"><span class="fn">🔬 半导体</span><span class="fv">-5.55% · 主力-136.40亿</span></div>
+      <div class="fund-row"><span class="fn">📡 通信设备</span><span class="fv">-5.53% · 主力-111.15亿</span></div>
+      <div class="fund-row"><span class="fn">🥇 有色金属</span><span class="fv">-2.60% · 主力-30.03亿</span></div>
+    </div>
+  </div>
+  <div class="fund-note"><b>一句话总结：</b>不是存量搬家那么简单——AI硬件四板块单日净流出600.9亿（CPO+PCB+半导体+通信设备），银行/白酒只接住零头；大部分钱在场外看戏，成交额缩了720亿。</div>
+</div>
+
+<!-- ⑥ 核心矛盾 -->
+<div class="eyebrow"><span class="num">6</span><span class="label">全天核心矛盾 · 三条看懂</span></div>
+<div class="pre-wrap">
+  <div class="conf-item">🔴 <b>多头说：</b>沪指仅-0.82%、银行走强、成交仍1.56万亿；AI硬件跌是业绩雷，不是系统性风险，跌完更便宜。</div>
+  <div class="conf-item">🟢 <b>空头说：</b>创业板14个月新低、124只跌超9.8%、跌停41家；CPO四板块净流出601亿，机构在夺门而出。</div>
+  <div class="conf-item">🔮 <b>关键变量：</b>①创业板能否守2500 ②天孚/中际能否止跌 ③银行红利是否继续吸金 ④300ETF是否真放量 ⑤今晚美股科技股。</div>
+</div>
+
+<!-- ⑦ 明天预判 -->
+<div class="eyebrow"><span class="num">🧭</span><span class="label">明天预判 · 精简3情景</span></div>
+<div class="pre-wrap">
+  <div class="pre-item"><b>情景A｜超跌修复（概率30%）</b>→ 创业板站稳2500，CPO龙头止跌，涨停回升50+；需300/500ETF持续放量。</div>
+  <div class="pre-item"><b>情景B｜继续杀估值（概率45%）</b>→ 创业板跌破2500，跌停30+，银行/红利继续吸金；业绩雷向其他AI硬件扩散，<b>最可能</b>。</div>
+  <div class="pre-item"><b>情景C｜风格再平衡（概率25%）</b>→ 成长止跌、银行歇脚，沪指围绕3650，成交缩到1.4万亿；方向等新催化。</div>
+</div>
+
+<!-- 数据说明 -->
+<div class="disc">
+  <b>📌 口径：</b>指数为10/29收盘：沪指3651.43/-0.82%（高3678.46/低3645.26）、深成-2.92%、创业板-4.45%、科创50-4.27%；成交1.56万亿（15,565.2亿），较10/28缩719.6亿；东财A股子集756涨/4400跌/62平（14.5%），财联社全市场781涨/4728跌；涨停39/炸板25/跌停41/封板率60.9%/最高4板（东财涨停池15:05快照，与财联社口径可能±1）。<br>
+  <b>📌 温度计：</b>按 scoring-v4 锚点复算；市场热度量比97.7%、上涨占比14.5%；赚钱效应涨停家数用近14日均值53.4（9/23-10/8池数据缺失，降级替代）；讨论热度环比-4.4%；恐贪封板率60.9%、4板无修正；风险偏好进攻组（券商/半导体/军工/有色/煤炭）均值-2.33% − 防御组（银行/白酒/电力/公用）-0.36% = -1.98pct，落在10-24区间取14°。<br>
+  <b>📌 ETF口径：</b>今日成交÷近14日（10/9~10/28）日均成交，东财日K收盘口径；16只合计591.0亿；尾盘30分钟占比因分钟线接口缺失未计算，仅保留“宽基ETF尾盘集体放量”的新闻口径；「救市级门槛」参照2024/2汇金样本单日5x起步。<br>
+  <b>📌 L1-L5：</b>本期未完成每板块≥15条股吧/雪球样本采集，分布为盘面结构+关注度估算，按v4.0规则降级，不作为情绪结论；韭菜浓度=L1+L2，机构浓度=L4+L5。<br>
+  <b>📌 资金流：</b>东财板块主力净流入为收盘快照，仅覆盖部分板块；白酒+3.31亿与白酒板块-1.45%并存，系茅台等权重与中小酒分化。<br>
+  <b>📌 免责：</b>本报告为娱乐化的市场情绪观察，不构成任何投资建议；市场有风险，吃瓜需理性。
+</div>
+
+<div class="footer">
+  🍉 <b>韭菜指数</b> · 2026.10.29 全天（昨天KTV，今天ICU：创业板-4.45%创14个月新低·银行+1.98%四大行市值破10万亿——AI硬件杀估值，红利成避风港） · 编制人：土豆 + Buddy<br>
+  数据来源：东方财富 + 腾讯行情 + 财联社/21财经 + 公开讨论 · ⚠️ 仅为散户情绪观察，不构成投资建议
+</div>
+
+</div>
+</body>
+</html>
