@@ -1,7 +1,7 @@
 {
   "userName": "",
   "permissionMode": "yolo",
-  "model": "opus",
+  "model": "fable",
   "thinkingBudget": "off",
   "effortLevel": "max",
   "serviceTier": "default",
@@ -96,7 +96,7 @@
   },
   "settingsProvider": "claude",
   "savedProviderModel": {
-    "claude": "opus"
+    "claude": "fable"
   },
   "savedProviderEffort": {
     "claude": "max"
