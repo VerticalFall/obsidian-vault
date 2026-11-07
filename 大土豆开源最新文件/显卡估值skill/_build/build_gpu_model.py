@@ -162,14 +162,15 @@ def sheet_assumptions(wb):
         ("16GB 显存寿命因子", 1.00, "16GB 作为基准，不额外折扣"),
         ("可买折扣", 0.85, "15% 安全边际"),
         ("上限溢价", 1.15, "高于公允 15% 不买"),
+        ("8GB 显存寿命因子", 0.90, "8GB 在 2027–2028 更容易遇到显存瓶颈，残值更低"),
     ]
     for i, (a, b, c) in enumerate(rows):
         r = 6 + i
         cell(ws, r, 1, a, align="left", bold=True, fill=PatternFill("solid", fgColor="FAF8F2"))
         cell(ws, r, 2, b, fmt="0.00", bold=True, color="1A73E8", fill=INPUT_FILL)
         block(ws, r, 3, r, 6, c, size=9, color=MUTED)
-    section(ws, 13, "二、性能指数（1440p 光栅，RTX 5070 = 100）", 6)
-    header(ws, 14, ["型号", "指数", "定位", "", "", ""])
+    section(ws, 14, "二、性能指数（1440p 光栅，RTX 5070 = 100）", 6)
+    header(ws, 15, ["型号", "指数", "定位", "", "", ""])
     perf = [
         ("RTX 5070", 100, "1440p 高刷"),
         ("RTX 5070 Ti", 125, "1440p/4K 入门"),
@@ -179,16 +180,60 @@ def sheet_assumptions(wb):
         ("RX 9070 XT", 135, "4K 性价比"),
     ]
     for i, (a, b, c) in enumerate(perf):
-        r = 15 + i
+        r = 16 + i
         cell(ws, r, 1, a, align="left", bold=True)
         cell(ws, r, 2, b, fmt="0", align="center")
         block(ws, r, 3, r, 6, c, size=9, color=MUTED)
-    block(ws, 22, 1, 25, 6,
+    block(ws, 23, 1, 26, 6,
           "指数用于横向比较“元/性能点”，不是绝对帧数；实际帧数受 CPU、游戏、驱动影响。"
           "参数不是永久值：内存暴涨/回落、下一代发布前后，先改内存因子，再改年龄因子。",
           size=9, color=MUTED, fill=NOTE_FILL, height=48)
     finish(ws, freeze="A4")
-    ws.print_area = "A1:F25"
+    ws.print_area = "A1:F26"
+
+
+
+def sheet_5060(wb):
+    ws = wb.create_sheet("5060补充")
+    title(ws, "RTX 5060 / 5060 Ti · 补充估值", 12)
+    subtitle(ws, "单位：人民币元；当前价为渠道/电商参考价；8GB 显存按 0.90 寿命因子", 12)
+    widths(ws, [18, 8, 11, 11, 11, 11, 9, 11, 11, 11, 11, 34])
+    header(ws, 4, ["型号", "显存", "首发价", "当前低价", "当前高价", "当前中值",
+                   "性能指数", "公允价", "可买价", "上限价", "当前/公允", "结论"])
+    cards = [
+        ("RTX 5060 8GB", 8, 2499, 3400, 4400, 61, "不买；等 ≤2,730，理想 ≤2,020"),
+        ("RTX 5060 Ti 8GB", 8, 3199, 4300, 5000, 71, "不买；8GB 版性价比最低，等 ≤3,500"),
+        ("RTX 5060 Ti 16GB", 16, 3599, 5500, 6300, 74, "三者中相对最好；等 ≤4,370，理想 ≤3,230"),
+    ]
+    for i, (name, vram, msrp, low, high, perf, concl) in enumerate(cards):
+        r = 5 + i
+        cell(ws, r, 1, name, align="left", bold=True, fill=PatternFill("solid", fgColor="FAF8F2"))
+        cell(ws, r, 2, vram, fmt="0", align="center")
+        cell(ws, r, 3, msrp, fmt="#,##0", color="1A73E8", fill=INPUT_FILL)
+        cell(ws, r, 4, low, fmt="#,##0", color="1A73E8", fill=INPUT_FILL)
+        cell(ws, r, 5, high, fmt="#,##0", color="1A73E8", fill=INPUT_FILL)
+        cell(ws, r, 6, f"=(D{r}+E{r})/2", fmt="#,##0")
+        cell(ws, r, 7, perf, fmt="0", align="center")
+        cell(ws, r, 8, f"=C{r}*假设!$B$6*假设!$B$7*IF(B{r}=8,假设!$B$12,IF(B{r}=12,假设!$B$8,假设!$B$9))", fmt="#,##0", bold=True)
+        cell(ws, r, 9, f"=H{r}*假设!$B$10", fmt="#,##0")
+        cell(ws, r, 10, f"=H{r}*假设!$B$11", fmt="#,##0")
+        cell(ws, r, 11, f"=F{r}/H{r}-1", fmt="0.0%", bold=True)
+        cell(ws, r, 12, concl, align="left", size=8.8, wrap=True)
+        prem = (low + high) / 2 / (msrp * 1.20 * 0.88 * (0.90 if vram == 8 else 1.0)) - 1
+        fill = GREEN_FILL if prem <= 0.05 else (GOLD_FILL if prem <= 0.15 else RED_FILL)
+        ws.cell(row=r, column=11).fill = fill
+        ws.row_dimensions[r].height = 34
+    block(ws, 9, 1, 12, 12,
+          "结论：三张都在上限价之上。RTX 5060 Ti 16GB 是三者中相对最好的，但仍需等 ≤4,370；"
+          "RTX 5060 8GB 不建议用于 2K/长期；RTX 5060 Ti 8GB 性价比最低。",
+          size=9.5, color=GREEN, fill=GREEN_FILL, height=54)
+    block(ws, 13, 1, 15, 12,
+          "口径：当前价为 2026-11 初渠道/电商参考价，RTX 5060 主流约 4,000 元、极端 4,800；"
+          "5060 Ti 16GB 约 5,500–6,300；8GB 卡按 0.90 显存寿命因子。"
+          "公允价 = 首发价 × 内存 1.20 × 年龄 0.88 × 显存因子；可买 = 公允 × 0.85；上限 = 公允 × 1.15。",
+          size=8.5, color=MUTED, fill=NOTE_FILL, height=48)
+    finish(ws)
+    ws.print_area = "A1:L15"
 
 
 def sheet_tracking(wb):
@@ -237,6 +282,7 @@ def sheet_method(wb):
 def main():
     wb = Workbook()
     sheet_table(wb)
+    sheet_5060(wb)
     sheet_assumptions(wb)
     sheet_tracking(wb)
     sheet_method(wb)
