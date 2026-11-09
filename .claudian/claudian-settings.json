@@ -7,7 +7,7 @@
   "serviceTier": "default",
   "enableAutoTitleGeneration": true,
   "titleGenerationLocale": "",
-  "titleGenerationModel": "",
+  "titleGenerationModel": "fable",
   "excludedTags": [],
   "mediaFolder": "",
   "systemPrompt": "",
@@ -22,7 +22,7 @@
     "focusInputKey": "i"
   },
   "requireCommandOrControlEnterToSend": false,
-  "locale": "en",
+  "locale": "zh-CN",
   "providerConfigs": {
     "claude": {
       "enabled": true,
@@ -35,7 +35,7 @@
       "customModels": "",
       "lastModel": "haiku",
       "modelEnvironmentType": "",
-      "titleModelEnvironmentType": "",
+      "titleModelEnvironmentType": "fable",
       "environmentVariables": "",
       "environmentHash": ""
     },
